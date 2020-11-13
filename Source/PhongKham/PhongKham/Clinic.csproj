@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0674F8B1-B4D4-42A0-B559-E5D965AE3C84}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Clinic</RootNamespace>
+    <AssemblyName>Clinic</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\Clinic.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\Clinic.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>clinic.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevComponents.DotNetBar2, Version=12.8.0.15, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\DevComponents.DotNetBar2.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MigraDoc.DocumentObjectModel, Version=1.31.3066.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\MigraDoc.DocumentObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.Rendering, Version=1.31.3066.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\MigraDoc.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.RtfRendering, Version=1.31.3066.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\MigraDoc.RtfRendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp, Version=1.31.1789.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.31.1789.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\PdfSharp.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Windows.Forms.Calendar, Version=1.0.5346.41310, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\System.Windows.Forms.Calendar.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClinicConstant.cs" />
+    <Compile Include="CoTableLayoutPanel .cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extensions\ProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extensions\ProgressForm.Designer.cs">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\ReasonAppointment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extensions\ReasonAppointment.Designer.cs">
+      <DependentUpon>ReasonAppointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Appointment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Appointment.Designer.cs">
+      <DependentUpon>Appointment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\Thongkethuoc.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\Thongkethuoc.Designer.cs">
+      <DependentUpon>Thongkethuoc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ErrorProviderHelper.cs" />
+    <Compile Include="Helpers\HelperControl.cs" />
+    <Compile Include="Helpers\HelperforSeemore.cs" />
+    <Compile Include="MessageBoxControl\MessageBoxNumberInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageBoxControl\MessageBoxNumberInput.Designer.cs">
+      <DependentUpon>MessageBoxNumberInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ReasonApointmentModel.cs" />
+    <Compile Include="Thong Ke\DiagnosesHistory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thong Ke\DiagnosesHistory.Designer.cs">
+      <DependentUpon>DiagnosesHistory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Thong Ke\DoanhThuForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thong Ke\DoanhThuForm.Designer.cs">
+      <DependentUpon>DoanhThuForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\LoaiKham\themLoaiForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Extensions\LoaiKham\themLoaiForm.Designer.cs">
+      <DependentUpon>themLoaiForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Converter.cs" />
+    <Compile Include="Helpers\HelperDatabase.cs" />
+    <Compile Include="Thong Ke\FormSeemoreMedicine.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thong Ke\FormSeemoreMedicine.Designer.cs">
+      <DependentUpon>FormSeemoreMedicine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Thong Ke\HelperThongKe.cs" />
+    <Compile Include="Thong Ke\ItemDoanhThu.cs" />
+    <Compile Include="ListPatientsTodayForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ListPatientsTodayForm.Designer.cs">
+      <DependentUpon>ListPatientsTodayForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ADate.cs" />
+    <Compile Include="CreateUserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateUserForm.Designer.cs">
+      <DependentUpon>CreateUserForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Database\Database.cs" />
+    <Compile Include="Database\DatabaseContants.cs" />
+    <Compile Include="Database\DatabaseFactory.cs" />
+    <Compile Include="Database\IDatabase.cs" />
+    <Compile Include="Database\MySqlDatabase.cs" />
+    <Compile Include="Database\StringBuilder.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\Helper.cs" />
+    <Compile Include="LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Age.cs" />
+    <Compile Include="Models\Contants.cs" />
+    <Compile Include="Models\DoanhThuBacSi.cs" />
+    <Compile Include="Models\InfoClinic.cs" />
+    <Compile Include="Models\ItemMedicine\IMedicine.cs" />
+    <Compile Include="Models\ItemMedicine\Medicine.cs" />
+    <Compile Include="Models\ItemMedicine\ObjectMedicine.cs" />
+    <Compile Include="Models\Patient.cs" />
+    <Compile Include="Models\ItemMedicine\Service.cs" />
+    <Compile Include="PassSQL.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PassSQL.Designer.cs">
+      <DependentUpon>PassSQL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SearchForm.Designer.cs">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Thong Ke\Services.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thong Ke\Services.Designer.cs">
+      <DependentUpon>Services.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Thong Ke\TuThuocForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thong Ke\TuThuocForm.Designer.cs">
+      <DependentUpon>TuThuocForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="CreateUserForm.resx">
+      <DependentUpon>CreateUserForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extensions\ProgressForm.resx">
+      <DependentUpon>ProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extensions\ReasonAppointment.resx">
+      <DependentUpon>ReasonAppointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Appointment.resx">
+      <DependentUpon>Appointment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\Thongkethuoc.resx">
+      <DependentUpon>Thongkethuoc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageBoxControl\MessageBoxNumberInput.resx">
+      <DependentUpon>MessageBoxNumberInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thong Ke\DiagnosesHistory.resx">
+      <DependentUpon>DiagnosesHistory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thong Ke\DoanhThuForm.resx">
+      <DependentUpon>DoanhThuForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Extensions\LoaiKham\themLoaiForm.resx">
+      <DependentUpon>themLoaiForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ListPatientsTodayForm.resx">
+      <DependentUpon>ListPatientsTodayForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PassSQL.resx">
+      <DependentUpon>PassSQL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="SearchForm.resx">
+      <DependentUpon>SearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thong Ke\FormSeemoreMedicine.resx">
+      <DependentUpon>FormSeemoreMedicine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thong Ke\Services.resx">
+      <DependentUpon>Services.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thong Ke\TuThuocForm.resx">
+      <DependentUpon>TuThuocForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Models\Date.dbml">
+      <SubType>Designer</SubType>
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>Date.designer.cs</LastGenOutput>
+    </None>
+    <None Include="Models\Date.dbml.layout">
+      <DependentUpon>Date.dbml</DependentUpon>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AcroPDFLib">
+      <Guid>{05BFD3F1-6319-4F30-B752-C7A22889BCC4}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="AxAcroPDFLib">
+      <Guid>{05BFD3F1-6319-4F30-B752-C7A22889BCC4}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="clinic.ico" />
+    <Content Include="Libs\DevComponents.DotNetBar2.dll" />
+    <Content Include="Libs\Microsoft.CSharp.dll" />
+    <Content Include="Libs\MigraDoc.DocumentObjectModel.dll" />
+    <Content Include="Libs\MigraDoc.Rendering.dll" />
+    <Content Include="Libs\MigraDoc.RtfRendering.dll" />
+    <Content Include="Libs\MySql.Data.dll" />
+    <Content Include="Libs\PdfSharp.Charting.dll" />
+    <Content Include="Libs\PdfSharp.dll" />
+    <Content Include="Libs\System.Windows.Forms.Calendar.dll" />
+    <None Include="Resources\patient.ico" />
+    <None Include="Resources\addnew.ico" />
+    <None Include="Resources\appointment.PNG" />
+    <None Include="Resources\time_calendar.jpg" />
+    <None Include="Resources\checklist.png" />
+    <None Include="Resources\edit-interface-symbol-of-a-pencil-on-a-square-outline-paper.png" />
+    <None Include="Resources\folder.png" />
+    <None Include="Resources\incomes.png" />
+    <None Include="Resources\hospital.png" />
+    <None Include="Resources\chandoan.ico" />
+    <None Include="Resources\medicine.png" />
+    <None Include="Resources\appointent.ico" />
+    <None Include="Resources\goDownArrow.png" />
+    <None Include="Resources\print_printer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Calendar\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="Date">
+  <DataContextMoniker Name="/DateDataContext" />
+  <nestedChildShapes>
+    <classShape Id="08673d00-a777-431a-8b35-5a4f6ae26b97" absoluteBounds="5.875, 4.25, 2, 1.9631982421875">
+      <DataClassMoniker Name="/DateDataContext/UserPK" />
+      <nestedChildShapes>
+        <elementListCompartment Id="fe0de30a-14c2-4cc0-8d64-6133938c5274" absoluteBounds="5.8900000000000006, 4.71, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ac7465c7-fb88-4d06-98a9-26135032c40c" absoluteBounds="4.5, 1.5, 2, 1.9631982421875">
+      <DataClassMoniker Name="/DateDataContext/ItemCalendarPK" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7cdd6672-598e-41d7-826e-e2e09edd85c6" absoluteBounds="4.515, 1.96, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(6.1875 : 3.4631982421875); (6.1875 : 4.25)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DateDataContext/ItemCalendarPK/ItemCalendarPK_UserPK" />
+      <nodes>
+        <classShapeMoniker Id="ac7465c7-fb88-4d06-98a9-26135032c40c" />
+        <classShapeMoniker Id="08673d00-a777-431a-8b35-5a4f6ae26b97" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="f57aaa71-9823-47ca-a54d-38e27472f259" absoluteBounds="0.5, 1.75, 2, 1.9631982421875">
+      <DataClassMoniker Name="/DateDataContext/PatientPK" />
+      <nestedChildShapes>
+        <elementListCompartment Id="0b72351f-7502-4d30-a428-0ac71784661d" absoluteBounds="0.515, 2.21, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="052f8c1c-5d1b-4310-83a2-b4c2c629e2d2" absoluteBounds="0.5, 4.25, 2, 2.1554996744791666">
+      <DataClassMoniker Name="/DateDataContext/MedicinePK" />
+      <nestedChildShapes>
+        <elementListCompartment Id="f0082e15-7a7a-465a-a8f3-185aa56eb8a6" absoluteBounds="0.5149999999999999, 4.71, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(1.5 : 3.7131982421875); (1.5 : 4.25)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DateDataContext/PatientPK/PatientPK_MedicinePK" />
+      <nodes>
+        <classShapeMoniker Id="f57aaa71-9823-47ca-a54d-38e27472f259" />
+        <classShapeMoniker Id="052f8c1c-5d1b-4310-83a2-b4c2c629e2d2" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(4.5 : 2.60659912109375); (2.5 : 2.60659912109375)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DateDataContext/ItemCalendarPK/ItemCalendarPK_PatientPK" />
+      <nodes>
+        <classShapeMoniker Id="ac7465c7-fb88-4d06-98a9-26135032c40c" />
+        <classShapeMoniker Id="f57aaa71-9823-47ca-a54d-38e27472f259" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="bdf2f91b-0ace-414e-85ac-f1fd250bff64" absoluteBounds="3.125, 4.75, 2, 0.8093896484375">
+      <DataClassMoniker Name="/DateDataContext/Class1" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e70d617c-4da7-4e39-8b51-917a7d881d8c" absoluteBounds="3.125, 4.75, 0.125, 0.2493896484375" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

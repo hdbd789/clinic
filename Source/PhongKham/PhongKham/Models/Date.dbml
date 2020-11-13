@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Class="DateDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Table Name="" Member="UserPKs">
+    <Type Name="UserPK">
+      <Column Member="IdUser" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="NameUser" Type="System.String" CanBeNull="false" />
+      <Column Member="Password1User" Type="System.String" CanBeNull="false" />
+      <Column Member="Password2User" Type="System.String" CanBeNull="false" />
+      <Column Member="AuthorityUser" Type="System.String" CanBeNull="false" />
+      <Column Member="LoginNameUser" Type="System.String" CanBeNull="false" />
+      <Association Name="ItemCalendarPK_UserPK" Member="ItemCalendarPK" ThisKey="IdUser" OtherKey="IdUser" Type="ItemCalendarPK" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="" Member="ItemCalendarPKs">
+    <Type Name="ItemCalendarPK">
+      <Column Member="IdUser" Type="System.String" CanBeNull="false" />
+      <Column Member="StartTime" Type="System.String" CanBeNull="false" />
+      <Column Member="EndTime" Type="System.String" CanBeNull="false" />
+      <Column Member="Text" Type="System.String" CanBeNull="false" />
+      <Column Member="Color" Type="System.String" CanBeNull="false" />
+      <Column Member="IdPatient" Type="System.String" CanBeNull="false" />
+      <Association Name="ItemCalendarPK_UserPK" Member="UserPKs" ThisKey="IdUser" OtherKey="IdUser" Type="UserPK" Cardinality="One" />
+      <Association Name="ItemCalendarPK_PatientPK" Member="PatientPKs" ThisKey="IdPatient" OtherKey="IdPatient" Type="PatientPK" />
+    </Type>
+  </Table>
+  <Table Name="" Member="PatientPKs">
+    <Type Name="PatientPK">
+      <Column Member="IdPatient" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="NamePatient" Type="System.String" CanBeNull="false" />
+      <Column Member="BirthdayPatient" Type="System.DateTime" CanBeNull="false" />
+      <Column Member="AddressPatient" Type="System.String" CanBeNull="false" />
+      <Column Member="HeightPatient" Type="System.String" CanBeNull="false" />
+      <Column Member="WeightPatient" Type="System.String" CanBeNull="false" />
+      <Association Name="PatientPK_MedicinePK" Member="MedicinePKs" ThisKey="IdPatient" OtherKey="IdMedicine" Type="MedicinePK" />
+      <Association Name="ItemCalendarPK_PatientPK" Member="ItemCalendarPK" ThisKey="IdPatient" OtherKey="IdPatient" Type="ItemCalendarPK" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="" Member="MedicinePKs">
+    <Type Name="MedicinePK">
+      <Column Member="IdMedicine" Type="System.String" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="NameMedicine" Type="System.String" CanBeNull="false" />
+      <Column Member="CountMedicine" Type="System.String" CanBeNull="false" />
+      <Column Member="CostInMedicine" Type="System.String" CanBeNull="false" />
+      <Column Member="CostOutMedicine" Type="System.String" CanBeNull="false" />
+      <Column Member="InputDayMedicine" Type="System.String" CanBeNull="false" />
+      <Column Member="OutDayMedicine" Type="System.String" CanBeNull="false" />
+      <Association Name="PatientPK_MedicinePK" Member="PatientPK" ThisKey="IdMedicine" OtherKey="IdPatient" Type="PatientPK" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="" Member="Class1s">
+    <Type Name="Class1" />
+  </Table>
+</Database>
