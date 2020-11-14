@@ -1,9 +1,6 @@
 ﻿using Clinic.Database;
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
 
 namespace Clinic.Helpers
 {
@@ -280,19 +277,19 @@ namespace Clinic.Helpers
         {
             Tuple<int, int> result;
             string strCommand = "select * from lichsunhapthuoc where InputDay = " + Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-
-            int count = 0;
-            int sumMoney = 0;
-            while (reader.Read())
+            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
-                int tempCount = int.Parse(reader["Count"].ToString());
-                int costIn = int.Parse(reader["CostIn"].ToString());
-                count += tempCount;
-                sumMoney += tempCount * costIn;
+                int count = 0;
+                int sumMoney = 0;
+                while (reader.Read())
+                {
+                    int tempCount = int.Parse(reader["Count"].ToString());
+                    int costIn = int.Parse(reader["CostIn"].ToString());
+                    count += tempCount;
+                    sumMoney += tempCount * costIn;
+                }
+                result = new Tuple<int, int>(count, sumMoney);
             }
-            reader.Close();
-            result = new Tuple<int, int>(count, sumMoney);
             return result;
         }
 
@@ -319,7 +316,7 @@ namespace Clinic.Helpers
         public static Tuple<int, int> GetAllCountAndMoneyMedicineInputInYear(IDatabase db, int year)
         {
             Tuple<int, int> result;
-            string strCommand = "select * from lichsunhapthuoc where YEAR(InputDay) = " + Helper.ConvertToSqlString(year.ToString());
+            string strCommand = string.Format("select * from {0} where YEAR(InputDay) = {1}", DatabaseContants.tables.lichsunhapthuoc, Helper.ConvertToSqlString(year.ToString()));
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
 
             int count = 0;

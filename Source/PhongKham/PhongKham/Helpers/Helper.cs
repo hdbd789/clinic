@@ -1,40 +1,41 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.IO;
+using System.Security.Permissions;
+using PhongKham;
+using MySql.Data.MySqlClient;
+using Clinic.Database;
+using System.Data;
+using System.Data.Common;
+using Clinic.Models;
+using System.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.Rendering;
+using MigraDoc.DocumentObjectModel.Tables;
+using Clinic.Models.ItemMedicine;
+using log4net;
+using System.Reflection;
 
 namespace Clinic.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Data.SqlClient;
-    using System.Security.Cryptography;
-    using System.IO;
-    using System.Security.Permissions;
-    using PhongKham;
-    using MySql.Data.MySqlClient;
-    using Clinic.Database;
-    using System.Data;
-    using System.Data.Common;
-    using Clinic.Models;
-    using System.Drawing;
-    using PdfSharp.Pdf;
-    using PdfSharp.Drawing;
-    using PdfSharp.Drawing.Layout;
-    using MigraDoc.DocumentObjectModel;
-    using MigraDoc.Rendering;
-    using MigraDoc.DocumentObjectModel.Tables;
-    using Clinic.Models.ItemMedicine;
-
     /// <summary>
     /// Comment for the class
     /// </summary>
     public class Helper
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         #region Fields
         private static readonly byte[] _key = { 0xA1, 0xF1, 0xA6, 0xBB, 0xA2, 0x5A, 0x37, 0x6F, 0x81, 0x2E, 0x17, 0x41, 0x72, 0x2C, 0x43, 0x27 };
         private static readonly byte[] _initVector = { 0xE1, 0xF1, 0xA6, 0xBB, 0xA9, 0x5B, 0x31, 0x2F, 0x81, 0x2E, 0x17, 0x4C, 0xA2, 0x81, 0x53, 0x61 };
-        public static List<string> ColumnsHistory = new List<string>() { "Id", "Symptom", "Diagnose", "Day", "Medicines", "temperature", "huyetap", ClinicConstant.HistoryTable_Reason };
-        public static List<string> ColumnsDoanhThu = new List<string>() { "Namedoctor", "Money", "time", "Idpatient", "Namepatient", ClinicConstant.DoanhThuTable_Services, ClinicConstant.DoanhThuTable_LoaiKham, ClinicConstant.HistoryTable_IdHistory };
+        public static List<string> ColumnsHistory = new List<string>() { "Id", "Symptom", "Diagnose", "Day", "Medicines", "temperature", "huyetap", DatabaseContants.history.Reason };
+        public static List<string> ColumnsDoanhThu = new List<string>() { "Namedoctor", "Money", "time", "Idpatient", "Namepatient", DatabaseContants.danhthu.Services, DatabaseContants.danhthu.LoaiKham, DatabaseContants.history.IdHistory };
         public static string IDPatient;
 
         private static readonly DateTime dateOld = new DateTime(2017, 05, 06);
@@ -145,81 +146,13 @@ namespace Clinic.Helpers
             }
         }
 
-
-        public static bool checkId(string Id)
-        {
-            if (Id.Length < 6)
-            {
-                return false;
-            }
-            return true;
-        }
         #endregion
         public static string ConvertToSqlString(string str)
         {
             return "'" + str + "'";
         }
-        //public static void InsertRowToTable( string nameOfTable, List<string>nameOfColumns,List<string> values)
-        //{
-
-        //    for (int i = 0; i < values.Count; i++)
-        //    {
-        //        values[i] = ConvertToSqlString(values[i]);
-        //    }
-
-        //    string columns = "Insert Into " +nameOfTable+" (";
-        //    foreach (string name in nameOfColumns)
-        //    {
-        //        columns += name + ",";
-        //    }
-        //    columns = columns.Remove(columns.Length - 1);
-        //    columns += ")"; 
-        //    string vals = " VALUES (";
-        //    foreach (string value in values)
-        //    {
-        //        vals += value + ",";
-        //    }
-        //    vals= vals.Remove(vals.Length -1 );
-        //    vals += ")";
-
-        //    string strCommand = columns + vals;
-
-        //    SqlCommand comm = new SqlCommand(strCommand, conn);
-        //    comm.ExecuteNonQuery();
-
-        //}
-
-        //public static void InsertRowToTable(MySqlConnection conn, string nameOfTable, List<string> nameOfColumns, List<string> values)
-        //{
-
-        //    for (int i = 0; i < values.Count; i++)
-        //    {
-        //        values[i] = ConvertToSqlString(values[i]);
-        //    }
-
-        //    string columns = "Insert Into " + nameOfTable + " (";
-        //    foreach (string name in nameOfColumns)
-        //    {
-        //        columns += name + ",";
-        //    }
-        //    columns = columns.Remove(columns.Length - 1);
-        //    columns += ")";
-        //    string vals = " VALUES (";
-        //    foreach (string value in values)
-        //    {
-        //        vals += value + ",";
-        //    }
-        //    vals = vals.Remove(vals.Length - 1);
-        //    vals += ")";
-
-        //    string strCommand = columns + vals;
-
-        //    MySqlCommand comm = new MySqlCommand(strCommand, conn);
-        //    comm.ExecuteNonQuery();
-
-        //}
-
-        private static string BuildFirstPartUpdateQuery(string nameOfTable, List<string> nameOfColumns, List<string> values)
+        
+        public static string BuildFirstPartUpdateQuery(string nameOfTable, List<string> nameOfColumns, List<string> values)
         {
             string strCommand = "Update " + nameOfTable + " Set ";
             for (int i = 0; i < nameOfColumns.Count; i++)
@@ -233,110 +166,7 @@ namespace Clinic.Helpers
             return strCommand;
         }
 
-        public static void UpdateRowToTable(IDatabase db, string nameOfTable, List<string> nameOfColumns,
-            List<string> values,string namecolumn, string id)
-        {
-            string strCommand = BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
-
-            strCommand += " Where " + namecolumn + " ='" + id + "';";
-
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            db.ExecuteNonQuery(strCommand, null);
-        }
-
-        public static void UpdateRowToTable(IDatabase db, string nameOfTable, List<string> nameOfColumns,
-            List<string> values,string nameColumn, string id, string visitDate)
-        {
-            string strCommand = BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
-
-            strCommand += " Where " + nameColumn + " ='" + id + "' AND Day='" + visitDate + "';";
-
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            db.ExecuteNonQuery(strCommand, null);
-        }
-
-        public static void UpdateRowToTableCalendar(IDatabase db, string nameOfTable, List<string> nameOfColumns,
-    List<string> values, string id, string Username)
-        {
-            string strCommand = BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
-
-            strCommand += " Where IdCalendar='" + id + "' AND Username='" + Username + "';";
-
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            db.ExecuteNonQuery(strCommand, null);
-        }
-
-
-        public static void DeleteRowToTableCalendar(IDatabase db, string nameOfTable, string id, string Username)
-        {
-            string strCommand = "Delete From " + nameOfTable;
-
-            strCommand += " Where IdCalendar='" + id + "' AND Username='" + Username + "';";
-
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            db.ExecuteNonQuery(strCommand, null);
-        }
-
-        public static void DeleteRowFromTablelistpatienttoday(IDatabase db, string id, string name)
-        {
-            string strCommand = "Delete From listpatienttoday";
-
-            strCommand += " Where Id='" + id + "' AND Name='" + name + "';";
-
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            db.ExecuteNonQuery(strCommand, null);
-        }
-
-        public static bool checkAdminExists(SqlConnection conn, string nameOfTable)
-        {
-
-            string strCommand = "SELECT * FROM " + nameOfTable + " WHERE Authority = '1'";
-            SqlCommand comm = new SqlCommand(strCommand, conn);
-            SqlDataReader reader = comm.ExecuteReader();
-            reader.Read();
-
-            try
-            {
-                return reader.HasRows;
-            }
-            finally
-            {
-                reader.Close();
-
-            }
-
-
-        }
-
-        public static List<string> GetAllRowsOfSpecialColumn(string table, string nameOfColumn)
-        {
-            List<string> result = new List<string>();
-            string strCommand = "SELECT " + nameOfColumn + " FROM " + table;
-            IDatabase database = DatabaseFactory.Instance;
-            DbDataReader reader = database.ExecuteReader(strCommand, null) as DbDataReader;
-            while (reader.Read())
-            {
-                string name = reader.GetString(0).Trim();
-                result.Add(name);
-            }
-            reader.Close();
-            return result;
-        }
-
-        public static List<ADate> GetAllDateOfUser(string Username, IDatabase db)
-        {
-            List<ADate> ListDate = new List<ADate>();
-            string strCommand = "Select * from calendar where Username = " + Helper.ConvertToSqlString(Username);
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-            while (reader.Read())
-            {
-                ListDate.Add(BoxingDate(reader));
-            }
-            reader.Close();
-            return ListDate;
-        }
-
-        private static ADate BoxingDate(DbDataReader reader)
+        public static ADate BoxingDate(DbDataReader reader)
         {
             ADate date = new ADate();
             date.Text = reader["Text"].ToString();
@@ -349,15 +179,14 @@ namespace Clinic.Helpers
 
         public static bool checkUserExists(string user, string pass, bool setAuthority)
         {
-            string strCommand = "Select Authority From ClinicUser Where Username = " + Helper.ConvertToSqlString(user) + " And Password1 = " + Helper.ConvertToSqlString(Helper.Encrypt(pass));
-
+            string strCommand = string.Format("SELECT {0} FROM {1} WHERE Username = {2} AND Password1 = {3}", DatabaseContants.clinicuser.Authority, DatabaseContants.tables.clinicuser, ConvertToSqlString(user), ConvertToSqlString(Helper.Encrypt(pass)));
             IDatabase database = DatabaseFactory.Instance;
 
             IDataReader reader = database.ExecuteReader(strCommand, null);
             reader.Read();
             if (((DbDataReader)reader).HasRows)
             {
-                if (setAuthority) LoginForm.Authority = int.Parse(reader["Authority"].ToString());
+                if (setAuthority) LoginForm.Authority = int.Parse(reader[DatabaseContants.clinicuser.Authority].ToString());
 
                 reader.Close();
                 return true;
@@ -372,8 +201,7 @@ namespace Clinic.Helpers
 
         public static bool checkUserExistsWithoutPassword(string user)
         {
-            string strCommand = "Select * From ClinicUser Where Username = " + Helper.ConvertToSqlString(user);
-
+            string strCommand = string.Format("SELECT {0} FROM {1} WHERE {0} = {2}", DatabaseContants.clinicuser.Username, DatabaseContants.tables.clinicuser, Helper.ConvertToSqlString(user));
             IDatabase database = DatabaseFactory.Instance;
 
             IDataReader reader = database.ExecuteReader(strCommand, null);
@@ -393,12 +221,10 @@ namespace Clinic.Helpers
 
         public static bool checkAdminExists(string nameOfTable)
         {
-
             string strCommand = "SELECT * FROM " + nameOfTable + " WHERE Authority = 1";
             // MySqlCommand comm = new MySqlCommand(strCommand, conn);
             //MySqlDataReader reader = comm.ExecuteReader();
             IDatabase db = DatabaseFactory.Instance;
-            bool hasrow = false;
             DbDataReader reader = (DbDataReader)db.ExecuteReader(strCommand, null);
 
             try
@@ -411,14 +237,11 @@ namespace Clinic.Helpers
                 reader.Close();
                 db.CloseCurrentConnection();
             }
-
-
         }
 
         public static string hasOtherNameForThisId(IDatabase db, string Id, string name)
         {
-
-            string strCommand = "SELECT name FROM Patient WHERE " + DatabaseContants.patient.Id + "=" + ConvertToSqlString(Id);
+            string strCommand = string.Format("SELECT name FROM {0} WHERE {1} = {2}", DatabaseContants.tables.patient, DatabaseContants.patient.Id, ConvertToSqlString(Id));
             //MySqlCommand comm = new MySqlCommand(strCommand, conn);
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
             reader.Read();
@@ -452,8 +275,7 @@ namespace Clinic.Helpers
 
         public static bool checkPatientExists(IDatabase db, string Id)
         {
-
-            string strCommand = string.Format("SELECT {0} FROM Patient WHERE {0} = ",DatabaseContants.patient.Id) + ConvertToSqlString(Id);
+            string strCommand = string.Format("SELECT {0} FROM {1} WHERE {0} = ",DatabaseContants.patient.Id, DatabaseContants.tables.patient) + ConvertToSqlString(Id);
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
             reader.Read();
 
@@ -470,7 +292,6 @@ namespace Clinic.Helpers
 
         public static bool checkVisitExists(IDatabase db, string Id, string visitDate,ref string idHistory)
         {
-
             string strCommand = "SELECT IdHistory FROM history WHERE Id = " + ConvertToSqlString(Id) + " AND Day=" + ConvertToSqlString(visitDate) + ";";
             //MySqlCommand comm = new MySqlCommand(strCommand, conn);
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
@@ -509,14 +330,6 @@ namespace Clinic.Helpers
 
             }
         }
-
-        #region Delete Db
-        public static void DeleteRowInTableByID(IDatabase db,string nameTable,string nameID ,string ID)
-        {
-            string strCommand = "delete from " + nameTable + " where " + nameID + " = " + ConvertToSqlString(ID);
-            db.ExecuteNonQuery(strCommand, null);
-        }
-        #endregion
         public static bool DoesUserHavePermission()
         {
             try
@@ -530,55 +343,6 @@ namespace Clinic.Helpers
                 return false;
             }
         }
-
-
-        //internal static int SearchMaxValueOfTable(SqlConnection sqlConnection, string p, string p_2 ,string order)
-        //{
-        //    string strCommand =" SELECT TOP 1 "+p_2+" FROM "+p+" ORDER BY "+p_2+" "+order;
-        //    SqlCommand comm = new SqlCommand(strCommand, Program.conn);
-        //    using (SqlDataReader reader = comm.ExecuteReader())
-        //    {
-
-        //        reader.Read();
-        //        int intTemp;
-        //        if (reader.HasRows)
-        //        {
-        //            string temp = reader.GetValue(0).ToString();
-        //            intTemp = int.Parse(temp);
-        //        }
-        //        else
-        //        {
-        //            intTemp = 0;
-        //        }
-        //        int newId = intTemp + 1;
-        //        return newId;
-        //    }
-        //}
-
-        #region Get value in DB
-        public static int GetCountFromMecidicByName(IDatabase db,string name)
-        {
-            string strCommand = "SELECT Sum(Count) FROM clinic.medicine where Name = " + ConvertToSqlString(name);
-            int count = ConvertString2Int(db.ExecuteScalar(strCommand).ToString());
-            return count;
-        }
-
-        public static List<ReasonApointmentModel> GetListReason(IDatabase db)
-        {
-            List<ReasonApointmentModel> list = new List<ReasonApointmentModel>();
-            string strCommand = "Select * from ReasonApoinment";
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-            while (reader.Read())
-            {
-                ReasonApointmentModel reason = new ReasonApointmentModel();
-                reason.ID = reader.GetInt32(0);
-                reason.Reason = reader[1].ToString();
-                list.Add(reason);
-            }
-            reader.Close();
-            return list;
-        }
-        #endregion
 
         /// <summary>
         /// Search value next in table.
@@ -594,7 +358,6 @@ namespace Clinic.Helpers
             IDatabase db = DatabaseFactory.Instance;
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
-
                 reader.Read();
                 int intTemp = 0;
                 if (reader.HasRows)
@@ -617,7 +380,6 @@ namespace Clinic.Helpers
             IDatabase db = DatabaseFactory.Instance;
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
-
                 reader.Read();
                 int intTemp = 0;
                 if (reader.HasRows)
@@ -643,72 +405,6 @@ namespace Clinic.Helpers
                 return newId;
             }
         }
-
-        internal static string SearchIDHistoryByIDPatientAndDay(string idPatient, string visitDate)
-        {
-            string strCommand = "SELECT IdHistory FROM history WHERE Id = " + ConvertToSqlString(idPatient) + " AND Day=" + ConvertToSqlString(visitDate) + ";";
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            IDatabase db = DatabaseFactory.Instance;
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-            reader.Read();
-            try
-            {
-                bool result = reader.HasRows;
-                string idHistory = string.Empty;
-                if (result)
-                {
-                    idHistory = reader["IdHistory"].ToString();
-                }
-                return idHistory;
-            }
-            finally
-            {
-                reader.Close();
-            }
-        }
-
-
-        // public Patient AddNewPatient(SqlConnection conn, string id, bool Old)
-        //{
-        //Patient patient = new Patient();
-        //patient.Name = txtBoxWaitRoomName.Text.Trim();
-
-        //patient.Birthday = dateTimePicker2.Value;
-        //patient.Old = DateTime.Now.Year - patient.Birthday.Year;
-        //patient.Address = txtBoxWaitRoomAddress.Text;
-        //patient.Symptom = txtBoxWaitingRoomSymptom.Text;
-        //patient.Id = id;
-        //try
-        //{
-        //    patient.Weight = int.Parse(txtBoxWaitingRoomWeight.Text);
-        //}
-        //catch (Exception ex)
-        //{
-        //    patient.Weight = 0;
-        //}
-        //try
-        //{
-        //    patient.Height = int.Parse(txtBoxWaitRoomHeight.Text);
-        //}
-        //catch (Exception ex)
-        //{
-        //    patient.Height = 0;
-        //}
-
-        //if (Old)
-        //{
-        //    return patient;
-        //}
-
-        //List<string> columns = new List<string>() { "Name", "Old", "Address", "Height", "Weight", "Birthday", "Id" };
-        //List<string> values = new List<string>() { patient.Name, patient.Old.ToString(), patient.Address, patient.Height.ToString(), patient.Weight.ToString(), patient.Birthday.ToString("yyyy-MM-dd"), patient.Id };
-
-        //Helper.InsertRowToTable(conn, "Patient", columns, values);
-        //MessageBox.Show("Thêm mới bệnh nhân thành công");
-
-        //return patient;
-
-        // }
 
         public static void DefineStyles(Document document)
         {
@@ -954,19 +650,11 @@ namespace Clinic.Helpers
 
             AddSection(document, InformationOfClinic, MaBn, patient, Medicines, true, taikham, ref  tongTienThuoc, Diagno, tuoi, Stt, reasonComeBack);
 
-            //document.LastSection.AddPageBreak();
-
-
-
-
-
             PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always);
      
             pdfRenderer.Document = document;
             pdfRenderer.RenderDocument();
             pdfRenderer.PdfDocument.Save("firstpage.pdf");
-
-
         }
 
         private static void AddSection(Document document, InfoClinic InformationOfClinic, string MaBn, Patient patient, List<Medicine> Medicines, bool onlyServices, string taikham, ref int tongTienThuoc, string Diagno, string tuoi, int Stt, string reasonComeBack)
@@ -1207,9 +895,7 @@ namespace Clinic.Helpers
             }
         }
 
-
-
-        internal static List<Medicine> GetAllMedicinesFromDataGrid(IDatabase db, System.Windows.Forms.DataGridView dataGridView)
+        internal static List<Medicine> GetAllMedicinesFromDataGrid(System.Windows.Forms.DataGridView dataGridView)
         {
             //List<int> listCountMedicines = new List<int>();
             List<Medicine> result = new List<Medicine>();
@@ -1261,23 +947,6 @@ namespace Clinic.Helpers
                 }
             }
             return services;
-        }
-
-        internal static bool CheckMedicineExists(IDatabase db, string Id)
-        {
-            string strCommand = "SELECT Id FROM medicine WHERE Id = " + ConvertToSqlString(Id);
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-            reader.Read();
-
-            try
-            {
-                return reader.HasRows;
-            }
-            finally
-            {
-                reader.Close();
-
-            }
         }
 
         // change medicine in db into string in datagridview search
@@ -1352,7 +1021,7 @@ namespace Clinic.Helpers
                     int temp = int.Parse(medicineAndCount[2]);
                     return false;
                 }
-                catch (Exception ex)
+                catch
                 {
                     return true;
                 }
@@ -1374,54 +1043,9 @@ namespace Clinic.Helpers
                 int temp = int.Parse(medicines[2]);
                 return false;
             }
-            catch (Exception ex)
+            catch
             {
                 return true;
-            }
-        }
-        internal static string GetNameOfDoctor(IDatabase db, string name)
-        {
-            string strCommand = "SELECT * FROM clinicuser where Username = " + Helper.ConvertToSqlString(name);
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-            reader.Read();
-
-            try
-            {
-                if (reader["namedoctor"] != null)
-                    return reader["namedoctor"].ToString();
-                return "";
-            }
-            finally
-            {
-                reader.Close();
-
-            }
-        }
-
-        internal static Dictionary<string, string> GetListPatientToday(IDatabase db)
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-
-            string strCommand = "SELECT * FROM listpatienttoday";
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-
-
-            try
-            {
-                while (reader.Read())
-                {
-                    if (reader.HasRows)
-                    {
-                        result.Add(reader["Id"].ToString(), reader["name"].ToString() + ";" + reader["state"].ToString());
-                    }
-
-                }
-                return result;
-            }
-            finally
-            {
-                reader.Close();
-
             }
         }
 
@@ -1431,7 +1055,7 @@ namespace Clinic.Helpers
 
             if (dateTime > dateOld)
             {
-                string strCommand = " SELECT * FROM doanhthu   WHERE time = " + Helper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd"));
+                string strCommand = string.Format("SELECT * FROM {0} WHERE time = {1}", DatabaseContants.tables.danhthu, ConvertToSqlString(dateTime.ToString("yyyy-MM-dd")));
                 result.AddRange(DoanhThuNew(db, strCommand));
             }
             else
@@ -1445,9 +1069,8 @@ namespace Clinic.Helpers
 
         internal static int SoluotKham0DongInDay(IDatabase db, DateTime dateTime)
         {
-            List<ItemDoanhThu> result = new List<ItemDoanhThu>();
-            string strCommand = string.Format("SELECT count(*) FROM doanhthu WHERE time = {0} and {1} = 0", Helper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd")),DatabaseContants.danhthu.Money);
-            return Helper.ConvertString2Int(db.ExecuteScalar(strCommand));
+            string strCommand = string.Format("SELECT count(*) FROM {0} WHERE time = {1} and {2} = 0", DatabaseContants.tables.danhthu, Helper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd")),DatabaseContants.danhthu.Money);
+            return ConvertString2Int(db.ExecuteScalar(strCommand));
         }
 
         internal static List<ItemDoanhThu> DoanhThuTheoNgayDataOld(IDatabase db, DateTime dateTime)
@@ -1477,13 +1100,13 @@ namespace Clinic.Helpers
         {
             string result = "";
 
-            string strCommand = " SELECT "+ClinicConstant.HistoryTable_Diagnose+" FROM "+ClinicConstant.HistoryTable  +" WHERE "+ClinicConstant.HistoryTable_IdHistory+" = " + Helper.ConvertToSqlString(idHistory.ToString());
+            string strCommand = " SELECT "+ DatabaseContants.history.Diagnose+ " FROM "+ DatabaseContants.tables.history + " WHERE "+ DatabaseContants.history.IdHistory+" = " + Helper.ConvertToSqlString(idHistory.ToString());
             using (DbDataReader reader = db2.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
                 if (reader.HasRows)
                 {
-                    result = reader[ClinicConstant.HistoryTable_Diagnose].ToString();
+                    result = reader[DatabaseContants.history.Diagnose].ToString();
                 }
             }
             return result;
@@ -1492,35 +1115,21 @@ namespace Clinic.Helpers
 
         internal static int LaySTTTheoNgay(IDatabase db, DateTime dateTime, string Id)
         {
-
-            List<string> result = new List<string>();
             int i = 0;
-            string strCommand = " SELECT * FROM doanhthu WHERE time = " + Helper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd"));
+            string strCommand = string.Format("SELECT * FROM {0} WHERE time = {1}", DatabaseContants.tables.danhthu, ConvertToSqlString(dateTime.ToString("yyyy-MM-dd")));
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 while (reader.Read())
                 {
-
                     i++;
                   
-                    string IdPatient = reader[ClinicConstant.DoanhThuTable_IdPatient].ToString();
+                    string IdPatient = reader[DatabaseContants.danhthu.IdPatient].ToString();
                     if (Id == IdPatient)
                     {
                         return i;
                     }
-                    //if (result.Contains(IdPatient) == false)
-                    //{
-                    //    result.Add(IdPatient);
-                    //}
-                    //else
-                    //{
-                    //    return i;
-                    //}
-
                 }
             }
-
-
             return i;
         }
 
@@ -1532,13 +1141,13 @@ namespace Clinic.Helpers
             
             if (dateTime > dateOld)
             {
-                string strCommand = string.Format("select * from {0} where {1} = {2} and {3} = {4}", ClinicConstant.DoanhThuTable, "month(" + DatabaseContants.danhthu.time + ")", dateTime.Month.ToString(), "YEAR(" + DatabaseContants.danhthu.time + ")", dateTime.Year.ToString());
+                string strCommand = string.Format("select * from {0} where {1} = {2} and {3} = {4}", DatabaseContants.tables.danhthu, "month(" + DatabaseContants.danhthu.time + ")", dateTime.Month.ToString(), "YEAR(" + DatabaseContants.danhthu.time + ")", dateTime.Year.ToString());
                 result.AddRange(DoanhThuNew(db, strCommand));
             }
             else
             {
                 //Data old should get history
-                string strCommand = string.Format("select * from {0} where {1} = {2} and {3} = {4} and Medicines != N{5}", ClinicConstant.HistoryTable, "month(" + DatabaseContants.history.Day + ")", dateTime.Month.ToString(), "YEAR(" + DatabaseContants.history.Day + ")", dateTime.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
+                string strCommand = string.Format("select * from {0} where {1} = {2} and {3} = {4} and Medicines != N{5}", DatabaseContants.tables.history, "month(" + DatabaseContants.history.Day + ")", dateTime.Month.ToString(), "YEAR(" + DatabaseContants.history.Day + ")", dateTime.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
                 result.AddRange(DoanhThuDataOld(db, strCommand));
             }
 
@@ -1550,13 +1159,13 @@ namespace Clinic.Helpers
             List<ItemDoanhThu> result = new List<ItemDoanhThu>();
             if (dateTime > dateOld)
             {
-                string strCommand = " SELECT * FROM doanhthu   WHERE YEAR(time) = " + dateTime.Year.ToString();
+                string strCommand = string.Format("SELECT * FROM {0} WHERE YEAR(time) = {1}", DatabaseContants.tables.danhthu, dateTime.Year.ToString());
                 result.AddRange(DoanhThuNew(db, strCommand));
             }
             else
             {
                 //Data old should get history
-                string strCommand = string.Format("select * from {0} where {1} = {2} and Medicines != N{3}", ClinicConstant.HistoryTable, "YEAR(" + DatabaseContants.history.Day + ")", dateTime.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
+                string strCommand = string.Format("select * from {0} where {1} = {2} and Medicines != N{3}", DatabaseContants.tables.history, "YEAR(" + DatabaseContants.history.Day + ")", dateTime.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
                 result.AddRange(DoanhThuDataOld(db, strCommand));
             }
 
@@ -1590,7 +1199,7 @@ namespace Clinic.Helpers
                     string medicines = reader[DatabaseContants.history.Medicines].ToString();
                     List<Medicine> medicineList = ConvertString2MedicineList(medicines);
                     item.Money = medicineList.Sum(m => m.CostOut * m.Number);
-                    item.NamePatient = GetNamePatientByID(item.IdPatient, DatabaseFactory.Instance2);
+                    item.NamePatient = DatabaseFactory.Instance2.GetNamePatientByID(item.IdPatient);
                     item.Services = BuildStringServices4SavingToDoanhThu(medicineList);
                     item.LoaiKham = reader[DatabaseContants.history.namLoaiKham].ToString();
                     item.Diagnose = reader[DatabaseContants.history.Diagnose].ToString();
@@ -1613,17 +1222,17 @@ namespace Clinic.Helpers
                 while (reader.Read())
                 {
                     ItemDoanhThu item = new ItemDoanhThu();
-                    item.Date = reader.GetDateTime(reader.GetOrdinal(ClinicConstant.DoanhThuTable_Time)).ToString("dd-MM-yyyy");
-                    item.NameOfDoctor = reader[ClinicConstant.DoanhThuTable_Namedoctor].ToString();
-                    item.Money = (int)reader[ClinicConstant.DoanhThuTable_Money];
-                    item.IdPatient = reader[ClinicConstant.DoanhThuTable_IdPatient].ToString();
-                    item.NamePatient = reader[ClinicConstant.DoanhThuTable_NamePatient].ToString();
-                    item.Services = reader[ClinicConstant.DoanhThuTable_Services].ToString();
-                    item.LoaiKham = reader[ClinicConstant.DoanhThuTable_LoaiKham].ToString();
+                    item.Date = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.danhthu.time)).ToString("dd-MM-yyyy");
+                    item.NameOfDoctor = reader[DatabaseContants.danhthu.NameDoctor].ToString();
+                    item.Money = (int)reader[DatabaseContants.danhthu.Money];
+                    item.IdPatient = reader[DatabaseContants.danhthu.IdPatient].ToString();
+                    item.NamePatient = reader[DatabaseContants.danhthu.NamePatient].ToString();
+                    item.Services = reader[DatabaseContants.danhthu.Services].ToString();
+                    item.LoaiKham = reader[DatabaseContants.danhthu.LoaiKham].ToString();
 
                     try
                     {
-                        int idHistory = (int)reader[ClinicConstant.HistoryTable_IdHistory];
+                        int idHistory = (int)reader[DatabaseContants.history.IdHistory];
                         item.Diagnose = GetDiagnoseFromHistoryByIdHistory(idHistory, DatabaseFactory.Instance2);
                     }
                     catch { item.Diagnose = ""; }
@@ -1638,7 +1247,7 @@ namespace Clinic.Helpers
         {
             List<IMedicine> result = new List<IMedicine>();
             IDatabase db = DatabaseFactory.Instance;
-            string strCommand = " SELECT * FROM medicine";
+            string strCommand = string.Format("SELECT * FROM {0}", DatabaseContants.tables.medicine);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 while (reader.Read())
@@ -1663,7 +1272,7 @@ namespace Clinic.Helpers
                         {
                             objectMedicine.Count = 0;
                             objectMedicine.CostIn = 1;
-                            objectMedicine.Admin = reader[ClinicConstant.MedicineTable_Admin].ToString();
+                            objectMedicine.Admin = reader[DatabaseContants.medicine.Admin].ToString();
                             objectMedicine.InputDay = DateTime.Now;
                         }
 
@@ -1676,7 +1285,7 @@ namespace Clinic.Helpers
                     }
                     catch (Exception e)
                     {
- 
+                        Log.Error(e.Message, e);
                     }
                 }
             }
@@ -1706,40 +1315,11 @@ namespace Clinic.Helpers
             db.ExecuteNonQuery(strCommand, null);
         }
 
-        internal static bool checkVisitExistsDoanhThu(IDatabase db, string Id, string visitDate)
-        {
-            //string strCommand = "SELECT Idpatient FROM doanhthu WHERE Idpatient = " + ConvertToSqlString(Id) + " AND time=" + ConvertToSqlString(visitDate) + ";";
-
-            string strCommand = string.Format("SELECT {0} FROM {1} WHERE {0} = {2} AND time ={3}", DatabaseContants.danhthu.IdPatient, DatabaseContants.tables.danhthu, ConvertToSqlString(visitDate));
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
-            reader.Read();
-            try
-            {
-                return reader.HasRows;
-            }
-            finally
-            {
-                reader.Close();
-
-            }
-        }
-
-        internal static void DeleteRowFromTableCalendar(IDatabase db, string id, string name)
-        {
-            string strCommand = "Delete From lichhen";
-
-            strCommand += " Where Idpatient='" + id + "' AND Namepatient='" + name + "';";
-
-            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
-            db.ExecuteNonQuery(strCommand, null);
-
-        }
 
         internal static string GetIdMedicineFromName(IDatabase db, string name)
         {
             string id = "";
-            string strCommand = "Select Id from medicine where Name = " +ConvertToSqlString(name)  ;
+            string strCommand = string.Format("SELECT Id FROM {0} where Name = {1}", DatabaseContants.tables.medicine, ConvertToSqlString(name));
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -1754,7 +1334,11 @@ namespace Clinic.Helpers
         internal static List<Medicine> GetMedicinesFromHistory(IDatabase db,string IdPatient, string datetime, ref bool isNew )
         {
             List<Medicine> result = new List<Medicine>();
-            string strCommand = "Select Medicines from history where Id = " + IdPatient + " And Day=" + ConvertToSqlString(datetime);
+            string strCommand = string.Format("SELECT Medicines FROM {0} WHERE Id = {1} AND Day = {2}", 
+                DatabaseContants.tables.history,
+                IdPatient,
+                ConvertToSqlString(datetime)
+                );
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -1766,21 +1350,6 @@ namespace Clinic.Helpers
                         isNew = true;
                         return result;
                     }
-                    //string[] medicineAndCount = new string[] { };
-                    //if (!string.IsNullOrEmpty(medicines))
-                    //{
-                    //    medicineAndCount = medicines.Split(',');
-                    //    for (int i = 0; i < medicineAndCount.Length; i = i + 3)
-                    //    {
-                    //        Medicine medicine = new Medicine();
-                    //        medicine.Name = medicineAndCount[i];
-                    //        reader.Close();
-                    //        medicine.Id = GetIdMedicineFromName(db, medicine.Name);
-                    //        medicine.Number = int.Parse(medicineAndCount[i + 1]);
-                    //        medicine.CostOut = int.Parse(medicineAndCount[i + 2]);
-                    //        result.Add(medicine);
-                    //    }
-                    //}
                     if (!string.IsNullOrEmpty(medicines))
                     {
                         result = ConvertString2MedicineList(medicines);
@@ -1794,7 +1363,7 @@ namespace Clinic.Helpers
         internal static List<Medicine> GetMedicinesFromHistoryByID(IDatabase db, string IdHistory,ref bool isNew)
         {
             List<Medicine> result = new List<Medicine>();
-            string strCommand = "Select Medicines from history where IdHistory = " + IdHistory;
+            string strCommand = string.Format("SELECT Medicines FROM {0} WHERE IdHistory = {1}", DatabaseContants.tables.history, IdHistory);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -1816,7 +1385,7 @@ namespace Clinic.Helpers
             return result;
         }
 
-        internal static void UpdateRowToTableMedicine(IDatabase db, string p, int offset, string p_2)
+        internal static void UpdateRowToTableMedicine(IDatabase db, int offset, string p_2)
         {
             //get current number of medicine in store
             //string strCommand = "Select Count from medicine where Id = " + p_2;
@@ -1830,7 +1399,7 @@ namespace Clinic.Helpers
                 int numberWillBe = numberInStore - offset;
                 reader.Close();
 
-                strCommand = "Update Medicine Set Count =" + numberWillBe.ToString() + " Where Id =" + p_2;
+                strCommand = string.Format("Update {0} Set Count = {1} WHERE Id = {2}", DatabaseContants.tables.medicine, numberWillBe.ToString(), p_2);
                 db.ExecuteNonQuery(strCommand, null);
             }
             else
@@ -1849,7 +1418,7 @@ namespace Clinic.Helpers
                 {
                     int offsetThuoc = listMedicines[iThuoc].Number;
                     string idThuoc = listMedicines[iThuoc].Id.ToString();
-                    Helper.UpdateRowToTableMedicine(db, "medicine", offsetThuoc, idThuoc);
+                    Helper.UpdateRowToTableMedicine(db, offsetThuoc, idThuoc);
                 }
             }
         }
@@ -1934,7 +1503,7 @@ namespace Clinic.Helpers
                 int temp = Int32.Parse(value.ToString());
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -1953,7 +1522,7 @@ namespace Clinic.Helpers
                     int temp = Int32.Parse(value.ToString());
                     return true;
                 }
-                catch (Exception e)
+                catch
                 {
                     return false;
                 }
@@ -2014,15 +1583,12 @@ namespace Clinic.Helpers
             return true;
         }
 
-        internal static void RefreshDoanhThu()
-        {
-             
-        }
-
         internal static bool SameAddressAndName(IDatabase db, string name, string address)
         {
-
-            string strCommand = "SELECT Name,Address FROM Patient WHERE Name = " + ConvertToSqlString(name) + " and " + "Address = " + ConvertToSqlString(address);
+            string strCommand = string.Format("SELECT Name, Address FROM {0} WHERE Name = {1} AND Address = {2}",
+                DatabaseContants.tables.patient,
+                ConvertToSqlString(name),
+                ConvertToSqlString(address));
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
             reader.Read();
 
@@ -2033,43 +1599,13 @@ namespace Clinic.Helpers
             finally
             {
                 reader.Close();
-
             }
-        }
-
-        /// <summary>
-        /// Should be called 1 time when loading the program
-        /// </summary>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        internal static List<string> GetAllDiagnosesFromHistory(IDatabase db, DateTime date)
-        {
-            List<string> result = new List<string>();
-            string strCommand = BuildStringCommandGettingFieldsFromTableWithoutCondition(ClinicConstant.HistoryTable, new List<string>() { ClinicConstant.HistoryTable_Diagnose }) + " where " + ClinicConstant.HistoryTable_Diagnose + " NOT LIKE '%[H]'" + "and Day < " + Helper.ConvertToSqlString(date.ToString("yyyy-MM-dd"));
-            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
-            {
-                while (reader.Read())
-                {
-                    try
-                    {
-                        if (!string.IsNullOrEmpty(reader[ClinicConstant.HistoryTable_Diagnose].ToString()) && !result.Contains(reader[ClinicConstant.HistoryTable_Diagnose].ToString()))
-                        {
-                            result.Add(reader[ClinicConstant.HistoryTable_Diagnose].ToString());
-                        }
-                    }
-                    catch (Exception e)
-                    {
-
-                    }
-                }
-            }
-            return result;
         }
 
         internal static Dictionary<int, string> GetAllDiagnosesFromTableDiagnoses(IDatabase db,List<string>except)
         {
             Dictionary<int, string> result = new Dictionary<int,string>();
-            string strCommand = string.Format("select * from {0} where hiden = 0", DatabaseContants.tables.diagnoses);
+            string strCommand = string.Format("SELECT * FROM {0} WHERE hiden = 0", DatabaseContants.tables.diagnoses);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 while (reader.Read())
@@ -2083,14 +1619,14 @@ namespace Clinic.Helpers
                     }
                     catch (Exception e)
                     {
-
+                        Log.Error(e.Message, e);
                     }
                 }
             }
             return result;
         }
 
-        private static string BuildStringCommandGettingFieldsFromTableWithoutCondition(string tableName, List<string> fields)
+        public static string BuildStringCommandGettingFieldsFromTableWithoutCondition(string tableName, List<string> fields)
         {
             return "SELECT " + BuildStringFieldsInCommand(fields) + " FROM " + tableName;
         }
@@ -2113,19 +1649,19 @@ namespace Clinic.Helpers
         internal static List<string> GetAllLoaiKham(IDatabase iDatabase)
         {
             List<string> result = new List<string>();
-            string strCommand = BuildStringCommandGettingFieldsFromTableWithoutCondition(ClinicConstant.LoaiKhamTable, new List<string>() { ClinicConstant.LoaiKhamTable_Nameloaikham });
+            string strCommand = BuildStringCommandGettingFieldsFromTableWithoutCondition(DatabaseContants.tables.loaikham, new List<string>() { DatabaseContants.LoaiKham.Nameloaikham });
             using (DbDataReader reader = iDatabase.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 while (reader.Read())
                 {
                     try
                     {
-                        if (!result.Contains(reader[ClinicConstant.LoaiKhamTable_Nameloaikham].ToString()))
+                        if (!result.Contains(reader[DatabaseContants.LoaiKham.Nameloaikham].ToString()))
                         {
-                            result.Add(reader[ClinicConstant.LoaiKhamTable_Nameloaikham].ToString());
+                            result.Add(reader[DatabaseContants.LoaiKham.Nameloaikham].ToString());
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
 
                     }
@@ -2154,32 +1690,17 @@ namespace Clinic.Helpers
             return result;
         }
 
-        internal static string GetIdHistoryFromHistory()
-        {
-            int result =0;
-            string strCommand = "SELECT LAST_INSERT_ID() FROM " + ClinicConstant.HistoryTable_IdHistory;
-            using (DbDataReader reader = DatabaseFactory.Instance.ExecuteReader(strCommand, null) as DbDataReader)
-            {
-                if (reader.HasRows)
-                {
-                    result = reader.GetInt32(0);
-                }
-
-            }
-            return result.ToString();
-        }
-
         internal static string GetReasonComeBackFromHistoryByIdHistory(int idHistory, IDatabase iDatabase2)
         {
             string result = "";
 
-            string strCommand = " SELECT " + ClinicConstant.HistoryTable_Reason + " FROM " + ClinicConstant.HistoryTable + " WHERE " + ClinicConstant.HistoryTable_IdHistory + " = " + Helper.ConvertToSqlString(idHistory.ToString());
+            string strCommand = " SELECT " + DatabaseContants.history.Reason + " FROM " + DatabaseContants.tables.history + " WHERE " + DatabaseContants.history.IdHistory + " = " + Helper.ConvertToSqlString(idHistory.ToString());
             using (DbDataReader reader = iDatabase2.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
                 if (reader.HasRows)
                 {
-                    result = reader[ClinicConstant.HistoryTable_Reason].ToString();
+                    result = reader[DatabaseContants.history.Reason].ToString();
                 }
             }
             return result;
@@ -2187,7 +1708,13 @@ namespace Clinic.Helpers
 
         internal static int GetStateComeBackFromHistoryByIdPatient(string IdPatient, IDatabase iDatabase2, DateTime time)
         {
-            string strCommand = string.Format("Select {0} from history Where Day = ", DatabaseContants.history.IdPatient) + Helper.ConvertToSqlString(time.ToString("yyyy-MM-dd")) + " And " + DatabaseContants.history.IdPatient + "=" + Helper.ConvertToSqlString(IdPatient);
+            string strCommand = string.Format("SELECT {0} FROM {1} WHERE Day = {2} AND {3} = {4}",
+                DatabaseContants.history.IdPatient,
+                DatabaseContants.tables.history,
+                Helper.ConvertToSqlString(time.ToString("yyyy-MM-dd")),
+                DatabaseContants.history.IdPatient,
+                Helper.ConvertToSqlString(IdPatient)
+                );
             using (DbDataReader reader = iDatabase2.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -2203,10 +1730,14 @@ namespace Clinic.Helpers
         {
             try
             {
-                string strCommand = "select count(*) from doanhthu where Namedoctor = " + Helper.ConvertToSqlString(useName) + " and time = " + Helper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"));
+                string strCommand = string.Format("SELECT count(*) FROM {0} WHERE Namedoctor = {1} AND time = {2}",
+                    DatabaseContants.tables.danhthu,
+                    ConvertToSqlString(useName),
+                    ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"))
+                    );
                 return long.Parse(db.ExecuteScalar(strCommand).ToString());
             }
-            catch (Exception e)
+            catch
             {
                 return 0;
             }
@@ -2216,10 +1747,10 @@ namespace Clinic.Helpers
         {
             try
             {
-                string strCommand = "select count(*) from doanhthu where time = " + Helper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"));
+                string strCommand = string.Format("SELECT count(*) FROM {0} where time = {1}", DatabaseContants.tables.danhthu, ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")));
                 return long.Parse(db.ExecuteScalar(strCommand).ToString());
             }
-            catch (Exception e)
+            catch
             {
                 return 0;
             }
@@ -2301,19 +1832,6 @@ namespace Clinic.Helpers
             return 0;
         }
 
-        public static string GetNamePatientByID(string id, IDatabase db )
-        {
-            string strcmd = string.Format("select Name from {0} where {1} = {2}", DatabaseContants.tables.patient, DatabaseContants.patient.Id, id);
-            using (DbDataReader reader = db.ExecuteReader(strcmd, null) as DbDataReader)
-            {
-                while (reader.Read())
-                {
-                    return reader[0].ToString();
-                }
-            }
-            return string.Empty;
-        }
-
         public static int ConvertString2Int(object a)
         {
             if (a != null)
@@ -2368,7 +1886,7 @@ namespace Clinic.Helpers
 
         internal static bool IsExistsAppointment(IDatabase db,string idbenhnhan, string idHistory, ref string idLichHen)
         {
-            string strCmd = string.Format("select {0} from lichhen where {1} = {2} and {3} = {4}", DatabaseContants.LichHen.ID, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.IdHistory, idHistory);
+            string strCmd = string.Format("select {0} from {1} where {2} = {3} and {4} = {5}", DatabaseContants.LichHen.ID, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.IdHistory, idHistory);
             using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
             {
                 if (reader.Read())
@@ -2378,28 +1896,6 @@ namespace Clinic.Helpers
                 }
                 return false;
             }
-        }
-
-        internal static Medicine GetMedicineFromName(IDatabase db, string name)
-        {
-            string id = "";
-            string strCommand = "Select * From Medicine Where Name =" + Helper.ConvertToSqlString(name);
-            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
-            {
-                reader.Read();
-                if (reader.HasRows)
-                {
-                    Medicine medicine = new Medicine();
-                    medicine.Name = Helper.ConvertObject2String(reader[DatabaseContants.medicine.Name]);
-                    medicine.CostIn = Helper.ConvertString2Int(reader[DatabaseContants.medicine.CostIn]);
-                    medicine.CostOut = Helper.ConvertString2Int(reader[DatabaseContants.medicine.CostOut]);
-                    medicine.Count = Helper.ConvertString2Int(reader[DatabaseContants.medicine.Count]);
-                    medicine.InputDay = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.medicine.InputDay));
-                    medicine.HDSD = Helper.ConvertObject2String(reader[DatabaseContants.medicine.Hdsd]);
-                    return medicine;
-                }
-            }
-            return null;
         }
     }
 }

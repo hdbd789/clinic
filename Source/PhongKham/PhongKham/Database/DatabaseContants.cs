@@ -19,36 +19,38 @@ namespace Clinic.Database
 
         public struct clinicuser
         {
-          public static string  Username = "Username";
-          public static string  Password1 = "Password1";
-          public static string  Authority = "Authority";
-           public static string Password2 = "Password2";
+            public static string  Username = "Username";
+            public static string  Password1 = "Password1";
+            public static string  Authority = "Authority";
+            public static string Password2 = "Password2";
+            public static string Namedoctor = "namedoctor";
         }
         public struct history
         {
-          public static string  Id = "Id";
-          public static string  Symptom = "Symptom";
-          public static string temperature = "temperature";
-          public static string huyetap = "huyetap";
-          public static string  Diagnose = "Diagnose";
-          public static string  Medicines = "Medicines";
-          public static string  Day = "Day";
-          public static string IdPatient = "Id";
-          public static string nameofdoctor = "NameDoctor";
-          public static string namLoaiKham = "NameLoaiKham";
-          public static string IdHistory = "IdHistory";
-
+            public static string  Id = "Id";
+            public static string  Symptom = "Symptom";
+            public static string temperature = "temperature";
+            public static string huyetap = "huyetap";
+            public static string  Diagnose = "Diagnose";
+            public static string  Medicines = "Medicines";
+            public static string  Day = "Day";
+            public static string IdPatient = "Id";
+            public static string nameofdoctor = "NameDoctor";
+            public static string namLoaiKham = "NameLoaiKham";
+            public static string IdHistory = "IdHistory";
+            public static string Reason = "Reason";
         }
 
         public struct medicine
         {
-           public static string Name = "Name";
-           public static string Count = "Count";
-           public static string CostIn = "CostIn";
-           public static string CostOut = "CostOut";
-           public static string InputDay = "InputDay";
-           public static string Id = "Id";
-           public static string Hdsd = "Hdsd";
+            public static string Name = "Name";
+            public static string Count = "Count";
+            public static string CostIn = "CostIn";
+            public static string CostOut = "CostOut";
+            public static string InputDay = "InputDay";
+            public static string Id = "Id";
+            public static string Hdsd = "Hdsd";
+            public static string Admin = "Admin";
         }
         public struct patient
         {
@@ -58,6 +60,7 @@ namespace Clinic.Database
            public static string height = "height";
            public static string weight = "weight";
            public static string Id = "Idpatient";
+            public static string Phone = "phone";
         }
 
         public struct danhthu
@@ -68,6 +71,9 @@ namespace Clinic.Database
             public static string NameDoctor = "Namedoctor";
             public static string IdHistory = "IdHistory";
             public static string Money = "Money";
+            public static string Services = "Services";
+            public static string LoaiKham = "LoaiKham";
+            public static string NamePatient = "NamePatient";
         }
 
         public struct lichsunhapthuoc
@@ -93,6 +99,14 @@ namespace Clinic.Database
             public static string IdHistory = "IdHistory";
             public static string phone = "phone";
             public static string sick = "benh";
+            public static string Namepatient = "Namepatient";
+            public static string Namedoctor = "Namedoctor";
+        }
+
+        public struct LoaiKham
+        {
+            public static string Idloaikham = "Idloaikham";
+            public static string Nameloaikham = "Nameloaikham";
         }
 
         public struct tables
@@ -103,10 +117,12 @@ namespace Clinic.Database
             public static string patient = "patient";
             public static string calendar = "calendar";
             public static string danhthu = "doanhthu";
-            public static string diagnoses = "Diagnoses";
+            public static string diagnoses = "diagnoses";
             public static string lichsunhapthuoc = "lichsunhapthuoc";
             public static string lichHen = "lichhen";
-
+            public static string loaikham = "loaikham";
+            public static string reasonapoinment = "reasonapoinment"; 
+            public static string listpatienttoday = "listpatienttoday";
         }
 
 

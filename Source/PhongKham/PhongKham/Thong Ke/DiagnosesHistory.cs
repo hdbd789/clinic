@@ -77,7 +77,7 @@ namespace Clinic.Thong_Ke
 
         private void UpdateRow(string value,string valuePrivious)
         {
-            string strCommand = string.Format("Update {0} Set {1} = {2} where {3} = {4}", ClinicConstant.HistoryTable, ClinicConstant.HistoryTable_Diagnose, Helper.ConvertToSqlString(value), ClinicConstant.HistoryTable_Diagnose, Helper.ConvertToSqlString(valuePrivious));
+            string strCommand = string.Format("Update {0} Set {1} = {2} where {3} = {4}", DatabaseContants.tables.history, DatabaseContants.history.Diagnose, Helper.ConvertToSqlString(value), DatabaseContants.history.Diagnose, Helper.ConvertToSqlString(valuePrivious));
             DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
         }
         private bool isValid(Control control, string text)

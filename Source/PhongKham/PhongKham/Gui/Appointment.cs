@@ -1,13 +1,7 @@
 ﻿using Clinic.Database;
 using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Clinic.Gui
@@ -48,12 +42,12 @@ namespace Clinic.Gui
             {
                 DataTable tb = new DataTable();
                 tb.Load(reader);
-                tb.Columns["Namepatient"].ColumnName = "Tên bệnh nhân";
-                tb.Columns["Namedoctor"].ColumnName = "Tên bác sĩ";
+                tb.Columns[DatabaseContants.LichHen.Namepatient].ColumnName = "Tên bệnh nhân";
+                tb.Columns[DatabaseContants.LichHen.Namedoctor].ColumnName = "Tên bác sĩ";
                 tb.Columns[DatabaseContants.LichHen.Time].ColumnName = "Thời gian hẹn";
                 tb.Columns[DatabaseContants.LichHen.phone].ColumnName = "Điện thoại";
                 tb.Columns[DatabaseContants.LichHen.sick].ColumnName = "Bệnh";
-                tb.Columns["Reason"].ColumnName = "Lí do tái khám";
+                tb.Columns[DatabaseContants.history.Reason].ColumnName = "Lí do tái khám";
                 dataGridView1.DataSource = tb;
                 dataGridView1.Columns[0].Width = 350;
                 dataGridView1.Columns[1].Width = 300;

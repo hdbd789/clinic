@@ -271,11 +271,12 @@ namespace Clinic
 
             Thread thread = new Thread(delegate()
             {
-                listItem = Helpers.Helper.DoanhThuTheoNgay(DatabaseFactory.Instance, dateTimePicker1.Value);
-                FillToGrid(listItem);
-                Tuple<int, int> resultBuyMedicine = HelperforSeemore.GetAllCountAndMoneyMedicineInputInDay(DatabaseFactory.Instance, dateTimePicker1.Value);
+                DateTime day = dateTimePicker1.Value;
+                listItem = Helpers.Helper.DoanhThuTheoNgay(DatabaseFactory.Instance, day);
+                Tuple<int, int> resultBuyMedicine = HelperforSeemore.GetAllCountAndMoneyMedicineInputInDay(DatabaseFactory.Instance, day);
                 int phimuathuoc = resultBuyMedicine.Item2;
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
+                FillToGrid(listItem);
             });
             thread.Start();
             HelperControl.Instance.ShowProgress(thread);
@@ -313,10 +314,8 @@ namespace Clinic
             });
             thread.Start();
             HelperControl.Instance.ShowProgress(thread);
-            thread.Join();        
+            thread.Join();
         }
-
-
         
         private void CalcuTotal(int chiphimuathuoc,List<ItemDoanhThu>listItem,int numberBuyMedicine)
         {
@@ -324,11 +323,11 @@ namespace Clinic
                 tsl_numberbuyMedicine.Text = numberBuyMedicine.ToString();
                 int total = 0;
                 total = listItem.Sum(m => m.Money);
-                labelTotal.Text = total.ToString("C0");
+                labelTotal.Text = total.ToString("N0");
                 this.tongDoanhThu = labelTotal.Text;
 
-                tsl_laikinhdoanh.Text = (total - chiphimuathuoc).ToString();
-                tsl_moneybuyMedicine.Text = chiphimuathuoc.ToString();
+                tsl_laikinhdoanh.Text = (total - chiphimuathuoc).ToString("N0");
+                tsl_moneybuyMedicine.Text = chiphimuathuoc.ToString("N0");
             }));
             
         }

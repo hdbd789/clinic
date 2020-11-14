@@ -1,36 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 using Clinic.Helpers;
 using Clinic;
-using System.Xml;
 using MySql.Data.MySqlClient;
 using System.IO;
 using Clinic.Database;
+using log4net;
+using System.Reflection;
 
 namespace PhongKham
 {
     static class Program
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         /// 
-        
-
-        public static string stringConnection;//= "Server =.\\SQLEXPRESS ; Database=Clinic;Integrated Security = true";
-        //public static SqlConnection conn;//= new SqlConnection(stringConnection);
         public static MySqlConnection conn;
 
         [STAThread]
         static void Main()
         {
+            log4net.Config.XmlConfigurator.Configure();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-
 
             if (!File.Exists("WriteLines.txt"))
             {
@@ -40,57 +34,71 @@ namespace PhongKham
                 {
                     return;
                 }
-
             }
             try
             {
                 string[] lines = System.IO.File.ReadAllLines("WriteLines.txt");
-               // GetConnectionString(lines[0], lines[1]);
                 DatabaseFactory.CreateNewDatabase("",GetConnectionString(lines[0], lines[1]));
-
             }
             catch(Exception e)
             {
                 File.Delete("WriteLines.txt");
                 MessageBox.Show("Lỗi database! Xin chạy lại chương trình!");
+                Log.Error(e.Message, e);
             }
-            if (!Helper.checkAdminExists("clinicuser"))
+
+            try
             {
-                CreateUserForm createUserForm = new CreateUserForm();
-                if (createUserForm.ShowDialog() == DialogResult.OK)
+                //if (!Helper.checkAdminExists("clinicuser"))
+                //{
+                //    CreateUserForm createUserForm = new CreateUserForm();
+                //    if (createUserForm.ShowDialog() == DialogResult.OK)
+                //    {
+
+                //        LoginForm login = new LoginForm();
+
+                //        if (login.ShowDialog() == DialogResult.OK)
+                //        {
+
+                //            Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    LoginForm login = new LoginForm();
+
+                //    if (login.ShowDialog() == DialogResult.OK)
+                //    {
+                //        Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
+                //    }
+
+                //}
+
+                if (!Helper.checkAdminExists("clinicuser"))
                 {
-
-                    LoginForm login = new LoginForm();
-
-                    if (login.ShowDialog() == DialogResult.OK)
+                    CreateUserForm createUserForm = new CreateUserForm();
+                    if (createUserForm.ShowDialog() == DialogResult.OK)
                     {
+                        LoginForm login = new LoginForm();
 
-                        Application.Run(new Form1(LoginForm.Authority,LoginForm.Name1));
+                        login.ShowDialog();
                     }
                 }
-            }
-            else
-            {
-                LoginForm login = new LoginForm();
-
-                if (login.ShowDialog() == DialogResult.OK)
+                else
                 {
-                    Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
+                    LoginForm login = new LoginForm();
+
+                    login.ShowDialog();
                 }
 
             }
+            catch ( Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+            }
+            
         }
-
-        //public static void InitSqlConnection(string passSql,string IPAddress)
-        //{
-        //    MySqlConnectionStringBuilder strBuilder = new MySqlConnectionStringBuilder();
-        //    strBuilder.Server = IPAddress=="   .   .   ."?"localhost":IPAddress;
-        //    strBuilder.UserID="root";
-        //    strBuilder.Password = passSql;
-        //    strBuilder.Database="clinic";
-         
-        //    conn = new MySqlConnection(strBuilder.ConnectionString);
-        //}
 
         private static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
         {

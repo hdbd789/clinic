@@ -13,7 +13,7 @@ namespace Clinic.Thong_Ke
 {
     public partial class FormSeemoreMedicine : Form
     {
-        private IDatabase db = DatabaseFactory.Instance;
+        private readonly IDatabase db = DatabaseFactory.Instance;
         private string IDMedicine;
         private string NameMedicine;
         public FormSeemoreMedicine(string Id, string name)
@@ -53,7 +53,7 @@ namespace Clinic.Thong_Ke
             if (current.Date == DateTime.Now.Date)
             {   
                 // Thuoc ton kho
-                int countInventory = Helper.GetCountFromMecidicByName(db, this.NameMedicine);
+                int countInventory = db.GetCountFromMecidicByName(this.NameMedicine);
                 tbx_cuoiki.Text = countInventory.ToString();
 
                 //Ton khi truoc ki
@@ -91,7 +91,7 @@ namespace Clinic.Thong_Ke
             if (month.Month == DateTime.Now.Month && month.Year == DateTime.Now.Year)
             {
                 /// Thuoc ton kho
-                int countInventory = Helper.GetCountFromMecidicByName(db, this.NameMedicine);
+                int countInventory = db.GetCountFromMecidicByName(this.NameMedicine);
                 tbx_cuoiki.Text = countInventory.ToString();
 
                 //Ton khi truoc ki
@@ -128,7 +128,7 @@ namespace Clinic.Thong_Ke
             if (year == DateTime.Now.Year)
             {
                 /// Thuoc ton kho
-                int countInventory = Helper.GetCountFromMecidicByName(db, this.NameMedicine);
+                int countInventory = db.GetCountFromMecidicByName(this.NameMedicine);
                 tbx_cuoiki.Text = countInventory.ToString();
 
                 //Ton khi truoc ki

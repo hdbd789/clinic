@@ -1,13 +1,7 @@
 ﻿using Clinic.Database;
 using Clinic.Helpers;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.Common;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Clinic.Gui
@@ -76,19 +70,19 @@ namespace Clinic.Gui
 
         private Tuple<int, int> GetCountAndMoneySellMedcineDay(DateTime date)
         {
-            string strCommand = string.Format("select Medicines from {0} where Day = {1} and Medicines != N{2}", DatabaseContants.tables.history, Helper.ConvertToSqlString(date.ToString("yyyy-MM-dd")), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
+            string strCommand = string.Format("select {0} from {1} where Day = {2} and Medicines != N{3}", DatabaseContants.history.Medicines, DatabaseContants.tables.history, Helper.ConvertToSqlString(date.ToString("yyyy-MM-dd")), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
             return GetCountAndMoneySellMedcine(strCommand);
         }
 
         private Tuple<int, int> GetCountAndMoneySellMedcineMonth(DateTime date)
         {
-            string strCommand = string.Format("select Medicines from {0} where Month(Day) = {1} and Year(Day) = {2} and Medicines != N{3}", DatabaseContants.tables.history, date.Month.ToString(),date.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
+            string strCommand = string.Format("select {0} from {1} where Month(Day) = {2} and Year(Day) = {3} and Medicines != N{4}", DatabaseContants.history.Medicines, DatabaseContants.tables.history, date.Month.ToString(),date.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
             return GetCountAndMoneySellMedcine(strCommand);
         }
 
         private Tuple<int, int> GetCountAndMoneySellMedcineYear(DateTime date)
         {
-            string strCommand = string.Format("select Medicines from {0} where Year(Day) = {1} and Medicines != N{2}", DatabaseContants.tables.history,date.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
+            string strCommand = string.Format("select {0} from {1} where Year(Day) = {2} and Medicines != N{3}", DatabaseContants.history.Medicines, DatabaseContants.tables.history,date.Year.ToString(), Helper.ConvertToSqlString("Dd nhập bệnh nhân mới,!"));
             return GetCountAndMoneySellMedcine(strCommand);
         }
 

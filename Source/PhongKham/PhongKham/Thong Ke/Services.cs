@@ -32,9 +32,7 @@ namespace Clinic
 
         private void RefreshIdOfNewMedicine()
         {
-
-
-            string strCommand = " SELECT ID FROM Medicine ORDER BY ID DESC LIMIT 1";
+            string strCommand = string.Format("SELECT {0} FROM {1} ORDER BY {0} DESC LIMIT 1", DatabaseContants.medicine.Id, DatabaseContants.tables.medicine);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -103,12 +101,12 @@ namespace Clinic
                 return;
             }
             string Id = lblNewIdService.Text;
-            if (!Helper.CheckMedicineExists(db, Id))
+            if (!db.CheckMedicineExists(Id))
             {
-                List<string> columns = new List<string>() { "Name", "CostOut", "ID", ClinicConstant.MedicineTable_Admin };
+                List<string> columns = new List<string>() { "Name", "CostOut", "Id", DatabaseContants.medicine.Admin };
                 List<string> values = new List<string>() { textBoxServices.Text.Trim(), giaOut.ToString(), Id, textBoxAdminOfService.Text };
 
-                db.InsertRowToTable(ClinicConstant.MedicineTable, columns, values);
+                db.InsertRowToTable(DatabaseContants.tables.medicine, columns, values);
                 MessageBox.Show("Thêm mới dịch vụ thành công");
             }
 
@@ -128,7 +126,7 @@ namespace Clinic
                 string adminOfService = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnAdmin.Name].Value.ToString();
                 string Id = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnId.Name].Value.ToString();
                 string name = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnName.Name].Value.ToString();
-                string strCommand = "Update Medicine Set CostOut =" + giaOut.ToString() + "," + ClinicConstant.MedicineTable_Name + " = " + Helper.ConvertToSqlString(name) + "," + ClinicConstant.MedicineTable_Admin + " = " + Helper.ConvertToSqlString(adminOfService) + " Where Id =" + Id;
+                string strCommand = "Update Medicine Set CostOut =" + giaOut.ToString() + "," + DatabaseContants.medicine.Name + " = " + Helper.ConvertToSqlString(name) + "," + DatabaseContants.medicine.Admin + " = " + Helper.ConvertToSqlString(adminOfService) + " Where Id =" + Id;
                 DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
                 MessageBox.Show("Cập nhật dịch vụ thành công");
                 Services_Load(sender, e);

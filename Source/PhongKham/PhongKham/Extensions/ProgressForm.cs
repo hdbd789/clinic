@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Clinic.Extensions
@@ -21,7 +15,5 @@ namespace Clinic.Extensions
             this.circularProgress1.Show();
             this.circularProgress1.IsRunning = true;
         }
-
-        
     }
 }

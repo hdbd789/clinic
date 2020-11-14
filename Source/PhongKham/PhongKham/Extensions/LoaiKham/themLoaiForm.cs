@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Clinic.Helpers;
 using Clinic.Database;
@@ -14,7 +9,7 @@ namespace Clinic.Extensions.LoaiKham
 {
     public partial class themLoaiForm : Form
     {
-        private IDatabase db = DatabaseFactory.Instance;
+        private readonly IDatabase database = DatabaseFactory.Instance;
         public themLoaiForm()
         {
             InitializeComponent();
@@ -27,12 +22,9 @@ namespace Clinic.Extensions.LoaiKham
                 MessageBox.Show(ErrorProviderHelper.GetInstance.GetError(txt_type), "Thông báo");
                 return;
             }
-            if (DatabaseFactory.Instance != null)
-            {
-                DatabaseFactory.Instance.InsertRowToTable(ClinicConstant.LoaiKhamTable, new List<string>() { ClinicConstant.LoaiKhamTable_Nameloaikham }, new List<string>() {txt_type.Text });
-                MessageBox.Show("Thêm thành công", "Thông báo");
-                FillGridView();
-            }
+            database.InsertRowToTable(DatabaseContants.tables.loaikham, new List<string>() { DatabaseContants.LoaiKham.Nameloaikham }, new List<string>() { txt_type.Text });
+            MessageBox.Show("Thêm thành công", "Thông báo");
+            FillGridView();
         }
 
         private void themLoaiForm_Load(object sender, EventArgs e)
@@ -48,17 +40,12 @@ namespace Clinic.Extensions.LoaiKham
         private void FillGridView()
         {
             dataGridView1.Rows.Clear();
-            string strcmd = "select * from loaikham";
-
-            using (DbDataReader reader = db.ExecuteReader(strcmd,null) as DbDataReader)
+            foreach (var loaiKham in database.GetAllLoaiKham())
             {
-                while (reader.Read())
-                {
-                    int index = dataGridView1.Rows.Add();
-                    DataGridViewRow row = dataGridView1.Rows[index];
-                    row.Cells["id"].Value = reader[0].ToString();
-                    row.Cells["NameType"].Value = reader[1].ToString();
-                }
+                int index = dataGridView1.Rows.Add();
+                DataGridViewRow row = dataGridView1.Rows[index];
+                row.Cells["id"].Value = loaiKham.Id;
+                row.Cells["NameType"].Value = loaiKham.TenLoaiKham;
             }
         }
 

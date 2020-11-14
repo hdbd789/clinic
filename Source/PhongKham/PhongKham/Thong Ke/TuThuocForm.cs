@@ -133,7 +133,7 @@ namespace Clinic
 
         private void RefreshIdOfNewMedicine()
         {
-            string strCommand = " SELECT ID FROM Medicine ORDER BY ID DESC LIMIT 1";
+            string strCommand = string.Format("SELECT Id FROM {0} ORDER BY Id DESC LIMIT 1", DatabaseContants.tables.medicine);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -194,7 +194,7 @@ namespace Clinic
                 string Id = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnId.Name].Value.ToString();
                 string name = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnName.Name].Value.ToString();
 
-                int countHistory = Helper.GetCountFromMecidicByName(db, name);
+                int countHistory = db.GetCountFromMecidicByName(name);
                 int countInput = int.Parse(count);
 
                 if (countInput < countHistory)
@@ -203,18 +203,18 @@ namespace Clinic
                     return;
                 }
                 
-                string strCommand = "Update " + ClinicConstant.MedicineTable +
+                string strCommand = "Update " + DatabaseContants.tables.medicine +
                     " Set CostOut =" + giaOut.ToString()
                     + "," +
-                    ClinicConstant.MedicineTable_Name + " = " + Helper.ConvertToSqlString(name)
+                    DatabaseContants.medicine.Name + " = " + Helper.ConvertToSqlString(name)
                     + "," +
-                    ClinicConstant.MedicineTable_Hdsd + " = " + Helper.ConvertToSqlString(hdsd)
+                    DatabaseContants.medicine.Hdsd + " = " + Helper.ConvertToSqlString(hdsd)
                     + "," +
-                    ClinicConstant.MedicineTable_Count + " = " + Helper.ConvertToSqlString(count)
+                    DatabaseContants.medicine.Count + " = " + Helper.ConvertToSqlString(count)
                     + "," +
-                    ClinicConstant.MedicineTable_CostIn + " = " + Helper.ConvertToSqlString(giaIn)
+                    DatabaseContants.medicine.CostIn + " = " + Helper.ConvertToSqlString(giaIn)
                     + "," +
-                    ClinicConstant.MedicineTable_InputDay + " = " + Helper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"))
+                    DatabaseContants.medicine.InputDay + " = " + Helper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"))
                     + " Where Id =" + Id;
                 DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
                 MessageBox.Show("Cập nhật thuốc thành công");
@@ -228,7 +228,7 @@ namespace Clinic
                 DialogResult dlgResult = MessageBox.Show("Có thật sự muốn xóa dịch vụ này?", "Chú ý", MessageBoxButtons.YesNo);
                 if (dlgResult == System.Windows.Forms.DialogResult.Yes)
                 {
-                    string strCommand = "Delete From medicine Where Id =" + Id;
+                    string strCommand = string.Format("Delete From {0} Where Id ={1}", DatabaseContants.tables.medicine, Id);
                     DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
                     MessageBox.Show("Xóa thuốc thành công");
                     TuThuocForm_Load(sender, e);
@@ -252,7 +252,7 @@ namespace Clinic
                     string Id = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnId.Name].Value.ToString();
 
                     long countCurrent = long.Parse(count);
-                    string strCommand = string.Format("Update {0} set {1} = {2} where {3} = {4}", ClinicConstant.MedicineTable, ClinicConstant.MedicineTable_Count, (countInput + countCurrent).ToString(), ClinicConstant.MedicineTable_Id, Id);
+                    string strCommand = string.Format("Update {0} set {1} = {2} where {3} = {4}", DatabaseContants.tables.medicine, DatabaseContants.medicine.Count, (countInput + countCurrent).ToString(), DatabaseContants.medicine.Id, Id);
                     DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
                     MessageBox.Show("Thêm số lượng thành công");
                     // Add into table history medicine
@@ -268,7 +268,7 @@ namespace Clinic
             // Add into table history medicine
             List<string> columns = new List<string>() { "IdMedicine", "Count", "CostIn", "CostOut", "InputDay", DatabaseContants.lichsunhapthuoc.CountStore };
             List<string> values = new List<string>() { ID, count, giaIn, giaOut, DateTime.Now.ToString("yyyy-MM-dd"),countStore };
-            db.InsertRowToTable("lichsunhapthuoc", columns, values);
+            db.InsertRowToTable(DatabaseContants.tables.lichsunhapthuoc, columns, values);
         }
         private void txtBoxInputMedicineNewCount_Validating(object sender, CancelEventArgs e)
         {
@@ -278,7 +278,7 @@ namespace Clinic
                 long count = long.Parse(textBox.Text);
                 ErrorProviderHelper.GetInstance.SetError(textBox, "");
             }
-            catch (Exception ex)
+            catch
             {
                 ErrorProviderHelper.GetInstance.SetError(textBox, "Bạn nhập không phải là số.");
             }
@@ -330,7 +330,7 @@ namespace Clinic
                 long t = long.Parse(text);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }

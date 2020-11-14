@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using PhongKham;
 using Clinic.Helpers;
 using Clinic.Database;
 
@@ -15,8 +9,6 @@ namespace Clinic
 {
     public partial class CreateUserForm : Form
     {
-
-
         public CreateUserForm()
         {
             InitializeComponent();
@@ -41,12 +33,9 @@ namespace Clinic
             List<string> columns = new List<string>() {"Username","Password1","Authority","Password2"};
             List<string> values = new List<string>() { textBox1.Text, Helper.Encrypt(textBox2.Text), "1", Helper.Encrypt(textBox4.Text) };
             IDatabase dabase = DatabaseFactory.Instance;
-            dabase.InsertRowToTable("ClinicUser", columns, values);
+            dabase.InsertRowToTable(DatabaseContants.tables.clinicuser, columns, values);
             this.DialogResult = DialogResult.OK;
-
             this.Close();
-
-
         }
         private bool checkConfirmTwoPass()
         {

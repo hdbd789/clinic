@@ -3,11 +3,8 @@ using Clinic.Helpers;
 using Clinic.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Clinic.Extensions
@@ -36,7 +33,7 @@ namespace Clinic.Extensions
         private void LoadData()
         {
             dataGridView1.Rows.Clear();
-            listReason = Helper.GetListReason(db);
+            listReason = db.GetListReason();
 
             for (int i = 0; i < listReason.Count; i++)
             {
@@ -62,7 +59,7 @@ namespace Clinic.Extensions
             {
                 List<string> columns = new List<string>() { "reason" };
                 List<string> values = new List<string>() {txt_reason.Text};
-                db.InsertRowToTable("ReasonApoinment", columns, values);
+                db.InsertRowToTable(DatabaseContants.tables.reasonapoinment, columns, values);
             }
             LoadData();
         }
@@ -93,7 +90,7 @@ namespace Clinic.Extensions
                 return;
             if (e.ColumnIndex == 2)
             {
-                Helper.DeleteRowInTableByID(db, "ReasonApoinment", "ID", dataGridView1[0, e.RowIndex].Value.ToString());
+                db.DeleteRowInTableByID(DatabaseContants.tables.reasonapoinment, "ID", dataGridView1[0, e.RowIndex].Value.ToString());
                 LoadData();
             }
         }

@@ -5,7 +5,10 @@ using System.Text;
 using System.Data.Common;
 using System.Data;
 using Clinic.Helpers;
-using System.Windows.Forms;
+using log4net;
+using System.Reflection;
+using Clinic.Models;
+using Clinic.Models.ItemMedicine;
 
 namespace Clinic.Database
 {
@@ -19,6 +22,7 @@ namespace Clinic.Database
         where TCommand : DbCommand, IDbCommand, new()
         where TDbConnectionStringBuilder : DbConnectionStringBuilder
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         protected TConnection tConnection;
         protected TTransaction tTransaction;
         public Database(string strCon)
@@ -31,15 +35,13 @@ namespace Clinic.Database
         {
             bool internalOpen = false;
             TCommand cmd;
-
-
             try
             {
-
-                cmd = new TCommand();
-                
-                //cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = StoreProcName;
+                cmd = new TCommand
+                {
+                    //cmd.CommandType = CommandType.StoredProcedure;
+                    CommandText = StoreProcName
+                };
                 if (tTransaction != default(TTransaction))
                     cmd.Transaction = tTransaction;
                 else
@@ -56,17 +58,16 @@ namespace Clinic.Database
                     tConnection.Open();
                     internalOpen = true;
                 }
-
                 return cmd.ExecuteNonQuery();
-
-
             }
             catch (DbException DbEx)
             {
+                Log.Error(DbEx.Message, DbEx);
                 throw DbEx;
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message, ex);
                 throw ex;
             }
             finally
@@ -78,7 +79,6 @@ namespace Clinic.Database
 
         protected  TDataReader ExecuteReader(string StoreProcName, List<TParameter> Params)
         {
-            bool internalOpen = false;
             TCommand cmd;
             try
             {
@@ -100,7 +100,6 @@ namespace Clinic.Database
                 if (tConnection.State == ConnectionState.Closed)
                 {
                     tConnection.Open();
-                    internalOpen = true;
                 }
                 return (TDataReader)cmd.ExecuteReader();
 
@@ -108,21 +107,15 @@ namespace Clinic.Database
             catch (DbException DbEx)
             {
                 System.Windows.Forms.MessageBox.Show("Đọc database thất bại, xin xem lại kết nối database", "Thông báo");
+                Log.Error(DbEx.Message, DbEx);
                 throw DbEx;
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message, ex);
                 throw ex;
             }
-            finally
-            {
-               // reader need connection still open for read() , and note : close connection
-
-                //if (internalOpen)
-                //    tConnection.Close();
-            }
         }
-
 
         protected void CreateDatabase(string password)
         {
@@ -157,13 +150,12 @@ namespace Clinic.Database
 
                 ExecuteNonQuery("CREATE Table IF NOT EXISTS Diagnoses(ID INT NOT NULL AUTO_INCREMENT,diagnoses TEXT NOT NULL,hiden TINYINT(1), PRIMARY KEY (ID)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
 
-                UpdateDatabase(password);
+                UpdateDatabase();
             }
             catch (Exception e)
             {
-                
+                throw e;
             }
-            
         }
 
         private void Guard(Func<int> action)
@@ -173,14 +165,14 @@ namespace Clinic.Database
                 action.Invoke();
             }
             catch (Exception e)
-            { }
+            {
+                throw e;
+            }
         }
 
 
-        private void UpdateDatabase(string password)
+        private void UpdateDatabase()
         {
-           
-            
             Func<int> fun = () => ExecuteNonQuery("ALTER TABLE medicine CHARACTER SET = utf16 , COLLATE = utf16_unicode_ci", null);
             fun=()=> ExecuteNonQuery("ALTER TABLE clinicuser ADD PRIMARY KEY(Username);", null);
             Guard(fun);;
@@ -212,27 +204,27 @@ namespace Clinic.Database
             fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN Idpatient varchar(10) NULL , ADD COLUMN Namepatient TEXT NULL;", null);
             Guard(fun);
 
-            fun = () => ExecuteNonQuery("ALTER TABLE medicine ADD COLUMN "+ ClinicConstant.MedicineTable_Admin +" TEXT NULL", null);
+            fun = () => ExecuteNonQuery("ALTER TABLE medicine ADD COLUMN "+ DatabaseContants.medicine.Admin +" TEXT NULL", null);
             Guard(fun);
 
-            fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN " + ClinicConstant.DoanhThuTable_Services + " TEXT NULL;", null);
-            Guard(fun);
-
-
-            fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN " + ClinicConstant.DoanhThuTable_LoaiKham + " TEXT NULL;", null);
+            fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN " + DatabaseContants.danhthu.Services + " TEXT NULL;", null);
             Guard(fun);
 
 
-            fun = () => ExecuteNonQuery("ALTER TABLE history  ADD COLUMN " + ClinicConstant.HistoryTable_IdHistory + " INT NOT NULL AUTO_INCREMENT ,ADD PRIMARY KEY (`IdHistory`) ;", null);
+            fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN " + DatabaseContants.danhthu.LoaiKham + " TEXT NULL;", null);
             Guard(fun);
 
-            fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN " + ClinicConstant.HistoryTable_IdHistory + " INT NULL ;", null);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE history  ADD COLUMN " + DatabaseContants.history.IdHistory + " INT NOT NULL AUTO_INCREMENT ,ADD PRIMARY KEY (`IdHistory`) ;", null);
             Guard(fun);
 
-            fun = () => ExecuteNonQuery("ALTER TABLE history  ADD COLUMN " + ClinicConstant.HistoryTable_Reason + " TEXT NULL ;", null);
+            fun = () => ExecuteNonQuery("ALTER TABLE doanhthu  ADD COLUMN " + DatabaseContants.history.IdHistory + " INT NULL ;", null);
             Guard(fun);
 
-            fun = () => ExecuteNonQuery("ALTER TABLE lichhen  ADD COLUMN " + ClinicConstant.HistoryTable_IdHistory + " INT NULL ;", null);
+            fun = () => ExecuteNonQuery("ALTER TABLE history  ADD COLUMN " + DatabaseContants.history.Reason + " TEXT NULL ;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE lichhen  ADD COLUMN " + DatabaseContants.LichHen.IdHistory + " INT NULL ;", null);
             Guard(fun);
 
             fun = () => ExecuteNonQuery("ALTER TABLE lichhen  ADD COLUMN " + DatabaseContants.LichHen.status + " INT NULL ;", null);
@@ -243,31 +235,10 @@ namespace Clinic.Database
 
         }
 
-        //protected void CreateDatabase(string password)
-        //{
-
-        //    ExecuteNonQuery("CREATE DATABASE IF NOT EXISTS ClinicDb;", null);
-        //    tConnection.ConnectionString += ";database=ClinicDb;";
-        //    tConnection.ConnectionString += ";password=" + password;
-        //    ExecuteNonQuery("CREATE Table IF NOT EXISTS clinicuser(Username varchar(50),Password1  varchar(50),Authority  smallint(6), Password2  varchar(50),PRIMARY KEY (Username) );", null);
-
-        //    ExecuteNonQuery("CREATE Table IF NOT EXISTS history(Id varchar(10),Symptom Longtext,Diagnose Longtext,Medicines Longtext,Day Datetime);", null);
-
-        //    ExecuteNonQuery("CREATE Table IF NOT EXISTS medicine(Name varchar(50),Count int,CostIn int,CostOut int,InputDay Datetime,IdMedicine varchar(10), PRIMARY KEY (IdMedicine,Name) );", null);
-
-        //    ExecuteNonQuery("CREATE Table IF NOT EXISTS patient(Name varchar(50),Address Varchar(400),birthday datetime,height int(11),weight int(11),IdPatient varchar(10),PRIMARY KEY (IdPatient,Name));", null);
-
-        //}
-
-
-
-
-
         #region implement Interface IDatabase
 
         IDataReader IDatabase.ExecuteReader(string StoreProcName, List<IDataParameter> Params)
         {
-
             return ExecuteReader(StoreProcName, Params as List<TParameter>);
         }
 
@@ -364,5 +335,23 @@ namespace Clinic.Database
                  //    tConnection.Close();
              }
          }
+
+        public abstract List<LoaiKham> GetAllLoaiKham();
+        public abstract List<ReasonApointmentModel> GetListReason();
+        public abstract void DeleteRowInTableByID(string nameTable, string nameID, string ID);
+        public abstract void UpdateRowToTable(string nameOfTable, List<string> nameOfColumns, List<string> values, string namecolumn, string id);
+        public abstract void UpdateRowToTable(string nameOfTable, List<string> nameOfColumns, List<string> values, string nameColumn, string id, string visitDate);
+        public abstract void UpdateRowToTableCalendar(string nameOfTable, List<string> nameOfColumns, List<string> values, string id, string Username);
+        public abstract void DeleteRowToTableCalendar(string nameOfTable, string id, string Username);
+        public abstract void DeleteRowFromTablelistpatienttoday(string id, string name);
+        public abstract List<ADate> GetAllDateOfUser(string Username);
+        public abstract int GetCountFromMecidicByName(string name);
+        public abstract string SearchIDHistoryByIDPatientAndDay(string idPatient, string visitDate);
+        public abstract bool CheckMedicineExists(string Id);
+        public abstract string GetNameOfDoctor(string name);
+        public abstract Dictionary<string, string> GetListPatientToday();
+        public abstract List<string> GetAllDiagnosesFromHistory(DateTime date);
+        public abstract string GetNamePatientByID(string id);
+        public abstract Medicine GetMedicineFromName(string name);
     }
 }
