@@ -49,47 +49,30 @@ namespace PhongKham
 
             try
             {
-                //if (!Helper.checkAdminExists("clinicuser"))
-                //{
-                //    CreateUserForm createUserForm = new CreateUserForm();
-                //    if (createUserForm.ShowDialog() == DialogResult.OK)
-                //    {
-
-                //        LoginForm login = new LoginForm();
-
-                //        if (login.ShowDialog() == DialogResult.OK)
-                //        {
-
-                //            Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                //        }
-                //    }
-                //}
-                //else
-                //{
-                //    LoginForm login = new LoginForm();
-
-                //    if (login.ShowDialog() == DialogResult.OK)
-                //    {
-                //        Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                //    }
-
-                //}
-
-                if (!Helper.checkAdminExists("clinicuser"))
+                if (!Helper.checkAdminExists(DatabaseContants.tables.clinicuser))
                 {
                     CreateUserForm createUserForm = new CreateUserForm();
                     if (createUserForm.ShowDialog() == DialogResult.OK)
                     {
+
                         LoginForm login = new LoginForm();
 
-                        login.ShowDialog();
+                        if (login.ShowDialog() == DialogResult.OK)
+                        {
+
+                            Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
+                        }
                     }
                 }
                 else
                 {
                     LoginForm login = new LoginForm();
 
-                    login.ShowDialog();
+                    if (login.ShowDialog() == DialogResult.OK)
+                    {
+                        Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
+                    }
+
                 }
 
             }
