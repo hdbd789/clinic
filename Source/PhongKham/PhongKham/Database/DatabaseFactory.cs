@@ -62,6 +62,7 @@ namespace Clinic.Database
             stringBuilder.UserID = strBuilder.UserID;
             stringBuilder.Password = strBuilder.Password;
             stringBuilder.Database = strBuilder.Database;
+            stringBuilder.SslMode = MySqlSslMode.None;
         }
 
         private DatabaseFactory()

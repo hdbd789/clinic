@@ -25,7 +25,6 @@ namespace PhongKham
             log4net.Config.XmlConfigurator.Configure();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
             if (!File.Exists("WriteLines.txt"))
             {
                 PassSQL SqlForm = new PassSQL();
@@ -38,7 +37,7 @@ namespace PhongKham
             try
             {
                 string[] lines = System.IO.File.ReadAllLines("WriteLines.txt");
-                DatabaseFactory.CreateNewDatabase("",GetConnectionString(lines[0], lines[1]));
+                DatabaseFactory.CreateNewDatabase("", GetConnectionString(lines[0], lines[1]));
             }
             catch(Exception e)
             {
@@ -49,30 +48,20 @@ namespace PhongKham
 
             try
             {
-                if (!Helper.checkAdminExists(DatabaseContants.tables.clinicuser))
+                if (!Helper.CheckAdminExists())
                 {
                     CreateUserForm createUserForm = new CreateUserForm();
-                    if (createUserForm.ShowDialog() == DialogResult.OK)
+                    if (createUserForm.ShowDialog() != DialogResult.OK)
                     {
-
-                        LoginForm login = new LoginForm();
-
-                        if (login.ShowDialog() == DialogResult.OK)
-                        {
-
-                            Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                        }
+                        return;
                     }
                 }
-                else
+
+                LoginForm login = new LoginForm();
+
+                if (login.ShowDialog() == DialogResult.OK)
                 {
-                    LoginForm login = new LoginForm();
-
-                    if (login.ShowDialog() == DialogResult.OK)
-                    {
-                        Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                    }
-
+                    Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
                 }
 
             }
@@ -85,12 +74,14 @@ namespace PhongKham
 
         private static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
         {
-            DbConStringBuilder strBuilder = new DbConStringBuilder();
-                strBuilder.Server = IPAddress=="..."?"localhost":IPAddress;
-                strBuilder.UserID="root";
-                strBuilder.Password = passSql;
-                strBuilder.Database="clinic";
-                return strBuilder;
+            DbConStringBuilder strBuilder = new DbConStringBuilder
+            {
+                Server = IPAddress == "..." ? "localhost" : IPAddress,
+                UserID = "root",
+                Password = passSql,
+                Database = "clinic"
+            };
+            return strBuilder;
         }
     }
 }

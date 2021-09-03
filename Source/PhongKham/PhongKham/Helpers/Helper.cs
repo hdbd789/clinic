@@ -219,9 +219,9 @@ namespace Clinic.Helpers
 
         }
 
-        public static bool checkAdminExists(string nameOfTable)
+        public static bool CheckAdminExists()
         {
-            string strCommand = "SELECT * FROM " + nameOfTable + " WHERE Authority = 1";
+            string strCommand = "SELECT Authority FROM " + DatabaseContants.tables.clinicuser + " WHERE Authority = 1 LIMIT 1";
             // MySqlCommand comm = new MySqlCommand(strCommand, conn);
             //MySqlDataReader reader = comm.ExecuteReader();
             IDatabase db = DatabaseFactory.Instance;

@@ -33,6 +33,7 @@ namespace Clinic.Database
 
         protected int ExecuteNonQuery(string StoreProcName, List<TParameter> Params)
         {
+            Log.Info("StoreProcName : " + StoreProcName);
             bool internalOpen = false;
             TCommand cmd;
             try

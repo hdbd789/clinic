@@ -379,7 +379,7 @@ namespace PhongKham
         {
 
 
-            if (!Helper.checkAdminExists(DatabaseContants.tables.clinicuser))
+            if (!Helper.CheckAdminExists())
             {
                 CreateUserForm createUserForm = new CreateUserForm();
                 createUserForm.ShowDialog();
