@@ -185,6 +185,7 @@
     <Compile Include="Helpers\ErrorProviderHelper.cs" />
     <Compile Include="Helpers\HelperControl.cs" />
     <Compile Include="Helpers\HelperforSeemore.cs" />
+    <Compile Include="Helpers\Setting.cs" />
     <Compile Include="MessageBoxControl\MessageBoxNumberInput.cs">
       <SubType>Form</SubType>
     </Compile>

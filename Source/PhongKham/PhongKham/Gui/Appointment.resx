@@ -118,14 +118,14 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="imageListAppoint.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
+    <value>181, 17</value>
   </metadata>
   <data name="imageListAppoint.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAADC
-        AwAAAk1TRnQBSQFMAwEBAAEIAQABCAEAARQBAAEUAQAE/wEZAQAI/wFCAU0BNgcAATYDAAEoAwABUAMA
+        AwAAAk1TRnQBSQFMAwEBAAEQAQABEAEAARQBAAEUAQAE/wEZAQAI/wFCAU0BNgcAATYDAAEoAwABUAMA
         ARQDAAEBAQABGAUAAcABEv8AMAAD/wPkA88D++EAA/8DwwNVA1MDyt4AA/8DywNKBVEBUgPf2wAD/wPD
         A0oDUwNLA7oD/9gAA/8DyANVAlABUQNLA8YD/9gAA/8DyQNKAlEBUgJRAVIDugP/2wAD3wJTAVQDUQNL
         A8MD/8kAA/0D2QGfAZgBkQGKAXkBZQGQAYIBcQG4AbYBtQPmA7kCbQFuAlEBUgPDA//JAAP9A4IBigFc
@@ -144,6 +144,9 @@
         Av8B8AkACw==
 </value>
   </data>
+  <metadata name="dateTimeInput1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

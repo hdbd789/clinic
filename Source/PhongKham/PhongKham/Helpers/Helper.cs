@@ -571,6 +571,7 @@ namespace Clinic.Helpers
 
         internal static void CreateAPdfThongKe(System.Windows.Forms.DataGridView dataGridView, string namePDF)
         {
+            int numberColumn = 6;
             Document document = new Document();
             document.Info.Author = "Luong Y";
             Unit width, height;
@@ -584,33 +585,28 @@ namespace Clinic.Helpers
             paragraphTitle.Format.Alignment = ParagraphAlignment.Center;
             paragraphTitle.AddTab();
             paragraphTitle.AddTab();
-
-
-
-              paragraphTitle.AddFormattedText("Tủ Thuốc \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
+            paragraphTitle.AddFormattedText("Tủ Thuốc \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
  
-
-
-
             section.PageSetup.LeftMargin = 1;
 
             Table tableMedicines = section.AddTable();
             tableMedicines.Borders.Width = 0.5;
             tableMedicines.BottomPadding = 1;
+            
             //Column columnMedicines1 = tableMedicines.AddColumn(30);
-            for (int i = 0; i<dataGridView.Columns.Count; i++)
+            for (int i = 0; i< numberColumn; i++)
             {
-
                 if (i == 1)
                 {
-                    Column columnMedicines1 = tableMedicines.AddColumn(150);
+                    tableMedicines.AddColumn(150);
                     
                 }
-                else {
-                    Column columnMedicines1 = tableMedicines.AddColumn();
+                else 
+                {
+                    tableMedicines.AddColumn();
                 }
             }
-
+            tableMedicines.Format.Alignment = ParagraphAlignment.Center;
             Row rowHeaderText = tableMedicines.AddRow();
             rowHeaderText.Cells[0].AddParagraph("Id");
             rowHeaderText.Cells[1].AddParagraph("Tên thuốc");

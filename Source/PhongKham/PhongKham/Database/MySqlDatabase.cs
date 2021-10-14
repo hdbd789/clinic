@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
 using Clinic.Helpers;
 using Clinic.Models;
 using Clinic.Models.ItemMedicine;

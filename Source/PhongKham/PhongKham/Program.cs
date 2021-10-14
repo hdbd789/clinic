@@ -7,6 +7,7 @@ using System.IO;
 using Clinic.Database;
 using log4net;
 using System.Reflection;
+using System.Configuration;
 
 namespace PhongKham
 {
@@ -34,6 +35,7 @@ namespace PhongKham
                     return;
                 }
             }
+            Setting.UpdateDatabase = bool.Parse(ConfigurationManager.AppSettings["updatedatabase"]);
             try
             {
                 string[] lines = System.IO.File.ReadAllLines("WriteLines.txt");

@@ -24,11 +24,12 @@ namespace Clinic.Database
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         protected TConnection tConnection;
-        protected TTransaction tTransaction;
         public Database(string strCon)
         {
-            tConnection = new TConnection();
-            tConnection.ConnectionString = strCon;
+            tConnection = new TConnection
+            {
+                ConnectionString = strCon
+            };
         }
 
         protected int ExecuteNonQuery(string StoreProcName, List<TParameter> Params)
@@ -36,17 +37,15 @@ namespace Clinic.Database
             Log.Info("StoreProcName : " + StoreProcName);
             bool internalOpen = false;
             TCommand cmd;
+            DbTransaction tTransaction = null;
             try
             {
                 cmd = new TCommand
                 {
                     //cmd.CommandType = CommandType.StoredProcedure;
-                    CommandText = StoreProcName
+                    CommandText = StoreProcName,
+                    Connection = tConnection
                 };
-                if (tTransaction != default(TTransaction))
-                    cmd.Transaction = tTransaction;
-                else
-                    cmd.Connection = tConnection;
 
                 if (Params != null && Params.Count > 0)
                 {
@@ -59,15 +58,20 @@ namespace Clinic.Database
                     tConnection.Open();
                     internalOpen = true;
                 }
-                return cmd.ExecuteNonQuery();
+                tTransaction = tConnection.BeginTransaction();
+                int result = cmd.ExecuteNonQuery();
+                tTransaction.Commit();
+                return result;
             }
             catch (DbException DbEx)
             {
+                tTransaction.Rollback();
                 Log.Error(DbEx.Message, DbEx);
                 throw DbEx;
             }
             catch (Exception ex)
             {
+                tTransaction.Rollback();
                 Log.Error(ex.Message, ex);
                 throw ex;
             }
@@ -84,13 +88,12 @@ namespace Clinic.Database
             try
             {
 
-                cmd = new TCommand();
-               // cmd.CommandType = CommandType.StoredProcedure;
-                cmd.CommandText = StoreProcName;
-                if (tTransaction != default(TTransaction))
-                    cmd.Transaction = tTransaction;
-                else
-                    cmd.Connection = tConnection;
+                cmd = new TCommand
+                {
+                    // cmd.CommandType = CommandType.StoredProcedure;
+                    CommandText = StoreProcName,
+                    Connection = tConnection
+                };
 
                 if (Params != null && Params.Count > 0)
                 {
@@ -102,6 +105,7 @@ namespace Clinic.Database
                 {
                     tConnection.Open();
                 }
+
                 return (TDataReader)cmd.ExecuteReader();
 
             }
@@ -151,7 +155,10 @@ namespace Clinic.Database
 
                 ExecuteNonQuery("CREATE Table IF NOT EXISTS Diagnoses(ID INT NOT NULL AUTO_INCREMENT,diagnoses TEXT NOT NULL,hiden TINYINT(1), PRIMARY KEY (ID)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
 
-                UpdateDatabase();
+                if (Setting.UpdateDatabase)
+                {
+                    UpdateDatabase();
+                }
             }
             catch (Exception e)
             {
@@ -296,25 +303,20 @@ namespace Clinic.Database
 
          public object ExecuteScalar(string query)
          {
-             bool internalOpen = false;
              TCommand cmd;
-
-
              try
              {
 
-                 cmd = new TCommand();
-                 // cmd.CommandType = CommandType.StoredProcedure;
-                 cmd.CommandText = query;
-                 if (tTransaction != default(TTransaction))
-                     cmd.Transaction = tTransaction;
-                 else
-                     cmd.Connection = tConnection;
+                cmd = new TCommand
+                {
+                    // cmd.CommandType = CommandType.StoredProcedure;
+                    CommandText = query,
+                    Connection = tConnection
+                };
 
-                 if (tConnection.State == ConnectionState.Closed)
+                if (tConnection.State == ConnectionState.Closed)
                  {
                      tConnection.Open();
-                     internalOpen = true;
                  }
 
                  return cmd.ExecuteScalar();
