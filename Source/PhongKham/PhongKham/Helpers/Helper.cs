@@ -592,7 +592,8 @@ namespace Clinic.Helpers
             Table tableMedicines = section.AddTable();
             tableMedicines.Borders.Width = 0.5;
             tableMedicines.BottomPadding = 1;
-            
+            tableMedicines.Rows.LeftIndent = Unit.FromMillimeter(17);
+
             //Column columnMedicines1 = tableMedicines.AddColumn(30);
             for (int i = 0; i< numberColumn; i++)
             {
@@ -606,7 +607,7 @@ namespace Clinic.Helpers
                     tableMedicines.AddColumn();
                 }
             }
-            tableMedicines.Format.Alignment = ParagraphAlignment.Center;
+            
             Row rowHeaderText = tableMedicines.AddRow();
             rowHeaderText.Cells[0].AddParagraph("Id");
             rowHeaderText.Cells[1].AddParagraph("Tên thuốc");
@@ -625,7 +626,6 @@ namespace Clinic.Helpers
                 row.Cells[4].AddParagraph(dataGridView.Rows[i].Cells["ColumnCostOut"].Value != null ? dataGridView.Rows[i].Cells["ColumnCostOut"].Value.ToString() : "");
                 row.Cells[5].AddParagraph(dataGridView.Rows[i].Cells["ColumnInputDay"].Value != null ? dataGridView.Rows[i].Cells["ColumnInputDay"].Value.ToString() : "");
             }
-            
 
             PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always);
             pdfRenderer.Document = document;

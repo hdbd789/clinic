@@ -154,6 +154,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\StartApplication.cs" />
     <Compile Include="ClinicConstant.cs" />
     <Compile Include="CoTableLayoutPanel .cs">
       <SubType>Component</SubType>

@@ -2399,14 +2399,14 @@ namespace PhongKham
             // 
             this.logOutToolStripMenuItem.Name = "logOutToolStripMenuItem";
             this.logOutToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
-            this.logOutToolStripMenuItem.Text = "Log out";
+            this.logOutToolStripMenuItem.Text = "Đăng xuất";
             this.logOutToolStripMenuItem.Click += new System.EventHandler(this.logOutToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
-            this.quitToolStripMenuItem.Text = "Quit";
+            this.quitToolStripMenuItem.Text = "Thoát";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // doanhThuToolStripMenuItem

@@ -20,13 +20,14 @@ using Clinic.Extensions;
 using Clinic.Gui;
 using log4net;
 using System.Reflection;
+using Clinic.Business;
 
 namespace PhongKham
 {
     public partial class Form1 : DevComponents.DotNetBar.Office2007Form
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        public bool IsLogout;
         [DllImport("user32")]
         public static extern int SetParent(int hWndChild, int hWndNewParent);
 
@@ -2275,9 +2276,8 @@ namespace PhongKham
 
         private void logOutToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            IsLogout = true;
             this.Close();
-            LoginForm login = new LoginForm();
-            login.ShowDialog();
         }
 
         private void buttonList_Click(object sender, EventArgs e)

@@ -8,6 +8,7 @@ using Clinic.Database;
 using log4net;
 using System.Reflection;
 using System.Configuration;
+using Clinic.Business;
 
 namespace PhongKham
 {
@@ -47,31 +48,15 @@ namespace PhongKham
                 MessageBox.Show("Lỗi database! Xin chạy lại chương trình!");
                 Log.Error(e.Message, e);
             }
-
-            try
+            if (!Helper.CheckAdminExists())
             {
-                if (!Helper.CheckAdminExists())
+                CreateUserForm createUserForm = new CreateUserForm();
+                if (createUserForm.ShowDialog() != DialogResult.OK)
                 {
-                    CreateUserForm createUserForm = new CreateUserForm();
-                    if (createUserForm.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
+                    return;
                 }
-
-                LoginForm login = new LoginForm();
-
-                if (login.ShowDialog() == DialogResult.OK)
-                {
-                    Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                }
-
             }
-            catch ( Exception ex)
-            {
-                Log.Error(ex.Message, ex);
-            }
-            
+            StartApplication.StartApp();
         }
 
         private static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
