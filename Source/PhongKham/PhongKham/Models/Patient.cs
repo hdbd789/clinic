@@ -86,6 +86,7 @@ namespace Clinic.Models
             this.address = address;
             this.birthday = birthday;
         }
+        public Patient() { }
         #endregion
 
         #region Properties

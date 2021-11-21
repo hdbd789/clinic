@@ -39,5 +39,7 @@ namespace Clinic.Database
         List<string> GetAllDiagnosesFromHistory(DateTime date);
         string GetNamePatientByID(string id);
         Medicine GetMedicineFromName(string name);
+
+        List<InfoPatient> GetAllPatientInfo(DateTime fromDate, DateTime toDate);
     }
 }

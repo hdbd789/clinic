@@ -257,5 +257,45 @@ namespace Clinic.Database
             //MySqlCommand comm = new MySqlCommand(strCommand, conn);
             ExecuteNonQuery(strCommand, null);
         }
+
+        public override List<InfoPatient> GetAllPatientInfo(DateTime fromDate, DateTime toDate)
+        {
+            string strCommand = string.Format("SELECT p.*, h.*, l.benh, l.time, l.status FROM {0} p ", DatabaseContants.tables.patient)
+                                + string.Format("LEFT JOIN {0} h ON p.Idpatient = h.Id ", DatabaseContants.tables.history)
+                                + string.Format("LEFT JOIN {0} l ON l.Idpatient = p.Idpatient ", DatabaseContants.tables.lichHen)
+                                + string.Format("WHERE h.Day >= {0} AND h.Day <= {1}",
+                                Helper.ConvertToSqlString(fromDate.ToString("yyyy-MM-dd")),
+                                Helper.ConvertToSqlString(toDate.ToString("yyyy-MM-dd")));
+
+            List<InfoPatient> results = new List<InfoPatient>();
+            using (DbDataReader reader = ExecuteReader(strCommand, null))
+            {
+                while (reader.Read())
+                {
+                    InfoPatient item = new InfoPatient();
+                    item.Name = reader[DatabaseContants.patient.Name].ToString();
+                    item.Birthday = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday));
+                    item.Phone = reader[DatabaseContants.patient.Phone].ToString();
+                    item.Address = reader[DatabaseContants.patient.Address].ToString();
+                    item.Height = reader[DatabaseContants.patient.height].ToString();
+                    item.Weight = reader[DatabaseContants.patient.weight].ToString();
+                    item.Symptom = reader[DatabaseContants.history.Symptom].ToString();
+                    item.Temperature = reader[DatabaseContants.history.temperature].ToString();
+                    item.HuyenAp = reader[DatabaseContants.history.huyetap].ToString();
+                    item.Diagnose = reader[DatabaseContants.history.Diagnose].ToString();
+                    item.Medicines = reader[DatabaseContants.history.Medicines].ToString();
+                    item.NgayKham = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.history.Day));
+                    item.Reason = reader[DatabaseContants.history.Reason].ToString();
+                    item.NameOfDoctor = reader[DatabaseContants.history.nameofdoctor].ToString();
+                    item.Benh = reader[DatabaseContants.LichHen.sick].ToString();
+                    item.NgayTaiKham = DateTime.TryParse(reader[DatabaseContants.LichHen.Time].ToString(), out DateTime taiKham) ? taiKham : (DateTime?)null;
+                    item.Status = reader[DatabaseContants.LichHen.status].ToString();
+
+                    results.Add(item);
+                }
+            }
+
+            return results;
+        }
     }
 }

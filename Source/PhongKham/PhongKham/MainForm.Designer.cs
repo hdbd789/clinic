@@ -249,6 +249,7 @@ namespace PhongKham
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolpatientAllCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripMenuItemPatient = new System.Windows.Forms.ToolStripMenuItem();
             this.MainTab.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.panelcontent.SuspendLayout();
@@ -2416,7 +2417,8 @@ namespace PhongKham
             this.tủThuốcToolStripMenuItem,
             this.cácDịchVụToolStripMenuItem,
             this.cácChẩnĐoánToolStripMenuItem,
-            this.appoinment});
+            this.appoinment,
+            this.toolStripMenuItemPatient});
             this.doanhThuToolStripMenuItem.Name = "doanhThuToolStripMenuItem";
             this.doanhThuToolStripMenuItem.Size = new System.Drawing.Size(86, 24);
             this.doanhThuToolStripMenuItem.Text = "Thống Kê";
@@ -2556,6 +2558,12 @@ namespace PhongKham
             this.toolpatientAllCount.Size = new System.Drawing.Size(43, 28);
             this.toolpatientAllCount.Text = "0";
             this.toolpatientAllCount.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            // toolStripMenuItemPatient
+            this.toolStripMenuItemPatient.Image = global::Clinic.Properties.Resources.patient;
+            this.toolStripMenuItemPatient.Name = "toolStripMenuItemPatient";
+            this.toolStripMenuItemPatient.Size = new System.Drawing.Size(192, 26);
+            this.toolStripMenuItemPatient.Text = "Bệnh nhân";
+            this.toolStripMenuItemPatient.Click += ToolStripMenuItemPatient_Click;
             // 
             // Form1
             // 
@@ -2829,6 +2837,7 @@ namespace PhongKham
         private DataGridViewTextBoxColumn ColumnReason;
         private DevComponents.DotNetBar.Controls.DataGridViewLabelXColumn ColumnState;
         private ToolStripMenuItem appoinment;
+        private ToolStripMenuItem toolStripMenuItemPatient;
     }
 }
 

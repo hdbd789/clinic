@@ -159,6 +159,12 @@
     <Compile Include="CoTableLayoutPanel .cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControl\DatagridviewPaging.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CustomControl\DatagridviewPaging.Designer.cs">
+      <DependentUpon>DatagridviewPaging.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -193,6 +199,7 @@
     <Compile Include="MessageBoxControl\MessageBoxNumberInput.Designer.cs">
       <DependentUpon>MessageBoxNumberInput.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\InfoPatient.cs" />
     <Compile Include="Models\LoaiKham.cs" />
     <Compile Include="Models\ReasonApointmentModel.cs" />
     <Compile Include="Thong Ke\DiagnosesHistory.cs">
@@ -278,6 +285,12 @@
     <Compile Include="SearchForm.Designer.cs">
       <DependentUpon>SearchForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Thong Ke\PatientStatisticsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Thong Ke\PatientStatisticsForm.Designer.cs">
+      <DependentUpon>PatientStatisticsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Thong Ke\Services.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -292,6 +305,9 @@
     </Compile>
     <EmbeddedResource Include="CreateUserForm.resx">
       <DependentUpon>CreateUserForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomControl\DatagridviewPaging.resx">
+      <DependentUpon>DatagridviewPaging.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extensions\ProgressForm.resx">
       <DependentUpon>ProgressForm.cs</DependentUpon>
@@ -345,6 +361,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Thong Ke\FormSeemoreMedicine.resx">
       <DependentUpon>FormSeemoreMedicine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Thong Ke\PatientStatisticsForm.resx">
+      <DependentUpon>PatientStatisticsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Thong Ke\Services.resx">
       <DependentUpon>Services.cs</DependentUpon>
@@ -406,6 +425,7 @@
     <Content Include="Libs\PdfSharp.Charting.dll" />
     <Content Include="Libs\PdfSharp.dll" />
     <Content Include="Libs\System.Windows.Forms.Calendar.dll" />
+    <None Include="Resources\icon_patient.png" />
     <None Include="Resources\patient.ico" />
     <None Include="Resources\addnew.ico" />
     <None Include="Resources\appointment.PNG" />

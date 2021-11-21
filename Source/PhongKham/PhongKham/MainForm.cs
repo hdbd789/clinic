@@ -2290,5 +2290,11 @@ namespace PhongKham
             Appointment appoint = new Appointment();
             appoint.Show();
         }
+
+        private void ToolStripMenuItemPatient_Click(object sender, System.EventArgs e)
+        {
+            PatientStatisticsForm patientStatistics = new PatientStatisticsForm();
+            patientStatistics.Show();
+        }
     }
 }

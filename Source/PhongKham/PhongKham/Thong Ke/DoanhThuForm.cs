@@ -13,6 +13,7 @@ using PhongKham;
 using Clinic.Models.ItemMedicine;
 using System.Threading;
 using Clinic.Extensions;
+using System.Threading.Tasks;
 
 namespace Clinic
 {
@@ -269,7 +270,7 @@ namespace Clinic
         {
             dataGridViewMain.Rows.Clear();
 
-            Thread thread = new Thread(delegate()
+            HelperControl.Instance.DoAsyncAction(() =>
             {
                 DateTime day = dateTimePicker1.Value;
                 listItem = Helpers.Helper.DoanhThuTheoNgay(DatabaseFactory.Instance, day);
@@ -278,16 +279,13 @@ namespace Clinic
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
                 FillToGrid(listItem);
             });
-            thread.Start();
-            HelperControl.Instance.ShowProgress(thread);
-            thread.Join();
         }
 
         private void button2_Click(object sender, EventArgs e) // thang
         {
             dataGridViewMain.Rows.Clear();
 
-            Thread thread = new Thread(delegate()
+            HelperControl.Instance.DoAsyncAction(() =>
             {
                 listItem = Helpers.Helper.DoanhThuTheoThang(DatabaseFactory.Instance, dateTimePicker1.Value);
                 FillToGrid(listItem);
@@ -295,26 +293,20 @@ namespace Clinic
                 int phimuathuoc = resultBuyMedicine.Item2;
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
             });
-            thread.Start();
-            HelperControl.Instance.ShowProgress(thread);
-            thread.Join();
         }
 
         private void btn_year_Click(object sender, EventArgs e) // nam
         {
             dataGridViewMain.Rows.Clear();
-            Thread thread = new Thread(delegate()
+
+            HelperControl.Instance.DoAsyncAction(() =>
             {
                 listItem = Helpers.Helper.DoanhThuTheoNam(DatabaseFactory.Instance, dateTimePicker1.Value);
                 FillToGrid(listItem);
-
                 Tuple<int, int> resultBuyMedicine = HelperforSeemore.GetAllCountAndMoneyMedicineInputInYear(DatabaseFactory.Instance, dateTimePicker1.Value.Year);
                 int phimuathuoc = resultBuyMedicine.Item2;
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
             });
-            thread.Start();
-            HelperControl.Instance.ShowProgress(thread);
-            thread.Join();
         }
         
         private void CalcuTotal(int chiphimuathuoc,List<ItemDoanhThu>listItem,int numberBuyMedicine)

@@ -1,9 +1,8 @@
 ﻿using Clinic.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Clinic.Helpers
 {
@@ -11,7 +10,7 @@ namespace Clinic.Helpers
     {
         private static HelperControl instance;
         public ProgressForm form;
-        private Thread thread;
+        private CancellationTokenSource _taskCancel;
         public static HelperControl Instance
         {
             get
@@ -24,12 +23,32 @@ namespace Clinic.Helpers
             }
         }
 
-        public void ShowProgress(Thread thread)
+        public void ShowProgress(CancellationTokenSource taskCancel)
         {
+            _taskCancel = taskCancel;
             form = new ProgressForm();
             form.FormClosed += form_FormClosed;
-            this.thread = thread;
             form.ShowDialog();
+        }
+
+        public void DoAsyncAction(Action action)
+        {
+            var ts = new CancellationTokenSource();
+            Task task = Task.Factory.StartNew(() =>
+            {
+                action();
+            }, ts.Token).ContinueWith((t1) =>
+            {
+                if (t1.IsCompleted)
+                {
+                    Instance.StopProgress();
+                }
+                else
+                {
+                    MessageBox.Show("Có lỗi xảy ra. Xin hãy liên hệ admin.", "Thông báo", MessageBoxButtons.OK);
+                }
+            });
+            Instance.ShowProgress(ts);
         }
 
         void form_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -37,17 +56,22 @@ namespace Clinic.Helpers
             ProgressForm form = (ProgressForm)sender;
             if (form.DialogResult == System.Windows.Forms.DialogResult.Cancel)
             {
-                if (thread != null && thread.IsAlive)
+                if (_taskCancel != null)
                 {
-                    thread.Abort();
+                    _taskCancel.Cancel();
                 }
             }
         }
-
+        private delegate void StopProgressDelegate();
         public void StopProgress()
         {
-            if(form != null && !form.IsDisposed)
-            form.Close();
+            if (form.InvokeRequired)
+            {
+                form.BeginInvoke(new StopProgressDelegate(StopProgress));
+                return;
+            }
+            if (form != null && !form.IsDisposed)
+                form.Close();
         }
     }
 }
