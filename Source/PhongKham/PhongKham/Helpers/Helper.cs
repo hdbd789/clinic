@@ -1893,5 +1893,52 @@ namespace Clinic.Helpers
                 return false;
             }
         }
+
+        internal static string BuildStringServicesAndAdmin(string servicesWithoutAdmin, List<IMedicine> currentServices, ref Dictionary<string, int> listService)
+        {
+            StringBuilder result = new StringBuilder();
+            string[] serviceArray = servicesWithoutAdmin.Split(new string[] { ClinicConstant.StringBetweenServicesInDoanhThu }, StringSplitOptions.None);
+
+            for (int i = 0; i < serviceArray.Count(); i++)
+            {
+                IMedicine service = currentServices.Where(x => x.Name == serviceArray[i]).FirstOrDefault();
+                result.Append(serviceArray[i] + ClinicConstant.StringBetweenServiceAndAdmin + (service == null ? "" : service.Admin));
+                if (i != serviceArray.Count() - 1)
+                {
+                    result.AppendLine();
+                }
+                if ((!String.IsNullOrEmpty(serviceArray[i])) && serviceArray[i][0] == '@')
+                {
+                    if (listService.ContainsKey(serviceArray[i]))
+                    {
+                        listService[serviceArray[i]]++;
+                    }
+                    else
+                    {
+                        listService.Add(serviceArray[i], 1);
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
+
+        internal static string BuildStringMedicines(string medicineStr)
+        {
+            StringBuilder result = new StringBuilder();
+            string[] serviceArray = medicineStr.Split(new string[] { ClinicConstant.StringBetweenOfMedicine }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < serviceArray.Count(); i++)
+            {
+                string nameMedicine = serviceArray[i].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                result.Append(nameMedicine);
+                if (i != serviceArray.Count() - 1)
+                {
+                    result.AppendLine();
+                }
+            }
+
+            return result.ToString();
+        }
     }
 }

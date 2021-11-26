@@ -1,17 +1,24 @@
-﻿using Clinic.Database;
+﻿using Clinic.ClinicException;
+using Clinic.Database;
 using Clinic.Helpers;
 using Clinic.Models;
+using CsvHelper;
+using CsvHelper.TypeConversion;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace Clinic.Thong_Ke
 {
     public partial class PatientStatisticsForm : Form
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static Dictionary<string, Tuple<string, int>> DataGridviewPatientStructure = new Dictionary<string, Tuple<string, int>>()
         {
             { "STT", new Tuple<string, int>("STT",50) },
@@ -108,6 +115,11 @@ namespace Clinic.Thong_Ke
 
         private void btnExport_Click(object sender, EventArgs e)
         {
+            if(datagridviewPaging1.RowCount == 0)
+            {
+                MessageBox.Show("Không có dữ liệu để xuất.", "Thông báo", MessageBoxButtons.OK);
+                return;
+            }
             FileDialog fileDialog = new SaveFileDialog();
             fileDialog.AddExtension = true;
             fileDialog.Title = "Xuất file";
@@ -118,7 +130,24 @@ namespace Clinic.Thong_Ke
             {
                 HelperControl.Instance.DoAsyncAction(() =>
                 {
+                    List<InfoPatient> infoPatients = datagridviewPaging1.Tag as List<InfoPatient>;
 
+                    try
+                    {
+                        using (var writer = new StreamWriter(fileDialog.FileName))
+                        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                        {
+                            var options = new TypeConverterOptions { Formats = new[] { ClinicConstant.DateTimeFormat } };
+                            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                            csv.WriteRecords(infoPatients);
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        Log.Error(ex.Message, ex);
+                        throw new FunctionalException($"Chúng tôi không thể truy cập file {fileDialog.FileName}. Xin hãy tắt file đang mở.", ex);
+                    }
+                    
                 });
             }
         }

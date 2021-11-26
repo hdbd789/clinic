@@ -155,7 +155,7 @@ namespace Clinic.Thong_Ke
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 541F));
+            this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 544F));
             this.coTableLayoutPatient.Controls.Add(this.label2, 2, 0);
             this.coTableLayoutPatient.Controls.Add(this.dtpToDate, 3, 0);
             this.coTableLayoutPatient.Controls.Add(this.label1, 0, 0);

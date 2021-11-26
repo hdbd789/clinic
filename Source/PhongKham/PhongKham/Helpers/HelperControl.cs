@@ -1,4 +1,5 @@
-﻿using Clinic.Extensions;
+﻿using Clinic.ClinicException;
+using Clinic.Extensions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Clinic.Helpers
             form.ShowDialog();
         }
 
-        public void DoAsyncAction(Action action)
+        public void DoAsyncAction(Action action, string messageSuccess = "", string messageFail = "Có lỗi xảy ra. Xin hãy liên hệ admin.")
         {
             var ts = new CancellationTokenSource();
             Task task = Task.Factory.StartNew(() =>
@@ -43,9 +44,20 @@ namespace Clinic.Helpers
                 {
                     Instance.StopProgress();
                 }
-                else
+                if (t1.Status == TaskStatus.Faulted || t1.Status == TaskStatus.Canceled)
                 {
-                    MessageBox.Show("Có lỗi xảy ra. Xin hãy liên hệ admin.", "Thông báo", MessageBoxButtons.OK);
+                    if (t1.Exception.InnerException is FunctionalException functional)
+                    {
+                        MessageBox.Show(functional.Message, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show(messageFail, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(messageSuccess))
+                {
+                    MessageBox.Show(messageSuccess, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             });
             Instance.ShowProgress(ts);

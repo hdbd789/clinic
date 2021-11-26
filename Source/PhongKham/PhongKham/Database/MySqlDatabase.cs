@@ -288,7 +288,7 @@ namespace Clinic.Database
                     item.Reason = reader[DatabaseContants.history.Reason].ToString();
                     item.NameOfDoctor = reader[DatabaseContants.history.nameofdoctor].ToString();
                     item.Benh = reader[DatabaseContants.LichHen.sick].ToString();
-                    item.NgayTaiKham = DateTime.TryParse(reader[DatabaseContants.LichHen.Time].ToString(), out DateTime taiKham) ? taiKham : (DateTime?)null;
+                    item.NgayTaiKham = DateTime.TryParse(reader[DatabaseContants.LichHen.Time].ToString(), out DateTime taiKham) ? taiKham.ToString(ClinicConstant.DateTimeFormat) : string.Empty;
                     item.Status = reader[DatabaseContants.LichHen.status].ToString();
 
                     results.Add(item);

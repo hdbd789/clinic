@@ -162,6 +162,7 @@ namespace Clinic.Database
             }
             catch (Exception e)
             {
+                Log.Error(e.Message, e);
                 throw e;
             }
         }
@@ -174,6 +175,7 @@ namespace Clinic.Database
             }
             catch (Exception e)
             {
+                Log.Error(e.Message, e);
                 throw e;
             }
         }
@@ -324,11 +326,13 @@ namespace Clinic.Database
              }
              catch (DbException DbEx)
              {
-                 throw DbEx;
+                Log.Error(DbEx.Message, DbEx);
+                throw DbEx;
              }
              catch (Exception ex)
              {
-                 throw ex;
+                Log.Error(ex.Message, ex);
+                throw ex;
              }
              finally
              {

@@ -79,15 +79,15 @@ namespace Clinic.CustomControl
         {
             lblCountItem.Text = string.Format("{0} of {1}", currentPage, totalPage);
             lblRecord.Text = string.Format("{0} records", dataRows.Length);
-            btnPrevious.Enabled = true;
-            btnNext.Enabled = true;
-            if (currentPage >= totalPage)
+            btnPrevious.Enabled = false;
+            btnNext.Enabled = false;
+            if (currentPage < totalPage)
             {
-                btnNext.Enabled = false;
+                btnNext.Enabled = true;
             }
-            else if (currentPage == 1)
+            if (currentPage > 1)
             {
-                btnPrevious.Enabled = false;
+                btnPrevious.Enabled = true;
             }
         }
 

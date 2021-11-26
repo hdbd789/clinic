@@ -95,7 +95,7 @@ namespace Clinic
 
                 row.Cells["ColumnNamePatient"].Value = listItem[i].NamePatient;
 
-                row.Cells["ColumnServices"].Value = BuildStringServicesAndAdmin(listItem[i].Services, ref listService);
+                row.Cells["ColumnServices"].Value = Helper.BuildStringServicesAndAdmin(listItem[i].Services, currentServices, ref listService);
 
                 row.Cells["ColumnLoaiKham"].Value = listItem[i].LoaiKham;
                 
@@ -235,35 +235,6 @@ namespace Clinic
             {
                 dataGridViewMain.Rows.Remove(row);
             }
-        }
-
-        private string BuildStringServicesAndAdmin(string servicesWithoutAdmin, ref Dictionary<string,int> listService)
-        {
-            string result = "";
-            string[] serviceArray = servicesWithoutAdmin.Split(new string[] {ClinicConstant.StringBetweenServicesInDoanhThu}, StringSplitOptions.None);
-
-            for (int i = 0; i < serviceArray.Count(); i++)
-            {
-                IMedicine service = currentServices.Where(x => x.Name == serviceArray[i]).FirstOrDefault();
-                result += (serviceArray[i] + ClinicConstant.StringBetweenServiceAndAdmin + (service==null?"": service.Admin));
-                if (i != serviceArray.Count() - 1)
-                {
-                    result += "\n";
-                }
-                if ((!String.IsNullOrEmpty(serviceArray[i])) && serviceArray[i][0] == '@')
-                {
-                    if (listService.ContainsKey(serviceArray[i]))
-                    {
-                        listService[serviceArray[i]]++;
-                    }
-                    else
-                    {
-                        listService.Add(serviceArray[i], 1);
-                    }
-                }
-            }
-
-            return result;
         }
 
         private void button1_Click(object sender, EventArgs e) // ngay

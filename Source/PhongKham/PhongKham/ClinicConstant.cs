@@ -14,5 +14,8 @@
         public const string SuccessUpdate_Text = "Cập nhật thành công.";
         public const string FailUpdate_Text = "Cập nhật thất bại.";
         #endregion
+
+        public const string DateTimeFormat = "dd-MM-yyyy";
+        public const string StringBetweenOfMedicine = "|";
     }
 }

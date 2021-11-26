@@ -324,7 +324,10 @@ namespace PhongKham
                             row.Cells[this.ColumnState.Name].Value = "Đã tái khám";
                         }
                     }
-                    catch { }
+                    catch(Exception ex)
+                    {
+                        Log.Error(ex.Message, ex);
+                    }
 
                        
                 }
@@ -539,6 +542,7 @@ namespace PhongKham
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message, ex);
                 MessageBox.Show("Bệnh Nhân Không Tồn Tại");
             }
 
@@ -707,8 +711,9 @@ namespace PhongKham
                             dataGridViewMedicine[DatabaseContants.MoneyColumnInDataGridViewMedicines, e.RowIndex].Value = cost.ToString();
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        Log.Error(ex.Message, ex);
                         MessageBox.Show("Format sai!");
                         dataGridViewMedicine[e.ColumnIndex, e.RowIndex].Value = "";
                     }
@@ -731,7 +736,7 @@ namespace PhongKham
                         }
                         catch (Exception ex)
                         {
-
+                            Log.Error(ex.Message, ex);
                         }
                     }
                 }
@@ -832,7 +837,9 @@ namespace PhongKham
                             this.dataGridViewMedicine.Rows[i / 2].Cells[1].Value = medicineAndCount[i + 1];
                         }
                         catch (Exception ex)
-                        { }
+                        {
+                            Log.Error(ex.Message, ex);
+                        }
 
                     }
                 }
@@ -1020,7 +1027,7 @@ namespace PhongKham
                         }
                         catch (Exception exp)
                         {
-
+                            Log.Error(exp.Message, exp);
                         }
                     }
                     row.Cells["ColumnHuyetAp"].Value = reader2[DatabaseContants.history.huyetap].ToString();
@@ -1886,8 +1893,9 @@ namespace PhongKham
                     if (dataGridViewMedicine[4, i].Value != null)
                         total += Helper.ConvertString2Int(dataGridViewMedicine[4, i].Value);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Log.Error(ex.Message, ex);
                 }
             }
 
@@ -1930,8 +1938,9 @@ namespace PhongKham
                     if (dataGridViewMedicine[4, i].Value != null)
                         total += int.Parse(dataGridViewMedicine[4, i].Value.ToString());
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Log.Error(ex.Message, ex);
                 }
             }
 
@@ -2088,7 +2097,7 @@ namespace PhongKham
                         }
                         catch (Exception exp)
                         {
-
+                            Log.Error(exp.Message, exp);
                         }
                     }
                     row.Cells["ColumnHuyetAp"].Value = reader2[DatabaseContants.history.huyetap].ToString();
