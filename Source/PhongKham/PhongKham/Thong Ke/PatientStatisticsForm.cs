@@ -163,5 +163,26 @@ namespace Clinic.Thong_Ke
                 btnExport.Enabled = false;
             }
         }
+
+        private void dtpFromDate_ValueChanged(object sender, EventArgs e)
+        {
+            if(DateTime.Compare(dtpFromDate.Value, dtpToDate.Value)> 0)
+            {
+                MessageBox.Show("Xin lưu ý. Ngày bắt đầu đang lớn hơn ngày kết thúc.");
+            }
+        }
+
+        private void dtpFromDate_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void dtpToDate_ValueChanged(object sender, EventArgs e)
+        {
+            if (DateTime.Compare(dtpToDate.Value, dtpFromDate.Value) < 0)
+            {
+                MessageBox.Show("Xin lưu ý. Ngày kết thúc đang nhỏ hơn ngày bắt đầu.");
+            }
+        }
     }
 }

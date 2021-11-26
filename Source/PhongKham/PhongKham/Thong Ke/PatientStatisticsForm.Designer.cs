@@ -155,7 +155,7 @@ namespace Clinic.Thong_Ke
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 544F));
+            this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 550F));
             this.coTableLayoutPatient.Controls.Add(this.label2, 2, 0);
             this.coTableLayoutPatient.Controls.Add(this.dtpToDate, 3, 0);
             this.coTableLayoutPatient.Controls.Add(this.label1, 0, 0);
@@ -187,6 +187,7 @@ namespace Clinic.Thong_Ke
             this.dtpToDate.Name = "dtpToDate";
             this.dtpToDate.Size = new System.Drawing.Size(200, 32);
             this.dtpToDate.TabIndex = 3;
+            this.dtpToDate.ValueChanged += new System.EventHandler(this.dtpToDate_ValueChanged);
             // 
             // label1
             // 
@@ -208,6 +209,8 @@ namespace Clinic.Thong_Ke
             this.dtpFromDate.Name = "dtpFromDate";
             this.dtpFromDate.Size = new System.Drawing.Size(199, 32);
             this.dtpFromDate.TabIndex = 1;
+            this.dtpFromDate.ValueChanged += new System.EventHandler(this.dtpFromDate_ValueChanged);
+            this.dtpFromDate.Validating += new System.ComponentModel.CancelEventHandler(this.dtpFromDate_Validating);
             // 
             // PatientStatisticsForm
             // 
