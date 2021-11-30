@@ -22,9 +22,9 @@ namespace Clinic.Thong_Ke
         private static Dictionary<string, Tuple<string, int>> DataGridviewPatientStructure = new Dictionary<string, Tuple<string, int>>()
         {
             { "STT", new Tuple<string, int>("STT",50) },
-            { "DateExamination", new Tuple<string, int>("Ngày khám",150) },
-            { "Name", new Tuple<string, int>("Tên bệnh nhân",220) },
-            { "Dateofbirth", new Tuple<string, int>("Ngày sinh",150) },
+            { "DateExamination", new Tuple<string, int>("Ngày khám",100) },
+            { "Name", new Tuple<string, int>("Tên bệnh nhân",200) },
+            { "Dateofbirth", new Tuple<string, int>("Ngày sinh",100) },
             { "Phone", new Tuple<string, int>("Số điện thoại",120) },
             { "Address", new Tuple<string, int>("Địa chỉ",250) },
             { "Weight", new Tuple<string, int>("Cân nặng",80) },
@@ -96,9 +96,9 @@ namespace Clinic.Thong_Ke
                 InfoPatient infoPatient = listPatient[i];
                 DataRow row = datagridviewPaging1.NewRow();
                 row["STT"] = i + 1;
-                row["DateExamination"] = infoPatient.NgayKham;
+                row["DateExamination"] = infoPatient.NgayKham.ToString(ClinicConstant.DateTimeFormat);
                 row["Name"] = infoPatient.Name;
-                row["Dateofbirth"] = infoPatient.Birthday;
+                row["Dateofbirth"] = infoPatient.Birthday.ToString(ClinicConstant.DateTimeFormat);
                 row["Phone"] = infoPatient.Phone;
                 row["Address"] = infoPatient.Address;
                 row["Weight"] = infoPatient.Weight;

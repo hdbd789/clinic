@@ -22,7 +22,7 @@ namespace Clinic.Database
         where TCommand : DbCommand, IDbCommand, new()
         where TDbConnectionStringBuilder : DbConnectionStringBuilder
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        protected static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         protected TConnection tConnection;
         public Database(string strCon)
         {
@@ -122,12 +122,17 @@ namespace Clinic.Database
             }
         }
 
+        public abstract DataTable ExecuteReaderAdapter(string StoreProcName, List<IDataParameter> Params);
+
         protected void CreateDatabase(string password)
         {
             try
             {
-                string strCommand = "grant all privileges on *.* to 'root'@'%' identified by " + Helper.ConvertToSqlString(password);
-                ExecuteNonQuery(strCommand, null);
+                if (!Setting.SslModeDatabase)
+                {
+                    string strCommand = "grant all privileges on *.* to 'root'@'%' identified by " + Helper.ConvertToSqlString(password);
+                    ExecuteNonQuery(strCommand, null);
+                }
                 ExecuteNonQuery("CREATE DATABASE IF NOT EXISTS clinic DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
                 tConnection.ConnectionString += ";database=clinic;";
                 tConnection.ConnectionString += ";password=" + password;
@@ -299,7 +304,10 @@ namespace Clinic.Database
 
          public void CloseCurrentConnection()
          {
-             tConnection.Close();
+            if(tConnection != null)
+            {
+                tConnection.Close();
+            }
          }
 
 

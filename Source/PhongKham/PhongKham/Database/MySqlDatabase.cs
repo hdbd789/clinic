@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using Clinic.Helpers;
 using Clinic.Models;
 using Clinic.Models.ItemMedicine;
@@ -13,6 +15,49 @@ namespace Clinic.Database
         public MySqlDatabase(string strCon)
             : base(strCon)
         {
+        }
+
+        public override DataTable ExecuteReaderAdapter(string StoreProcName, List<IDataParameter> Params)
+        {
+            MySqlCommand cmd;
+            DataTable dtDataTablesList = new DataTable();
+            try
+            {
+                using (cmd = new MySqlCommand(StoreProcName, tConnection))
+                {
+                    if (Params != null && Params.Count > 0)
+                    {
+                        foreach (DbParameter param in Params)
+                            cmd.Parameters.Add(param);
+                    }
+
+                    if (tConnection.State == ConnectionState.Closed)
+                    {
+                        tConnection.Open();
+                    }
+                    MySqlDataAdapter adptr = new MySqlDataAdapter(cmd);
+                    adptr.FillAsync(dtDataTablesList).GetAwaiter().GetResult();
+                    return dtDataTablesList;
+                }
+            }
+            catch (DbException DbEx)
+            {
+                System.Windows.Forms.MessageBox.Show("Đọc database thất bại, xin xem lại kết nối database", "Thông báo");
+                Log.Error(DbEx.Message, DbEx);
+                throw DbEx;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                throw ex;
+            }
+            finally
+            {
+                if(tConnection != null)
+                {
+                    tConnection.Close();
+                }
+            }
         }
 
         public override bool CheckMedicineExists(string Id)
@@ -262,13 +307,13 @@ namespace Clinic.Database
         {
             string strCommand = string.Format("SELECT p.*, h.*, l.benh, l.time, l.status FROM {0} p ", DatabaseContants.tables.patient)
                                 + string.Format("LEFT JOIN {0} h ON p.Idpatient = h.Id ", DatabaseContants.tables.history)
-                                + string.Format("LEFT JOIN {0} l ON l.Idpatient = p.Idpatient ", DatabaseContants.tables.lichHen)
+                                + string.Format("LEFT JOIN {0} l ON l.IdHistory = h.IdHistory ", DatabaseContants.tables.lichHen)
                                 + string.Format("WHERE h.Day >= {0} AND h.Day <= {1}",
                                 Helper.ConvertToSqlString(fromDate.ToString("yyyy-MM-dd")),
                                 Helper.ConvertToSqlString(toDate.ToString("yyyy-MM-dd")));
 
             List<InfoPatient> results = new List<InfoPatient>();
-            using (DbDataReader reader = ExecuteReader(strCommand, null))
+            using (MySqlDataReader reader = ExecuteReader(strCommand, null))
             {
                 while (reader.Read())
                 {
@@ -294,8 +339,45 @@ namespace Clinic.Database
                     results.Add(item);
                 }
             }
-
+            CloseCurrentConnection();
             return results;
         }
+        //public List<InfoPatient> GetAllPatientInfo1(DateTime fromDate, DateTime toDate)
+        //{
+        //    string strCommand = string.Format("SELECT p.*, h.*, l.benh, l.time, l.status FROM {0} p ", DatabaseContants.tables.patient)
+        //                        + string.Format("LEFT JOIN {0} h ON p.Idpatient = h.Id ", DatabaseContants.tables.history)
+        //                        + string.Format("LEFT JOIN {0} l ON l.IdHistory = h.IdHistory ", DatabaseContants.tables.lichHen)
+        //                        + string.Format("WHERE h.Day >= {0} AND h.Day <= {1}",
+        //                        Helper.ConvertToSqlString(fromDate.ToString("yyyy-MM-dd")),
+        //                        Helper.ConvertToSqlString(toDate.ToString("yyyy-MM-dd")));
+
+        //    List<InfoPatient> results = new List<InfoPatient>();
+        //    DataTable dataTable = ExecuteReaderAdapter(strCommand, null);
+        //    foreach(DataRow row in dataTable.Rows)
+        //    {
+        //        InfoPatient item = new InfoPatient();
+        //        item.Name = row[1].ToString();
+        //        item.Phone = row[2].ToString();
+        //        item.Address = row[3].ToString();
+        //        item.Birthday = Convert.ToDateTime(row[4]);
+        //        item.Height = row[5].ToString();
+        //        item.Weight = row[6].ToString();
+        //        item.Symptom = row[8].ToString();
+        //        item.Temperature = row[9].ToString();
+        //        item.HuyenAp = row[10].ToString();
+        //        item.Diagnose = row[11].ToString();
+        //        item.Medicines = row[12].ToString();
+        //        item.NgayKham = Convert.ToDateTime(row[13].ToString());
+        //        item.Reason = row[15].ToString();
+        //        item.NameOfDoctor = row[16].ToString();
+        //        item.Benh = row[18].ToString();
+        //        item.NgayTaiKham = DateTime.TryParse(row[19].ToString(), out DateTime taiKham) ? taiKham.ToString(ClinicConstant.DateTimeFormat) : string.Empty;
+        //        item.Status = row[20].ToString();
+
+        //        results.Add(item);
+        //    }
+
+        //    return results;
+        //}
     }
 }

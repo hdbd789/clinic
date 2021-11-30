@@ -24,9 +24,21 @@ namespace Clinic.Models
         [Name("Tên bác sĩ")]
         [Index(11)]
         public string NameOfDoctor { get; set; }
-        [Name("Thuốc/Dịch vụ")]
+        [Name("Lí do")]
         [Index(12)]
-        public string Medicines 
+        public string Reason { get; set; }
+        [Name("Bệnh")]
+        [Index(13)]
+        public string Benh { get; set; }
+        [Name("Ngày tái khám")]
+        [Index(14)]
+        public string NgayTaiKham { get; set; }
+        [Name("Trạng thái")]
+        [Index(15)]
+        public string Status { get; set; }
+        [Name("Thuốc/Dịch vụ")]
+        [Index(16)]
+        public string Medicines
         {
             get
             {
@@ -37,18 +49,5 @@ namespace Clinic.Models
                 service = Helper.BuildStringMedicines(value);
             }
         }
-        
-        [Name("Lí do")]
-        [Index(13)]
-        public string Reason { get; set; }
-        [Name("Bệnh")]
-        [Index(14)]
-        public string Benh { get; set; }
-        [Name("Ngày tái khám")]
-        [Index(15)]
-        public string NgayTaiKham { get; set; }
-        [Name("Trạng thái")]
-        [Index(16)]
-        public string Status { get; set; }
     }
 }

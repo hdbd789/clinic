@@ -1,6 +1,8 @@
 ﻿using Clinic.ClinicException;
 using Clinic.Extensions;
+using log4net;
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -9,6 +11,7 @@ namespace Clinic.Helpers
 {
     public class HelperControl
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static HelperControl instance;
         public ProgressForm form;
         private CancellationTokenSource _taskCancel;
@@ -44,7 +47,7 @@ namespace Clinic.Helpers
                 {
                     Instance.StopProgress();
                 }
-                if (t1.Status == TaskStatus.Faulted || t1.Status == TaskStatus.Canceled)
+                if (t1.Status == TaskStatus.Faulted)
                 {
                     if (t1.Exception.InnerException is FunctionalException functional)
                     {
@@ -52,8 +55,13 @@ namespace Clinic.Helpers
                     }
                     else
                     {
+                        Log.Error(t1.Exception.InnerException.Message, t1.Exception.InnerException);
                         MessageBox.Show(messageFail, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                }
+                else if(t1.Status == TaskStatus.Canceled)
+                {
+                    MessageBox.Show("Bạn đã dừng xử lí.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else if (!string.IsNullOrEmpty(messageSuccess))
                 {

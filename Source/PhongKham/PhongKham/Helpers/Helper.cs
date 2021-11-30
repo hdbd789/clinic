@@ -1934,7 +1934,7 @@ namespace Clinic.Helpers
                 result.Append(nameMedicine);
                 if (i != serviceArray.Count() - 1)
                 {
-                    result.AppendLine();
+                    result.Append(ClinicConstant.StringBetweenOfMedicine);
                 }
             }
 

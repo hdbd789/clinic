@@ -12,6 +12,7 @@ namespace Clinic.Database
     public interface IDatabase
     {
         IDataReader ExecuteReader(string StoreProcName, List<IDataParameter> Params);
+        DataTable ExecuteReaderAdapter(string StoreProcName, List<IDataParameter> Params);
         void CreateDatabase(string password);
         int InsertRowToTable(string nameOfTable, List<string> nameOfColumns, List<string> values);
         int ExecuteNonQuery(string StoreProcName, List<IDataParameter> Params);
