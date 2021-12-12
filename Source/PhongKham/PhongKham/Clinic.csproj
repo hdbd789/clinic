@@ -179,6 +179,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\ISavePatientCommand.cs" />
+    <Compile Include="Business\SaveAdviseCommand.cs" />
+    <Compile Include="Business\SaveKhamCommand.cs" />
     <Compile Include="Business\StartApplication.cs" />
     <Compile Include="ClinicConstant.cs" />
     <Compile Include="CoTableLayoutPanel .cs">
@@ -226,8 +229,11 @@
       <DependentUpon>MessageBoxNumberInput.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\InfoPatient.cs" />
+    <Compile Include="Models\LoadDataType.cs" />
     <Compile Include="Models\LoaiKham.cs" />
+    <Compile Include="Models\PatientToday.cs" />
     <Compile Include="Models\ReasonApointmentModel.cs" />
+    <Compile Include="Models\RecordType.cs" />
     <Compile Include="Thong Ke\DiagnosesHistory.cs">
       <SubType>Form</SubType>
     </Compile>

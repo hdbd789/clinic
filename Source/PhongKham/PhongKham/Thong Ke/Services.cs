@@ -95,7 +95,7 @@ namespace Clinic
             {
                 giaOut = int.Parse(textBoxServicesCost.Text);
             }
-            catch (Exception ex)
+            catch
             {
                 MessageBox.Show("Xin nhập lại giá. Giá không phù hợp!", "Chú ý");
                 return;

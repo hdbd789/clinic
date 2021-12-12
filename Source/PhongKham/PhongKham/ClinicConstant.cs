@@ -16,6 +16,8 @@
         #endregion
 
         public const string DateTimeFormat = "dd-MM-yyyy";
+        public const string DateTimeSQLFormat = "yyyy-MM-dd";
         public const string StringBetweenOfMedicine = "|";
+        public const string StringFormatCountPatient = "{0} - {1}";
     }
 }

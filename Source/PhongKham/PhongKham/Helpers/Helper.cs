@@ -22,6 +22,7 @@ using MigraDoc.DocumentObjectModel.Tables;
 using Clinic.Models.ItemMedicine;
 using log4net;
 using System.Reflection;
+using System.Globalization;
 
 namespace Clinic.Helpers
 {
@@ -72,8 +73,13 @@ namespace Clinic.Helpers
 
         public static string ChangePositionOfDayAndYear(string datetime)
         {
-            string[] temp = datetime.Split('-');
-            return temp[2] + '-' + temp[1] + '-' + temp[0];
+            DateTime date;
+            if(DateTime.TryParseExact(datetime, ClinicConstant.DateTimeFormat, CultureInfo.InvariantCulture
+                , DateTimeStyles.None, out date))
+            {
+                return date.ToString(ClinicConstant.DateTimeSQLFormat);
+            }
+            return DateTime.Today.ToString(ClinicConstant.DateTimeSQLFormat);
         }
 
 
@@ -309,6 +315,33 @@ namespace Clinic.Helpers
             {
                 reader.Close();
 
+            }
+        }
+
+        public static bool IsAdvisoryExists(IDatabase db, string IdAdvisory)
+        {
+            string strCommand = $"SELECT {DatabaseContants.Advisory.Id} FROM {DatabaseContants.tables.advisory} WHERE {DatabaseContants.Advisory.Id} = {IdAdvisory}";
+            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
+            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
+            {
+                return reader.HasRows;
+            }
+        }
+
+        public static bool IsAdvisoryHistoryExists(IDatabase db, string IdPatient, string visitDate, out string idAdvisoryHistory)
+        {
+            idAdvisoryHistory = string.Empty;
+            string strCommand = $"SELECT {DatabaseContants.AdvisoryHistory.Id} FROM {DatabaseContants.tables.AdvisoryHistory} "
+                + $" WHERE {DatabaseContants.AdvisoryHistory.IdPatient} = {IdPatient} AND {DatabaseContants.AdvisoryHistory.Day} = {ConvertToSqlString(visitDate)};";
+            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
+            {
+                reader.Read();
+                bool result = reader.HasRows;
+                if (result)
+                {
+                    idAdvisoryHistory = reader[DatabaseContants.AdvisoryHistory.Id].ToString();
+                }
+                return result;
             }
         }
 
@@ -678,16 +711,10 @@ namespace Clinic.Helpers
                 paragraph.AddSpace(int.Parse(sdtArray[0]));
                 paragraph.AddText(sdtArray[1]);
             }
-            catch (Exception ex)
+            catch
             {
                 paragraph.AddSpace(10);
             }
-            
-
-
-
-            
-
 
             Paragraph paragraph2 = section.Headers.Primary.AddParagraph();
 
@@ -858,7 +885,7 @@ namespace Clinic.Helpers
             Row rowsignatureAndMore2 = signatureAndMore.AddRow();
             rowsignatureAndMore2.VerticalAlignment = VerticalAlignment.Center;
             //rowsignatureAndMore2.Cells[0].AddParagraph(taikham + ": " + reasonComeBack);
-            Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n \n" + Form1.nameOfDoctor);
+            Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n \n" + Form1.NameOfDoctor);
             para.Format.Alignment = ParagraphAlignment.Center;
 
             document.LastSection.Add(table);
@@ -1311,6 +1338,48 @@ namespace Clinic.Helpers
             db.ExecuteNonQuery(strCommand, null);
         }
 
+        internal static void UpdateStatusAppointmentHistory(IDatabase db, string idbenhnhan, string idHistoryOld)
+        {
+            // select id,state,idpatient,time,idHistory
+            string strcmd = string.Format("SELECT Idlichhen,{1},{3},{5},{6} from {2} where {3} = {4} and {1} = 0 order by {5} limit 1", DatabaseContants.LichHen.ID, DatabaseContants.LichHen.status, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.Time, DatabaseContants.LichHen.IdHistory);
+            using (DbDataReader reader = db.ExecuteReader(strcmd, null) as DbDataReader)
+            {
+                while (reader.Read())
+                {
+                    if (ConvertObject2String(reader[DatabaseContants.LichHen.IdHistory]) == idHistoryOld)
+                        return;
+                    int status = GetStatusAppointment(reader[DatabaseContants.LichHen.Idpatient].ToString(), Convert.ToDateTime(reader[DatabaseContants.LichHen.Time]), reader[DatabaseContants.LichHen.status]);
+                    if (status == 0)
+                    {
+                        string strUpdate = string.Format("update {0} set {1} = {2} where {3} = {4}", DatabaseContants.tables.lichHen, DatabaseContants.LichHen.status, 1, DatabaseContants.LichHen.ID, reader[DatabaseContants.LichHen.ID]);
+                        DatabaseFactory.Instance2.ExecuteNonQuery(strUpdate, null);
+                        return;
+                    }
+                }
+            }
+        }
+
+        internal static int GetStatusAppointment(string idPatient, DateTime timeHen, object statusFromDb)
+        {
+            int timeCompare = timeHen.CompareTo(DateTime.Now);
+            if (statusFromDb == null || !Helper.CheckNumberValid(statusFromDb))
+            {
+                if (timeCompare <= 0)
+                {
+                    return Helper.GetStateComeBackFromHistoryByIdPatient(idPatient, DatabaseFactory.Instance2, timeHen);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                int status = Helper.ConvertString2Int(statusFromDb);
+                return status;
+            }
+
+        }
 
         internal static string GetIdMedicineFromName(IDatabase db, string name)
         {
@@ -1702,6 +1771,23 @@ namespace Clinic.Helpers
             return result;
         }
 
+        internal static string GetReasonFromAdvisoryByIdAdvisory(string idAdvisory, IDatabase iDatabase2)
+        {
+            string result = "";
+
+            string strCommand = $"SELECT {DatabaseContants.Advisory.Reason} FROM {DatabaseContants.tables.advisory} WHERE {DatabaseContants.Advisory.Id} = {idAdvisory}";
+            using (DbDataReader reader = iDatabase2.ExecuteReader(strCommand, null) as DbDataReader)
+            {
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    result = reader[DatabaseContants.Advisory.Reason].ToString();
+                }
+            }
+            iDatabase2.CloseCurrentConnection();
+            return result;
+        }
+
         internal static int GetStateComeBackFromHistoryByIdPatient(string IdPatient, IDatabase iDatabase2, DateTime time)
         {
             string strCommand = string.Format("SELECT {0} FROM {1} WHERE Day = {2} AND {3} = {4}",
@@ -1739,11 +1825,47 @@ namespace Clinic.Helpers
             }
         }
 
+        public static long AmoutAdvisoryInDay(IDatabase db, string useName)
+        {
+            try
+            {
+                string strCommand = string.Format("SELECT count(*) FROM {0} WHERE {1} = {2} AND {3} = {4}",
+                    DatabaseContants.tables.AdvisoryHistory,
+                    DatabaseContants.AdvisoryHistory.nameofdoctor,
+                    ConvertToSqlString(useName),
+                    DatabaseContants.AdvisoryHistory.Day,
+                    ConvertToSqlString(DateTime.Today.ToString("yyyy-MM-dd"))
+                    );
+                return long.Parse(db.ExecuteScalar(strCommand).ToString());
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
         public static long TongSoLuotKhamTrongNgay(IDatabase db)
         {
             try
             {
                 string strCommand = string.Format("SELECT count(*) FROM {0} where time = {1}", DatabaseContants.tables.danhthu, ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")));
+                return long.Parse(db.ExecuteScalar(strCommand).ToString());
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        public static long TotalAmoutAdvisoryInDay(IDatabase db)
+        {
+            try
+            {
+                string strCommand = string.Format("SELECT count(*) FROM {0} WHERE {1} = {2} AND {3} IS NOT NULL", 
+                    DatabaseContants.tables.AdvisoryHistory, 
+                    DatabaseContants.AdvisoryHistory.Day,
+                    ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")),
+                    DatabaseContants.AdvisoryHistory.nameofdoctor);
                 return long.Parse(db.ExecuteScalar(strCommand).ToString());
             }
             catch
@@ -1880,9 +2002,23 @@ namespace Clinic.Helpers
             }
         }
 
-        internal static bool IsExistsAppointment(IDatabase db,string idbenhnhan, string idHistory, ref string idLichHen)
+        internal static bool IsExistsAppointmentHistory(IDatabase db,string idbenhnhan, string idHistory, ref string idLichHen)
         {
             string strCmd = string.Format("select {0} from {1} where {2} = {3} and {4} = {5}", DatabaseContants.LichHen.ID, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.IdHistory, idHistory);
+            using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
+            {
+                if (reader.Read())
+                {
+                    idLichHen = Helper.ConvertObject2String(reader[DatabaseContants.LichHen.ID]);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        internal static bool IsExistsAppointmentAdvisory(IDatabase db, string idbenhnhan, string idAdvisory, ref string idLichHen)
+        {
+            string strCmd = string.Format("SELECT {0} FROM {1} WHERE {2} = {3} and {4} = {5}", DatabaseContants.LichHen.ID, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.IdAdvisory, idAdvisory);
             using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
             {
                 if (reader.Read())
@@ -1939,6 +2075,18 @@ namespace Clinic.Helpers
             }
 
             return result.ToString();
+        }
+
+        internal static bool IsExistsAdvisory(IDatabase db, string idPatient)
+        {
+            bool result;
+            string strCmd = $"SELECT {DatabaseContants.Advisory.Id} FROM {DatabaseContants.tables.advisory} WHERE {DatabaseContants.Advisory.IdPatient} = {idPatient}";
+            using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
+            {
+                result = reader.HasRows;
+            }
+            db.CloseCurrentConnection();
+            return result;
         }
     }
 }

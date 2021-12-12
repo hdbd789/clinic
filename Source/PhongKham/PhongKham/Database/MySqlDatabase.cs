@@ -159,23 +159,28 @@ namespace Clinic.Database
             return count;
         }
 
-        public override Dictionary<string, string> GetListPatientToday()
+        public override List<PatientToday> GetListPatientToday()
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            List<PatientToday> result = new List<PatientToday>();
 
             string strCommand = string.Format("SELECT * FROM {0}", DatabaseContants.tables.listpatienttoday);
             using (DbDataReader reader = ExecuteReader(strCommand, null))
             {
                 while (reader.Read())
                 {
-                    if (reader.HasRows)
+                    PatientToday patientToday = new PatientToday()
                     {
-                        result.Add(reader["Id"].ToString(), reader["name"].ToString() + ";" + reader["state"].ToString());
-                    }
-
+                        IdPatient = reader["Id"].ToString(),
+                        NamePatient = reader["name"].ToString(),
+                        State = reader["state"].ToString(),
+                        Type = Enum.TryParse(reader["Type"]?.ToString(), out RecordType type) ? type : RecordType.Examination
+                    };
+                    result.Add(patientToday);
                 }
-                return result;
+                
             }
+            CloseCurrentConnection();
+            return result;
         }
 
         public override List<ReasonApointmentModel> GetListReason()

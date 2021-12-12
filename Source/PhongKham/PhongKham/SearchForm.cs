@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Windows.Forms;
 using Clinic.Helpers;
+using Clinic.Models;
 
 namespace Clinic
 {
     public partial class SearchForm : Form
     {
         public static System.Windows.Forms.DataGridView dataGridView1;
-        public delegate void SendCommandProcessFromSearchForm(string id , string time);
+        public delegate void SendCommandProcessFromSearchForm(string idHistory , RecordType recordType);
         public static SendCommandProcessFromSearchForm sendCommand;
 
 
@@ -48,12 +49,12 @@ namespace Clinic
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-
             if (e.RowIndex >= 0)
             {
-                string Id = dataGridView1[0, e.RowIndex].Value.ToString();
-                string time = Helper.ConvertToSqlString(Helper.ChangePositionOfDayAndYear(dataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString()));
-                sendCommand(Id, time);
+                string IdHistory = dataGridView1.Rows[e.RowIndex].Cells["CollIDHistory"].Value.ToString();
+                RecordType recordType = (RecordType)dataGridView1.Rows[e.RowIndex].Cells["ColTypeRecord"].Value;
+
+                sendCommand(IdHistory, recordType);
                 this.Close();
             }
         }

@@ -36,7 +36,7 @@ namespace Clinic.Database
         string SearchIDHistoryByIDPatientAndDay(string idPatient, string visitDate);
         bool CheckMedicineExists(string Id);
         string GetNameOfDoctor(string name);
-        Dictionary<string, string> GetListPatientToday();
+        List<PatientToday> GetListPatientToday();
         List<string> GetAllDiagnosesFromHistory(DateTime date);
         string GetNamePatientByID(string id);
         Medicine GetMedicineFromName(string name);

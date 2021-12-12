@@ -7,6 +7,8 @@ namespace Clinic.Models
 {
     public class InfoPatient : Patient
     {
+        [Ignore]
+        public string IdHistory { get; set; }
         private string service;
         [Name("Ngày khám")]
         [Index(0)]
@@ -33,6 +35,8 @@ namespace Clinic.Models
         [Name("Ngày tái khám")]
         [Index(14)]
         public string NgayTaiKham { get; set; }
+        [Ignore()]
+        public DateTime NgayTaiKhamDate { get; set; }
         [Name("Trạng thái")]
         [Index(15)]
         public string Status { get; set; }
@@ -49,5 +53,7 @@ namespace Clinic.Models
                 service = Helper.BuildStringMedicines(value);
             }
         }
+        [Ignore()]
+        public string LoaiKham { get; set; }
     }
 }

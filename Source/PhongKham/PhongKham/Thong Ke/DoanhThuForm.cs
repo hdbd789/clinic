@@ -27,8 +27,6 @@ namespace Clinic
         List<IMedicine> currentServices;
         List<string> AllLoaiKham;
         private bool needOptimize =false;
-
-        private Thread threadLoad;
         public DoanhThuForm()
         {
             InitializeComponent();
