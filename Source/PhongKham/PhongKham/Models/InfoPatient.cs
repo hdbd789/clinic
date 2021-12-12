@@ -10,6 +10,7 @@ namespace Clinic.Models
         [Ignore]
         public string IdHistory { get; set; }
         private string service;
+        private string status;
         [Name("Ngày khám")]
         [Index(0)]
         public DateTime NgayKham { get; set; }
@@ -39,7 +40,24 @@ namespace Clinic.Models
         public DateTime NgayTaiKhamDate { get; set; }
         [Name("Trạng thái")]
         [Index(15)]
-        public string Status { get; set; }
+        public string Status 
+        {
+            get
+            {
+                return status;
+            }
+            set
+            {
+                if(value == "1")
+                {
+                    status = "Đã khám";
+                }
+                else
+                {
+                    status = "Chưa khám";
+                }
+            }
+        }
         [Name("Thuốc/Dịch vụ")]
         [Index(16)]
         public string Medicines

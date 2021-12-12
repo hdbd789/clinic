@@ -34,7 +34,6 @@ namespace Clinic.Thong_Ke
             this.btnExport = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.cbbExportType = new DevComponents.DotNetBar.Controls.ComboBoxEx();
-            this.CSVType = new DevComponents.Editors.ComboItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblInfo = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -91,18 +90,12 @@ namespace Clinic.Thong_Ke
             this.cbbExportType.Font = new System.Drawing.Font("Times New Roman", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbbExportType.FormattingEnabled = true;
             this.cbbExportType.ItemHeight = 27;
-            this.cbbExportType.Items.AddRange(new object[] {
-            this.CSVType});
             this.cbbExportType.Location = new System.Drawing.Point(337, 38);
             this.cbbExportType.Name = "cbbExportType";
             this.cbbExportType.Size = new System.Drawing.Size(216, 33);
             this.cbbExportType.Style = DevComponents.DotNetBar.eDotNetBarStyle.StyleManagerControlled;
             this.cbbExportType.TabIndex = 4;
             this.cbbExportType.SelectedIndexChanged += new System.EventHandler(this.cbbExportType_SelectedIndexChanged);
-            // 
-            // CSVType
-            // 
-            this.CSVType.Text = "CSV File";
             // 
             // pictureBox1
             // 
@@ -155,7 +148,7 @@ namespace Clinic.Thong_Ke
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
             this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 550F));
+            this.coTableLayoutPatient.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 559F));
             this.coTableLayoutPatient.Controls.Add(this.label2, 2, 0);
             this.coTableLayoutPatient.Controls.Add(this.dtpToDate, 3, 0);
             this.coTableLayoutPatient.Controls.Add(this.label1, 0, 0);
@@ -250,7 +243,6 @@ namespace Clinic.Thong_Ke
         private DevComponents.DotNetBar.Controls.ComboBoxEx cbbExportType;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lblInfo;
-        private DevComponents.Editors.ComboItem CSVType;
         private System.Windows.Forms.Label label3;
         private CustomControl.DatagridviewPaging datagridviewPaging1;
     }

@@ -1,15 +1,11 @@
-﻿using Clinic.ClinicException;
+﻿using Clinic.Business;
 using Clinic.Database;
 using Clinic.Helpers;
 using Clinic.Models;
-using CsvHelper;
-using CsvHelper.TypeConversion;
 using log4net;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -38,9 +34,14 @@ namespace Clinic.Thong_Ke
             InitializeComponent();
             SetupColumnLayout();
             lblInfo.Text = "Màn hình xem thông tin bệnh nhân và xuất dữ liệu";
-            cbbExportType.SelectedIndex = 0;
+            
             datagridviewPaging1.AmountEachPage = 100;
             UpdateStatusButton();
+            cbbExportType.DisplayMember = "Text";
+            cbbExportType.ValueMember = "Value";
+            cbbExportType.Items.Add(new { Text = "Excel file", Value = ExportType.ExcelType });
+            cbbExportType.Items.Add(new { Text = "CSV file", Value = ExportType.CSVType });
+            cbbExportType.SelectedIndex = 0;
         }
 
         private void cbbExportType_SelectedIndexChanged(object sender, EventArgs e)
@@ -120,36 +121,29 @@ namespace Clinic.Thong_Ke
                 MessageBox.Show("Không có dữ liệu để xuất.", "Thông báo", MessageBoxButtons.OK);
                 return;
             }
-            FileDialog fileDialog = new SaveFileDialog();
-            fileDialog.AddExtension = true;
-            fileDialog.Title = "Xuất file";
-            fileDialog.DefaultExt = ".csv";
-            fileDialog.FileName = "Bệnh nhân";
-            fileDialog.Filter = "CSV file|*.csv";
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-            {
-                HelperControl.Instance.DoAsyncAction(() =>
-                {
-                    List<InfoPatient> infoPatients = datagridviewPaging1.Tag as List<InfoPatient>;
 
-                    try
-                    {
-                        using (var writer = new StreamWriter(fileDialog.FileName))
-                        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-                        {
-                            var options = new TypeConverterOptions { Formats = new[] { ClinicConstant.DateTimeFormat } };
-                            csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
-                            csv.WriteRecords(infoPatients);
-                        }
-                    }
-                    catch (IOException ex)
-                    {
-                        Log.Error(ex.Message, ex);
-                        throw new FunctionalException($"Chúng tôi không thể truy cập file {fileDialog.FileName}. Xin hãy tắt file đang mở.", ex);
-                    }
-                    
-                });
+            if(cbbExportType.SelectedItem == null)
+            {
+                MessageBox.Show("Bạn chưa chọn kiểu xuất data.", "Thông báo", MessageBoxButtons.OK);
+                return;
             }
+            IExportFile exportFile = new CSVExportFile();
+            ExportType exportType = (ExportType)(cbbExportType.SelectedItem as dynamic).Value;
+            switch (exportType)
+            {
+                case ExportType.CSVType:
+                    {
+                        exportFile = new CSVExportFile();
+                        break;
+                    }
+                case ExportType.ExcelType:
+                    {
+                        exportFile = new ExcelExportFile();
+                        break;
+                    }
+            }
+
+            exportFile.ExportAction(datagridviewPaging1.Tag as List<InfoPatient>);
         }
 
         private void UpdateStatusButton()
