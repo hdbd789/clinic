@@ -74,7 +74,17 @@ namespace Clinic.Database
         {
             
         }
-
+        public static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
+        {
+            DbConStringBuilder strBuilder = new DbConStringBuilder
+            {
+                Server = IPAddress == "..." ? "localhost" : IPAddress,
+                UserID = "root",
+                Password = passSql,
+                Database = Setting.DatabaseName
+            };
+            return strBuilder;
+        }
 
 
     }

@@ -38,7 +38,7 @@ namespace PhongKham
             try
             {
                 string[] lines = System.IO.File.ReadAllLines("WriteLines.txt");
-                DatabaseFactory.CreateNewDatabase("", GetConnectionString(lines[0], lines[1]));
+                DatabaseFactory.CreateNewDatabase("", DatabaseFactory.GetConnectionString(lines[0], lines[1]));
             }
             catch(Exception e)
             {
@@ -55,18 +55,6 @@ namespace PhongKham
                 }
             }
             StartApplication.StartApp();
-        }
-
-        private static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
-        {
-            DbConStringBuilder strBuilder = new DbConStringBuilder
-            {
-                Server = IPAddress == "..." ? "localhost" : IPAddress,
-                UserID = "root",
-                Password = passSql,
-                Database = "clinic"
-            };
-            return strBuilder;
         }
     }
 }

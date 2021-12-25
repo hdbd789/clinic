@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using PhongKham;
-using Clinic.Helpers;
-using MySql.Data.MySqlClient;
 using Clinic.Database;
 using System.Text.RegularExpressions;
 
@@ -43,18 +34,15 @@ namespace Clinic
             //test connection ;
             try
             {
- 
+                
                 if (checkBox1.Checked == false)
                 {
                     ///Old structure
-                    DbConStringBuilder strBuilder = new DbConStringBuilder();
-                    strBuilder.Server = "localhost";
-                    strBuilder.UserID = "root";
-                    strBuilder.Password = textBox1.Text;
+                    DbConStringBuilder strBuilder = DatabaseFactory.GetConnectionString(textBox1.Text, "localhost");
                     //Program.conn = new MySqlConnection(strBuilder.ConnectionString);
                     //Program.conn.Open();
                     //InitDatabase(Program.conn, textBox1.Text);
-                    
+
                     ///New Structure
                     ///
                     DatabaseFactory.CreateNewDatabase("", strBuilder);
@@ -63,14 +51,11 @@ namespace Clinic
                 }
                 else
                 {
-                   
-                    DbConStringBuilder strBuilder = new DbConStringBuilder();
-                    strBuilder.Server = IP == "   .   .   ." ? "localhost" : IP;
-                    strBuilder.UserID = "root";
-                    strBuilder.Password = textBox1.Text;
+                    string server = IP == "   .   .   ." ? "localhost" : IP;
+                    DbConStringBuilder strBuilder = DatabaseFactory.GetConnectionString(textBox1.Text, server);
+
                     DatabaseFactory.CreateNewDatabase("", strBuilder);
                     IDatabase database = DatabaseFactory.Instance;
-
                 }
 
             }
