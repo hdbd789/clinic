@@ -329,7 +329,7 @@ namespace PhongKham
             this.textBoxHuyetAp.Text = stateString[1];
             this.txtBoxClinicRoomWeight.Text = stateString[2];
             this.txtBoxClinicRoomHeight.Text = stateString[3];
-
+            this.buttonPutIn.Text = savePatientCommand.ButtonInputText;
             // buttonSearch.PerformClick();
             SearchOnTextBox_PressEnter();
         }
@@ -922,10 +922,13 @@ namespace PhongKham
             return DateTime.Today;
         }
 
-        private void SearchOnTextBox_PressEnter()
+        private void SearchOnTextBox_PressEnter(bool isClearMedicine = true)
         {
             dataGridViewSearchValue.Rows.Clear();
-            dataGridViewMedicine.Rows.Clear();
+            if (isClearMedicine)
+            {
+                dataGridViewMedicine.Rows.Clear();
+            }
 
             string findingName = comboBoxClinicRoomName.Text;
             string Id = lblClinicRoomId.Text;
@@ -1100,6 +1103,7 @@ namespace PhongKham
 
         private void buttonSearch_Click(object sender, EventArgs e)
         {
+            savePatientCommand = new SaveKhamCommand(db);
             LoadDataType = LoadDataType.ALL;
             this.IsViewHistory = true;
             
@@ -1202,7 +1206,8 @@ namespace PhongKham
                 NameOfDoctor = Form1.NameOfDoctor,
                 NgayTaiKhamDate = dateTimePickerHen.Value,
                 LoaiKham = comboBoxLoaiKham.Text,
-                IdHistory = txtIdHistory.Text
+                IdHistory = txtIdHistory.Text,
+                Age = labelTuoi.Text
             };
 
             List<Medicine> listMedicines = new List<Medicine>();
@@ -1219,22 +1224,9 @@ namespace PhongKham
                 return;
             }
 
-            //string idbenhnhan = e.Argument.ToString();
-            string strHenTaiKham = "";
-            if (checkBoxHen.Checked == true)
-            {
-                strHenTaiKham = BuildStringHenTaiKham(idbenhnhan, strHenTaiKham);
-            }
-            int STT = Helper.LaySTTTheoNgay(db, DateTime.UtcNow, this.lblClinicRoomId.Text);
-            Helper.CreateAPdf(infoClinic, idbenhnhan, infoPatient, listMedicines, strHenTaiKham, this.txtBoxClinicRoomDiagnose.Text, this.labelTuoi.Text, STT, this.cbb_Reason.Text);
-            this.cbb_Reason.Text = string.Empty;
+            savePatientCommand.CreatePDFPrescription(infoPatient, infoClinic, checkBoxHen.Checked, listMedicines);
+            cbb_Reason.Text = string.Empty;
             checkBoxHen.Checked = false;
-        }
-
-        private string BuildStringHenTaiKham(string idbenhnhan, string strHenTaiKham)
-        {
-            strHenTaiKham = "Mời tái khám vào ngày: " + dateTimePickerHen.Value.ToString("dd-MM-yyyy");
-            return strHenTaiKham;
         }
 
         private void buttonPutIn_Click(object sender, EventArgs e)
@@ -1312,7 +1304,7 @@ namespace PhongKham
         private void UpdateForm(LoadDataType loadDataType)
         {
             LoadDataType = loadDataType;
-            SearchOnTextBox_PressEnter();
+            SearchOnTextBox_PressEnter(false);
             UpdateToolstrip();
         }
 

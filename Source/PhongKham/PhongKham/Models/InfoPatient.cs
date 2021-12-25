@@ -73,5 +73,7 @@ namespace Clinic.Models
         }
         [Ignore()]
         public string LoaiKham { get; set; }
+        [Ignore]
+        public string Age { get; set; }
     }
 }

@@ -665,28 +665,48 @@ namespace Clinic.Helpers
             pdfRenderer.RenderDocument();
             pdfRenderer.PdfDocument.Save(namePDF+".pdf");
         }
-        public static void CreateAPdf(InfoClinic InformationOfClinic, string MaBn, Patient patient, List<Medicine> Medicines, string taikham, string Diagno, string tuoi,int Stt,string reasonComeBack)
+        public static void CreateAPdfExamination(InfoClinic InformationOfClinic, InfoPatient infoPatient, List<Medicine> Medicines, string taikham, int Stt)
         {
             Document document = new Document();
             document.Info.Author = "Luong Y";
-             Unit width, height;
-            PageSetup.GetPageSize(PageFormat.A5, out width, out height);
+            PageSetup.GetPageSize(PageFormat.A5, out Unit width, out Unit height);
             document.DefaultPageSetup.PageWidth = width;
             document.DefaultPageSetup.PageHeight = height;
            
             int tongTienThuoc = 0;
-            AddSection(document, InformationOfClinic, MaBn, patient, Medicines, false, taikham, ref  tongTienThuoc, Diagno, tuoi, Stt, reasonComeBack);
+            AddSection("TOA THUỐC \n \n", document, InformationOfClinic, infoPatient, Medicines, false, taikham, ref tongTienThuoc, Stt);
 
-            AddSection(document, InformationOfClinic, MaBn, patient, Medicines, true, taikham, ref  tongTienThuoc, Diagno, tuoi, Stt, reasonComeBack);
+            AddSection("Bảng Dịch Vụ \n \n", document, InformationOfClinic, infoPatient, Medicines, true, taikham, ref tongTienThuoc, Stt);
 
-            PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always);
-     
-            pdfRenderer.Document = document;
+            PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always)
+            {
+                Document = document
+            };
             pdfRenderer.RenderDocument();
             pdfRenderer.PdfDocument.Save("firstpage.pdf");
         }
 
-        private static void AddSection(Document document, InfoClinic InformationOfClinic, string MaBn, Patient patient, List<Medicine> Medicines, bool onlyServices, string taikham, ref int tongTienThuoc, string Diagno, string tuoi, int Stt, string reasonComeBack)
+        public static void CreateAPdfAdvisory(InfoClinic InformationOfClinic, InfoPatient infoPatient, List<Medicine> Medicines, string taikham, int Stt)
+        {
+            Document document = new Document();
+            document.Info.Author = "Luong Y";
+            PageSetup.GetPageSize(PageFormat.A5, out Unit width, out Unit height);
+            document.DefaultPageSetup.PageWidth = width;
+            document.DefaultPageSetup.PageHeight = height;
+
+            int tongTienThuoc = 0;
+
+            AddSection("Bảng Dịch Vụ Tư Vấn \n \n", document, InformationOfClinic, infoPatient, Medicines, true, taikham, ref tongTienThuoc, Stt);
+
+            PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always)
+            {
+                Document = document
+            };
+            pdfRenderer.RenderDocument();
+            pdfRenderer.PdfDocument.Save("firstpage.pdf");
+        }
+
+        private static void AddSection(string title, Document document, InfoClinic InformationOfClinic, InfoPatient infoPatient, List<Medicine> Medicines, bool onlyServices, string taikham, ref int tongTienThuoc, int Stt)
         {
             Section section = document.AddSection();
             section.PageSetup.LeftMargin = 10;
@@ -719,7 +739,7 @@ namespace Clinic.Helpers
             Paragraph paragraph2 = section.Headers.Primary.AddParagraph();
 
             paragraph2.Format.Alignment = ParagraphAlignment.Right;
-            paragraph2.AddText("ID : " + MaBn);
+            paragraph2.AddText("ID : " + infoPatient.Id);
             paragraph2.AddText(" \n");
             paragraph2.AddText("STT : " + Stt);
 
@@ -750,14 +770,7 @@ namespace Clinic.Helpers
             paragraphTitle.Format.Alignment = ParagraphAlignment.Center;
             paragraphTitle.AddTab();
             paragraphTitle.AddTab();
-            if (!onlyServices)
-            {
-                paragraphTitle.AddFormattedText("TOA THUỐC \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
-            }
-            else
-            {
-                paragraphTitle.AddFormattedText("Bảng Dịch Vụ \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
-            }
+            paragraphTitle.AddFormattedText(title, new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
 
             Table table = new Table();
             table.Borders.Width = 0;
@@ -767,22 +780,20 @@ namespace Clinic.Helpers
 
             Row row = table.AddRow();
             row.Cells[0].AddParagraph("Bệnh nhân: ");
-            row.Cells[1].AddParagraph(patient.Name);
+            row.Cells[1].AddParagraph(infoPatient.Name);
             //int tuoi = DateTime.Now.Year - patient.Birthday.Year;
             row.Cells[0].AddParagraph("Tuổi:");
-            row.Cells[1].AddParagraph(tuoi);
+            row.Cells[1].AddParagraph(infoPatient.Age);
             Row row2 = table.AddRow();
             row2.Cells[0].AddParagraph("Địa chỉ: ");
-            row2.Cells[1].AddParagraph(patient.Address);
+            row2.Cells[1].AddParagraph(infoPatient.Address);
             //row2.Cells[2].AddParagraph("Mã BN: "+ patient.Id);
             if (!onlyServices)
             {
                 Row row3 = table.AddRow();
                 row3.Cells[0].AddParagraph("Chẩn đoán: ");
-                row3.Cells[1].AddParagraph(Diagno);
+                row3.Cells[1].AddParagraph(infoPatient.Diagnose);
             }
-
-
             
             Table tableMedicines = new Table();
             tableMedicines.Borders.Width = 0;

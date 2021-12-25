@@ -22,6 +22,8 @@ namespace Clinic.Business
 
         public LoadDataType LoadDataType => LoadDataType.OnlyAdvisory;
 
+        public string ButtonInputText => "Nhập tư vấn";
+
         public SaveAdviseCommand(IDatabase database)
         {
             db = database ?? throw new ArgumentNullException(nameof(database));
@@ -74,6 +76,26 @@ namespace Clinic.Business
             }
             AddToLichHenTable(isAppointment, infoPatient);
             AddToAdvisoryHistory(infoPatient);
+        }
+
+        public void CreatePDFPrescription(
+            InfoPatient infoPatient,
+            InfoClinic infoClinic,
+            bool isAppointment,
+            List<Medicine> listMedicines)
+        {
+            string strHenTaiKham = "";
+            if (isAppointment)
+            {
+                strHenTaiKham = BuildStringHenTaiKham(infoPatient.NgayTaiKhamDate);
+            }
+            int STT = Helper.LaySTTTheoNgay(db, DateTime.UtcNow, infoPatient.Id);
+            Helper.CreateAPdfAdvisory(
+                infoClinic,
+                infoPatient,
+                listMedicines,
+                strHenTaiKham,
+                STT);
         }
 
         private void AddToAdvisoryHistory(InfoPatient infoPatient)
@@ -285,6 +307,11 @@ namespace Clinic.Business
                     db.InsertRowToTable(DatabaseContants.tables.lichHen, columnslichhen, valueslichhen);
                 }
             }
+        }
+
+        private string BuildStringHenTaiKham(DateTime ngayHen)
+        {
+            return $"Mời tái khám vào ngày: {ngayHen.ToString(ClinicConstant.DateTimeFormat)}";
         }
     }
 }

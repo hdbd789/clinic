@@ -20,6 +20,7 @@ namespace Clinic.Business
         public string MessageNotifyFinishWithAppointment => "Kết thúc phiên khám! và hẹn tái khám vào ngày: ";
 
         public LoadDataType LoadDataType => LoadDataType.OnlyExamination;
+        public string ButtonInputText => "Nhập khám";
         public SaveKhamCommand(IDatabase database)
         {
             db = database ?? throw new ArgumentNullException(nameof(database));
@@ -163,6 +164,26 @@ namespace Clinic.Business
             }
             Helper.UpdateStatusAppointmentHistory(db, infoPatient.Id, idHistoryOld);
             AddToLichHenTable(isAppointment, infoPatient, idHistoryOld);
+        }
+
+        public void CreatePDFPrescription(
+            InfoPatient infoPatient,
+            InfoClinic infoClinic,
+            bool isAppointment,
+            List<Medicine> listMedicines)
+        {
+            string strHenTaiKham = "";
+            if (isAppointment)
+            {
+                strHenTaiKham = BuildStringHenTaiKham(infoPatient.NgayTaiKhamDate);
+            }
+            int STT = Helper.LaySTTTheoNgay(db, DateTime.UtcNow, infoPatient.Id);
+            Helper.CreateAPdfExamination(
+                infoClinic,
+                infoPatient,
+                listMedicines,
+                strHenTaiKham,
+                STT);
         }
 
         private void UpdateStatusAppointmentOfAdvisory(string idPatient)
@@ -342,6 +363,11 @@ namespace Clinic.Business
                     db.InsertRowToTable(DatabaseContants.tables.lichHen, columnslichhen, valueslichhen);
                 }
             }
+        }
+
+        private string BuildStringHenTaiKham(DateTime ngayHen)
+        {
+            return $"Mời tái khám vào ngày: {ngayHen.ToString(ClinicConstant.DateTimeFormat)}";
         }
     }
 }
