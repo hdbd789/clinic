@@ -7,6 +7,8 @@ namespace Clinic.Models
 {
     public class InfoClinic
     {
+        public string NameSystem { get; set; }
+
         private string name;
 
         public string Name
