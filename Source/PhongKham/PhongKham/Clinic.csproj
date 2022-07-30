@@ -211,6 +211,7 @@
   <ItemGroup>
     <Compile Include="Business\CSVExportFile.cs" />
     <Compile Include="Business\ExcelExportFile.cs" />
+    <Compile Include="Business\PrintPrescription.cs" />
     <Compile Include="Business\IExportFile.cs" />
     <Compile Include="Business\ISavePatientCommand.cs" />
     <Compile Include="Business\SaveAdviseCommand.cs" />
@@ -252,6 +253,7 @@
       <DependentUpon>Thongkethuoc.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ErrorProviderHelper.cs" />
+    <Compile Include="Helpers\ExtensionMethod.cs" />
     <Compile Include="Helpers\HelperControl.cs" />
     <Compile Include="Helpers\HelperforSeemore.cs" />
     <Compile Include="Helpers\Setting.cs" />

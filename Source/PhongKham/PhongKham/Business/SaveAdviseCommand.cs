@@ -90,7 +90,8 @@ namespace Clinic.Business
                 strHenTaiKham = BuildStringHenTaiKham(infoPatient.NgayTaiKhamDate);
             }
             int STT = Helper.LaySTTTheoNgay(db, DateTime.UtcNow, infoPatient.Id);
-            Helper.CreateAPdfAdvisory(
+
+            PrintPrescription.CreateAPdfAdvisory(
                 infoClinic,
                 infoPatient,
                 listMedicines,

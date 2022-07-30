@@ -76,7 +76,7 @@ namespace PhongKham
             Services.refreshMedicines4MainForm = new Clinic.Services.RefreshMedicines4MainForm(InitComboboxMedicinesMySql);
 
 
-            
+
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Text = "Phòng Khám -" + "User: " + name;
             Form1.Authority = Authority;
@@ -106,7 +106,7 @@ namespace PhongKham
             this.comboBoxLoaiKham.Items.AddRange(listLoaiKham.ToArray());
             comboBoxLoaiKham.Text = "Loại Khám: ";
 
-            
+
 
             // add autocomplete into textbox
             AddItemAutoCompleteTextBoxDiagnoses();
@@ -116,38 +116,7 @@ namespace PhongKham
             this.WindowState = Clinic.Properties.Settings.Default.State;
             if (this.WindowState == FormWindowState.Normal) this.Size = Clinic.Properties.Settings.Default.Size;
             this.Resize += new System.EventHandler(this.Form1_Resize);
-
-            try
-            {
-
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(InfoClinic));
-                StreamReader sr = new StreamReader("Information.xml");
-                infoClinic = xmlSerializer.Deserialize(sr) as InfoClinic;
-
-
-
-                textBoxNameClinic.Text = infoClinic.Name;
-                textBoxAddressClinic.Text = infoClinic.Address;
-                textBoxAdviceClinic.Text = infoClinic.Advice;
-                textBoxSDT.Text = infoClinic.Sdt;
-
-                textBoxBackupSource.Text = infoClinic.PathData;
-                textBoxBackupTarget.Text = infoClinic.PathTargetBackup;
-
-                textBoxBackupTimeAuto.Text = infoClinic.TimeBackup;
-                bool temp = bool.Parse(infoClinic.CheckedBackup1.ToLower());
-                if (temp)
-                {
-                    checkBoxAutoCopy.CheckState = CheckState.Checked;
-                }
-
-
-                sr.Close();
-            }
-            catch (Exception exx)
-            {
-                Log.Error(exx.Message, exx);
-            }
+            LoadClinicInfo();
             try
             {
                 // do any background work
@@ -166,6 +135,8 @@ namespace PhongKham
 
                 // Add List appointment today into list today
                 AddListTodayFromAppoitment();
+
+                savePatientCommand = new SaveAdviseCommand(db);
             }
             catch (Exception ex)
             {
@@ -192,6 +163,38 @@ namespace PhongKham
             this.ColumnSearchValueMedicines.Width = 250;
 
             this.circularProgress1.Hide();
+        }
+
+        private void LoadClinicInfo()
+        {
+            try
+            {
+
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(InfoClinic));
+                using (StreamReader sr = new StreamReader("Information.xml"))
+                {
+                    infoClinic = xmlSerializer.Deserialize(sr) as InfoClinic;
+
+                    textBoxNameClinic.Text = infoClinic.Name;
+                    textBoxAddressClinic.Text = infoClinic.Address;
+                    textBoxAdviceClinic.Text = infoClinic.Advice;
+                    textBoxSDT.Text = infoClinic.Sdt;
+
+                    textBoxBackupSource.Text = infoClinic.PathData;
+                    textBoxBackupTarget.Text = infoClinic.PathTargetBackup;
+
+                    textBoxBackupTimeAuto.Text = infoClinic.TimeBackup;
+                    bool temp = bool.Parse(infoClinic.CheckedBackup1.ToLower());
+                    if (temp)
+                    {
+                        checkBoxAutoCopy.CheckState = CheckState.Checked;
+                    }
+                }
+            }
+            catch (Exception exx)
+            {
+                Log.Error(exx.Message, exx);
+            }
         }
 
         private void AddListTodayFromAppoitment()
@@ -717,7 +720,7 @@ namespace PhongKham
 
                 int temp = total;
                 TongTien = total;
-                labelTongTien.Text = temp.ToString("C0");
+                labelTongTien.Text = temp.ToMoney();
             }
             if(e.ColumnIndex == 3 && e.RowIndex > -1) // Chang Cost Out
             {
@@ -1404,8 +1407,8 @@ namespace PhongKham
             StreamWriter sw = new StreamWriter("Information.xml");
             serializer.Serialize(sw, infoClinic);
             sw.Close();
-
-            MessageBox.Show("Thay đổi thành công, yêu cầu chạy lại chương trình để áp dụng thông tin mới", "Thông báo!");
+            LoadClinicInfo();
+            MessageBox.Show("Thay đổi thành công.", "Thông báo!");
         }
 
         private void checkBoxAutoCopy_CheckedChanged(object sender, EventArgs e)
@@ -1769,7 +1772,7 @@ namespace PhongKham
 
             int temp = total;
             TongTien = total;
-            labelTongTien.Text = temp.ToString("C0");
+            labelTongTien.Text = temp.ToMoney();
         }
 
         private void dataGridViewCalendar_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -1814,7 +1817,7 @@ namespace PhongKham
 
             int temp = total;
             TongTien = total;
-            labelTongTien.Text = temp.ToString("C0");
+            labelTongTien.Text = temp.ToMoney();
         }
 
         private void button3_Click_1(object sender, EventArgs e)
