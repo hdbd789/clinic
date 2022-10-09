@@ -66,7 +66,7 @@ namespace Clinic.Business
             document.DefaultPageSetup.PageHeight = height;
 
             int tongTienThuoc = 0;
-            AddSectionVaccination("PHIẾU CHỈ ĐỊNH TIÊM CHỦNG \n \n", document, InformationOfClinic, infoPatient, Medicines, false, taikham, ref tongTienThuoc, Stt);
+            //AddSectionVaccination("PHIẾU CHỈ ĐỊNH TIÊM CHỦNG \n \n", document, InformationOfClinic, infoPatient, Medicines, false, taikham, ref tongTienThuoc, Stt);
 
             AddSectionVaccination("PHIẾU THU DỊCH VỤ TIÊM CHỦNG \n \n", document, InformationOfClinic, infoPatient, Medicines, true, taikham, ref tongTienThuoc, Stt);
 
@@ -297,14 +297,14 @@ namespace Clinic.Business
             Column columnMedicines2;
             if (onlyServices)
             {
-                columnMedicines2 = tableMedicines.AddColumn(140);
+                tableMedicines.AddColumn(140);
             }
             else
             {
-                columnMedicines2 = tableMedicines.AddColumn(240);
+                tableMedicines.AddColumn(240);
             }
-            Column columnMedicines3 = tableMedicines.AddColumn(70);
-            Column columnMedicines4 = tableMedicines.AddColumn(130);
+            tableMedicines.AddColumn(70);
+            tableMedicines.AddColumn(130);
             Row rowMedicinesHeader = tableMedicines.AddRow();
             rowMedicinesHeader.Cells[0].AddParagraph("STT").Format.Font.Bold = true;
             if (!onlyServices)
@@ -325,12 +325,13 @@ namespace Clinic.Business
                 int indexServices = 1;
                 for (int i = 0; i < Medicines.Count; i++)
                 {
-                    if (Medicines[i].Name[0] == '@')
+                    //if (Medicines[i].Name[0] == '@')
                     {
                         string name = Medicines[i].Name.Substring(1, Medicines[i].Name.Length - 1);
                         Row rowDetail = tableMedicines.AddRow();
                         rowDetail.Cells[0].AddParagraph(indexServices.ToString());
-                        rowDetail.Cells[1].AddParagraph(name + "\n" + Medicines[i].HDSD);
+                        //rowDetail.Cells[1].AddParagraph(name + "\n" + Medicines[i].HDSD);
+                        rowDetail.Cells[1].AddParagraph(name);
                         rowDetail.Cells[2].AddParagraph(Medicines[i].Number.ToString());
                         int thanhtien = Medicines[i].CostOut * Medicines[i].Number;
                         rowDetail.Cells[3].AddParagraph(thanhtien.ToMoney());
@@ -342,9 +343,9 @@ namespace Clinic.Business
                 }
                 //tong cong thuoc
 
-                Row rowTotalThuoc = tableMedicines.AddRow();
-                rowTotalThuoc.Cells[1].AddParagraph("Thuốc");
-                rowTotalThuoc.Cells[3].AddParagraph(tongTienThuoc.ToMoney());
+                //Row rowTotalThuoc = tableMedicines.AddRow();
+                //rowTotalThuoc.Cells[1].AddParagraph("Thuốc");
+                //rowTotalThuoc.Cells[3].AddParagraph(tongTienThuoc.ToMoney());
 
 
 
@@ -478,7 +479,9 @@ namespace Clinic.Business
             Paragraph paragraphHeader3 = rowHeader.Cells[1].AddParagraph();
             paragraphHeader3.Format.Font.Size = 10;
 
-            Image logo = paragraphHeader1.AddImage("Logo.png");
+            Image logo = paragraphHeader1.AddImage("Images/Logo.png");
+            logo.Width = 80;
+            logo.Height = 55;
             paragraphHeader2.Format.Alignment = ParagraphAlignment.Center;
             paragraphHeader2.Format.Font = new Font()
             {

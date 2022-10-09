@@ -189,7 +189,7 @@ namespace PhongKham
             {
 
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(InfoClinic));
-                using (StreamReader sr = new StreamReader("Information.xml"))
+                using (StreamReader sr = new StreamReader("File/Information.xml"))
                 {
                     infoClinic = xmlSerializer.Deserialize(sr) as InfoClinic;
 
@@ -1570,7 +1570,7 @@ namespace PhongKham
             infoClinic.TimeBackup = textBoxBackupTimeAuto.Text;
 
             XmlSerializer serializer = new XmlSerializer(infoClinic.GetType());
-            StreamWriter sw = new StreamWriter("Information.xml");
+            StreamWriter sw = new StreamWriter("File/Information.xml");
             serializer.Serialize(sw, infoClinic);
             sw.Close();
             LoadClinicInfo();
