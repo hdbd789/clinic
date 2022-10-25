@@ -39,7 +39,6 @@ namespace PhongKham
         public static string NameOfDoctor;
         private ISavePatientCommand savePatientCommand;
         private IDatabase db = DatabaseFactory.Instance;
-        List<CalendarItem> _items = new List<CalendarItem>();
 
 
         public List<IMedicine> currentMedicines = new List<IMedicine>();
@@ -158,23 +157,6 @@ namespace PhongKham
                 InitClinicRoom();
                 dataGridView4.Visible = false;
                 maxIdOfCalendarItem = Helper.SearchMaxValueOfTable("calendar", "IdCalendar", "DESC");
-                //
-                //Load calendar
-                //
-                List<ADate> listDate = db.GetAllDateOfUser(UserName);
-                foreach (ADate item in listDate)
-                {
-                    CalendarItem cal = new CalendarItem(calendar1, item.StartTime, item.EndTime, item.Text);
-                    cal.Tag = item.Id;
-                    if (item.color != 0)
-                    {
-                        cal.ApplyColor(Helper.ConvertCodeToColor(item.color));
-                    }
-                    _items.Add(cal);
-                }
-
-                PlaceItems();
-
 
                 //load lichhen
                 LoadLichHen(DateTime.Now);
@@ -361,8 +343,9 @@ namespace PhongKham
 
         private void LoadLichHen(DateTime time)
         {
-            string cmd = string.Format("Select * from {0} Where time = {1}", 
-                DatabaseContants.tables.lichHen, 
+            string cmd = string.Format("SELECT l.*, p.birthday FROM {0} l LEFT JOIN {1} p ON p.Idpatient = l.Idpatient WHERE time = {2}", 
+                DatabaseContants.tables.lichHen,
+                DatabaseContants.tables.patient,
                 Helper.ConvertToSqlString(time.ToString("yyyy-MM-dd")));
             using (DbDataReader reader = db.ExecuteReader(cmd, null) as DbDataReader)
             {
@@ -374,7 +357,7 @@ namespace PhongKham
                     row.Cells[1].Value = reader["Namepatient"].ToString();
                     row.Cells[2].Value = reader["phone"].ToString();
                     row.Cells[3].Value = reader["benh"].ToString();
-                    row.Cells[4].Value = reader["Namedoctor"].ToString();
+                    row.Cells[4].Value = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday)).ToString(ClinicConstant.DateTimeFormat);
                     try
                     {
                         string reason = string.Empty;
@@ -1363,159 +1346,12 @@ namespace PhongKham
         #endregion
 
         CalendarItem contextItem = null;
-        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
-        {
-            contextItem = calendar1.ItemAt(contextMenuStrip1.Bounds.Location);
-        }
 
-        private void calendar1_ItemDoubleClick(object sender, CalendarItemEventArgs e)
-        {
-            calendar1.ActivateEditMode();
-        }
-
-        private void calendar1_ItemDeleted(object sender, CalendarItemEventArgs e)
-        {
-            _items.Remove(e.Item);
-            db.DeleteRowToTableCalendar(DatabaseContants.tables.calendar, e.Item.Tag.ToString(), Form1.UserName);
-
-        }
-
-        private void calendar1_ItemTextEdited(object sender, CalendarItemCancelEventArgs e)
-        {
-
-            // e.Item.Tag = // set id
-            db.UpdateRowToTableCalendar(DatabaseContants.tables.calendar, new List<string> { "Text" }, new List<string> { e.Item.Text }, e.Item.Tag.ToString(), UserName);
-
-        }
-
-        private void calendar1_ItemDatesChanged(object sender, CalendarItemEventArgs e)
-        {
-
-            // e.Item.Tag = // set id
-            try
-            {
-                db.UpdateRowToTableCalendar(DatabaseContants.tables.calendar, new List<string> { "StartTime", "EndTime" }, new List<string> { Helper.ConvertToDatetimeSql(e.Item.StartDate), Helper.ConvertToDatetimeSql(e.Item.EndDate) }, e.Item.Tag.ToString(), UserName);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message, ex);
-            }
-
-        }
-
-        private void calendar1_DayHeaderClick(object sender, CalendarDayEventArgs e)
-        {
-            calendar1.SetViewRange(e.CalendarDay.Date, e.CalendarDay.Date);
-        }
-        private void calendar1_ItemCreated(object sender, CalendarItemCancelEventArgs e)
-        {
-            _items.Add(e.Item);
-            //if (e.Item.Text.Length > 0)
-            //{
-            e.Item.Tag = maxIdOfCalendarItem;
-            List<string> values = new List<string> { maxIdOfCalendarItem.ToString(), UserName, Helper.ConvertToDatetimeSql(e.Item.StartDate), Helper.ConvertToDatetimeSql(e.Item.EndDate), e.Item.Text, "0" };
-            db.InsertRowToTable(DatabaseContants.tables.calendar, DatabaseContants.columnsCalendar, values);
-            //MessageBox.Show("s");
-            //}
-            maxIdOfCalendarItem = Helper.SearchMaxValueOfTable(DatabaseContants.tables.calendar, "IdCalendar", "DESC");
-        }
-
-        public FileInfo ItemsFile
-        {
-            get
-            {
-                return new FileInfo(Path.Combine(Application.StartupPath, "items.xml"));
-            }
-        }
         private void monthView1_SelectionChanged(object sender, EventArgs e)
         {
-            calendar1.SetViewRange(tabPageLich.SelectionStart, tabPageLich.SelectionEnd);
-
-            //refresh datagridViewCalendar
-
             this.dataGridViewCalendar.Rows.Clear();
             LoadLichHen(tabPageLich.SelectionStart);
 
-        }
-        private void PlaceItems()
-        {
-            foreach (CalendarItem item in _items)
-            {
-                if (calendar1.ViewIntersects(item))
-                {
-                    calendar1.Items.Add(item);
-                }
-            }
-        }
-
-        private void calendar1_ItemClick(object sender, CalendarItemEventArgs e)
-        {
-            //MessageBox.Show(e.Item.Text);
-        }
-        private void calendar1_LoadItems(object sender, CalendarLoadEventArgs e)
-        {
-            PlaceItems();
-        }
-        private void calendar1_ItemMouseHover(object sender, CalendarItemEventArgs e)
-        {
-            Text = e.Item.Text;
-        }
-        private void otherColorTagToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            using (ColorDialog dlg = new ColorDialog())
-            {
-                if (dlg.ShowDialog() == DialogResult.OK)
-                {
-                    foreach (CalendarItem item in calendar1.GetSelectedItems())
-                    {
-                        item.ApplyColor(dlg.Color);
-                        calendar1.Invalidate(item);
-                    }
-                }
-            }
-        }
-        private void redTagToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (CalendarItem item in calendar1.GetSelectedItems())
-            {
-                item.ApplyColor(Color.Red);
-                calendar1.Invalidate(item);
-                db.UpdateRowToTableCalendar(DatabaseContants.tables.calendar, new List<string> { "Color" }, new List<string> { "1" }, item.Tag.ToString(), UserName);
-            }
-        }
-
-        private void yellowTagToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (CalendarItem item in calendar1.GetSelectedItems())
-            {
-                item.ApplyColor(Color.Gold);
-                calendar1.Invalidate(item);
-                db.UpdateRowToTableCalendar(DatabaseContants.tables.calendar, new List<string> { "Color" }, new List<string> { "2" }, item.Tag.ToString(), UserName);
-            }
-        }
-
-        private void greenTagToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (CalendarItem item in calendar1.GetSelectedItems())
-            {
-                item.ApplyColor(Color.Green);
-                calendar1.Invalidate(item);
-                db.UpdateRowToTableCalendar(DatabaseContants.tables.calendar, new List<string> { "Color" }, new List<string> { "3" }, item.Tag.ToString(), UserName);
-            }
-        }
-
-        private void blueTagToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (CalendarItem item in calendar1.GetSelectedItems())
-            {
-                item.ApplyColor(Color.DarkBlue);
-                calendar1.Invalidate(item);
-                db.UpdateRowToTableCalendar(DatabaseContants.tables.calendar, new List<string> { "Color" }, new List<string> { "4" }, item.Tag.ToString(), UserName);
-            }
-        }
-        private void editItemToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            calendar1.ActivateEditMode();
         }
 
         private void label30_Click(object sender, EventArgs e)
