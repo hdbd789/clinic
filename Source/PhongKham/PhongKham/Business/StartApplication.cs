@@ -27,7 +27,7 @@ namespace Clinic.Business
             {
                 Log.Error(ex.Message, ex);
             }
-            if (mainForm.IsLogout)
+            if (mainForm != null && mainForm.IsLogout)
             {
                 Close();
                 StartApp();
