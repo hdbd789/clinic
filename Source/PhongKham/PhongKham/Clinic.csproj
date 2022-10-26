@@ -252,6 +252,7 @@
     <Compile Include="Gui\Thongkethuoc.Designer.cs">
       <DependentUpon>Thongkethuoc.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AuthorizationHelper.cs" />
     <Compile Include="Helpers\ErrorProviderHelper.cs" />
     <Compile Include="Helpers\ExtensionMethod.cs" />
     <Compile Include="Helpers\HelperControl.cs" />

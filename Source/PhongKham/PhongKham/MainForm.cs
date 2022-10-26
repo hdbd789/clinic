@@ -1728,7 +1728,7 @@ namespace PhongKham
 
         private void tủThuốcToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Authority == 1 || Authority == 3)
+            if (AuthorizationHelper.IsRolePrescribeInputMedicine(Authority))
             {
                 TuThuocForm dtForm = new Clinic.TuThuocForm();
                 dtForm.Show();
