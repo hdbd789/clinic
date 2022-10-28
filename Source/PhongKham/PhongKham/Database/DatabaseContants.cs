@@ -39,6 +39,7 @@ namespace Clinic.Database
             public static string namLoaiKham = "NameLoaiKham";
             public static string IdHistory = "IdHistory";
             public static string Reason = "Reason";
+            public static string DateWillBirth = "DateWillBirth";
         }
 
         public struct medicine
@@ -60,7 +61,7 @@ namespace Clinic.Database
            public static string height = "height";
            public static string weight = "weight";
            public static string Id = "Idpatient";
-            public static string Phone = "phone";
+           public static string Phone = "phone";
         }
 
         public struct danhthu
@@ -102,6 +103,7 @@ namespace Clinic.Database
             public static string Namepatient = "Namepatient";
             public static string Namedoctor = "Namedoctor";
             public static string IdAdvisory = "IdAdvisory";
+            public static string DateWillBirth = "DateWillBirth";
         }
 
         public struct LoaiKham
@@ -123,6 +125,7 @@ namespace Clinic.Database
             public static string nameofdoctor = "NameDoctor";
             public static string namLoaiKham = "NameLoaiKham";
             public static string Reason = "Reason";
+            public static string DateWillBirth = "DateWillBirth";
         }
 
         public struct AdvisoryHistory

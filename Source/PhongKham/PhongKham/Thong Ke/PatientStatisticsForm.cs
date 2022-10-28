@@ -24,7 +24,6 @@ namespace Clinic.Thong_Ke
             { "Phone", new Tuple<string, int>("Số điện thoại",120) },
             { "Address", new Tuple<string, int>("Địa chỉ",250) },
             { "Weight", new Tuple<string, int>("Cân nặng",80) },
-            { "Hight", new Tuple<string, int>("Chiều cao",80) },
             { "Temperature", new Tuple<string, int>("Nhiệt độ",100) },
             { "Huyetap", new Tuple<string, int>("Huyết áp",100) },
             { "Diagnose", new Tuple<string, int>("Chẩn đoán",0) },
@@ -103,7 +102,6 @@ namespace Clinic.Thong_Ke
                 row["Phone"] = infoPatient.Phone;
                 row["Address"] = infoPatient.Address;
                 row["Weight"] = infoPatient.Weight;
-                row["Hight"] = infoPatient.Height;
                 row["Temperature"] = infoPatient.Temperature;
                 row["Huyetap"] = infoPatient.HuyenAp;
                 row["Diagnose"] = infoPatient.Diagnose;

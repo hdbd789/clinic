@@ -58,7 +58,6 @@ namespace Clinic
                 row.Cells["ColumnNhietDo"].Value = stateParts[0];
                 row.Cells["ColumnHuyetAp"].Value = stateParts[1];
                 row.Cells["ColWeight"].Value = stateParts[2];
-                row.Cells["ColHeight"].Value = stateParts[3];
                 row.Tag = listPatientToday[i].Type;
                 if (listPatientToday[i].Type == RecordType.Advisory)
                 {
@@ -78,7 +77,7 @@ namespace Clinic
                 dataGridView1.Columns["ColAction"].Index) return;
 
             //MessageBox.Show(dataGridView1.Rows[1].Cells[2].Value.ToString());
-            string state = dataGridView1.Rows[e.RowIndex].Cells["ColumnNhietDo"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColumnHuyetAp"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColWeight"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColHeight"].Value.ToString();
+            string state = dataGridView1.Rows[e.RowIndex].Cells["ColumnNhietDo"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColumnHuyetAp"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColWeight"].Value.ToString();
 
             RecordType recordType = (RecordType)dataGridView1.Rows[e.RowIndex].Tag;
             if(recordType == RecordType.Examination)

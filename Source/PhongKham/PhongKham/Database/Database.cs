@@ -198,6 +198,15 @@ namespace Clinic.Database
 
             fun = () => ExecuteNonQuery("CREATE event delete on schedule every 1 day starts at timestamp '2007-03-25 23:59:00' do delete from listpatienttoday", null);
             Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE history ADD COLUMN DateWillBirth datetime NULL;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE Advisory ADD COLUMN DateWillBirth datetime NULL;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE lichhen ADD COLUMN DateWillBirth datetime NULL;", null);
+            Guard(fun);
         }
 
         #region implement Interface IDatabase

@@ -38,7 +38,6 @@ namespace Clinic
             this.ColumnNhietDo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnHuyetAp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColWeight = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColHeight = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,8 +66,7 @@ namespace Clinic
             this.ColAction,
             this.ColumnNhietDo,
             this.ColumnHuyetAp,
-            this.ColWeight,
-            this.ColHeight});
+            this.ColWeight});
             this.dataGridView1.Location = new System.Drawing.Point(0, 69);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
             this.dataGridView1.Name = "dataGridView1";
@@ -138,14 +136,6 @@ namespace Clinic
             this.ColWeight.Visible = false;
             this.ColWeight.Width = 125;
             // 
-            // ColHeight
-            // 
-            this.ColHeight.HeaderText = "Chieu cao";
-            this.ColHeight.MinimumWidth = 6;
-            this.ColHeight.Name = "ColHeight";
-            this.ColHeight.Visible = false;
-            this.ColHeight.Width = 125;
-            // 
             // ListPatientsTodayForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -178,6 +168,5 @@ namespace Clinic
         private DataGridViewTextBoxColumn ColumnNhietDo;
         private DataGridViewTextBoxColumn ColumnHuyetAp;
         private DataGridViewTextBoxColumn ColWeight;
-        private DataGridViewTextBoxColumn ColHeight;
     }
 }

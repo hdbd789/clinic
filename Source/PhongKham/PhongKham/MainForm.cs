@@ -134,7 +134,7 @@ namespace PhongKham
                 XoaListToday();
 
                 // Add List appointment today into list today
-                AddListTodayFromAppoitment();
+                // AddListTodayFromAppoitment();
 
                 savePatientCommand = new SaveAdviseCommand(db);
             }
@@ -171,7 +171,7 @@ namespace PhongKham
             {
 
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(InfoClinic));
-                using (StreamReader sr = new StreamReader("Information.xml"))
+                using (StreamReader sr = new StreamReader("File/Information.xml"))
                 {
                     infoClinic = xmlSerializer.Deserialize(sr) as InfoClinic;
 
@@ -313,7 +313,6 @@ namespace PhongKham
             this.textBoxClinicNhietDo.Text = stateString[0];
             this.textBoxHuyetAp.Text = stateString[1];
             this.txtBoxClinicRoomWeight.Text = stateString[2];
-            this.txtBoxClinicRoomHeight.Text = stateString[3];
             this.buttonPutIn.Text = savePatientCommand.ButtonInputText;
             // buttonSearch.PerformClick();
             SearchOnTextBox_PressEnter();
@@ -361,6 +360,7 @@ namespace PhongKham
                     row.Cells[2].Value = reader["phone"].ToString();
                     row.Cells[3].Value = reader["benh"].ToString();
                     row.Cells[4].Value = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday)).ToString(ClinicConstant.DateTimeFormat);
+                    row.Cells[5].Value = DateTime.TryParse(reader[DatabaseContants.LichHen.DateWillBirth].ToString(), out DateTime dateWillBirth) ? dateWillBirth.ToString(ClinicConstant.DateTimeFormat) : string.Empty;
                     try
                     {
                         string reason = string.Empty;
@@ -538,7 +538,6 @@ namespace PhongKham
             txtBoxClinicRoomAddress.Clear();
             comboBoxClinicRoomName.Text = "";
             txtBoxClinicRoomDiagnose.Clear();
-            txtBoxClinicRoomHeight.Text = "";
             dateTimePickerBirthDay.ResetText();
             txtBoxClinicRoomSymptom.Clear();
             txtBoxClinicRoomWeight.Text = "";
@@ -551,6 +550,7 @@ namespace PhongKham
             textBoxClinicNhietDo.Text = "";
             textBoxHuyetAp.Text = "";
             labelTuoi.Text = "0";
+            dateTimePickerNgayDuSanh.ResetText();
         }
         #endregion
 
@@ -576,11 +576,11 @@ namespace PhongKham
                 {
                     textBoxClinicNhietDo.Text = reader[DatabaseContants.history.temperature].ToString();
                     textBoxHuyetAp.Text = reader[DatabaseContants.history.huyetap].ToString();
+                    dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.history.DateWillBirth].ToString();
                 }
                 if (IsViewHistory)
                 {                   
                     txtBoxClinicRoomWeight.Text = reader["Weight"].ToString();
-                    txtBoxClinicRoomHeight.Text = reader["Height"].ToString();
                 }
                 textBoxClinicPhone.Text = reader["phone"].ToString();
             }
@@ -1179,7 +1179,7 @@ namespace PhongKham
                 Id = lblClinicRoomId.Text,
                 Name = comboBoxClinicRoomName.Text,
                 Weight = txtBoxClinicRoomWeight.Text,
-                Height = txtBoxClinicRoomHeight.Text,
+                DateWillBirth = dateTimePickerNgayDuSanh.Value,
                 Address = txtBoxClinicRoomAddress.Text,
                 Birthday = dateTimePickerBirthDay.Value,
                 NgayKham = dateTimePickerNgayKham.Value,
@@ -1404,7 +1404,7 @@ namespace PhongKham
             infoClinic.TimeBackup = textBoxBackupTimeAuto.Text;
 
             XmlSerializer serializer = new XmlSerializer(infoClinic.GetType());
-            StreamWriter sw = new StreamWriter("Information.xml");
+            StreamWriter sw = new StreamWriter("File/Information.xml");
             serializer.Serialize(sw, infoClinic);
             sw.Close();
             LoadClinicInfo();
@@ -1499,14 +1499,20 @@ namespace PhongKham
                     }
                 }
 
-                List<string> columns = new List<string>() { DatabaseContants.patient.Name, DatabaseContants.patient.Address, DatabaseContants.patient.birthday, DatabaseContants.patient.height, DatabaseContants.patient.weight, DatabaseContants.patient.Phone };
+                List<string> columns = new List<string>() 
+                { 
+                    DatabaseContants.patient.Name, 
+                    DatabaseContants.patient.Address, 
+                    DatabaseContants.patient.birthday, 
+                    DatabaseContants.patient.weight, 
+                    DatabaseContants.patient.Phone
+                };
                 //List<string> columns = new List<string>() { "Name", "Address", "Birthday", "phone" };
                 List<string> values = new List<string>()
                 {
                     comboBoxClinicRoomName.Text,
                     txtBoxClinicRoomAddress.Text,
                     dateTimePickerBirthDay.Value.ToString("yyyy-MM-dd"),
-                    txtBoxClinicRoomHeight.Text,
                     txtBoxClinicRoomWeight.Text,
                     textBoxClinicPhone.Text
                 };
@@ -1514,7 +1520,7 @@ namespace PhongKham
                 GetIDMaxCurrentPatient();
                 string medicines = "Dd nhập bệnh nhân mới,!";
 
-                List<string> columnsHistory = new List<string>() { "Id", "Symptom","temperature", "Diagnose", "Day", "Medicines" };
+                List<string> columnsHistory = new List<string>() { "Id", "Symptom","temperature", "Diagnose", "Day", "Medicines", DatabaseContants.history.DateWillBirth };
                 List<string> valuesHistory = new List<string>() 
                 { 
                     lblClinicRoomId.Text, 
@@ -1522,21 +1528,27 @@ namespace PhongKham
                     textBoxClinicNhietDo.Text, 
                     txtBoxClinicRoomDiagnose.Text, 
                     DateTime.Now.ToString("yyyy-MM-dd"), 
-                    medicines 
+                    medicines,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
                 db.InsertRowToTable(DatabaseContants.tables.history, columnsHistory, valuesHistory);
                 MessageBox.Show("Thêm bệnh nhân mới thành công","Thông Báo");  
             }
             else // cap nhat
             {
-                List<string> columns = new List<string>() { DatabaseContants.patient.Address, DatabaseContants.patient.birthday, DatabaseContants.patient.height, DatabaseContants.patient.weight, DatabaseContants.patient.Phone };
+                List<string> columns = new List<string>() 
+                { 
+                    DatabaseContants.patient.Address, 
+                    DatabaseContants.patient.birthday, 
+                    DatabaseContants.patient.weight, 
+                    DatabaseContants.patient.Phone
+                };
                 List<string> values = new List<string>() 
                 { 
                     txtBoxClinicRoomAddress.Text, 
-                    dateTimePickerBirthDay.Value.ToString("yyyy-MM-dd"), 
-                    txtBoxClinicRoomHeight.Text, 
+                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text, 
-                    textBoxClinicPhone.Text 
+                    textBoxClinicPhone.Text
                 };
                 db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values,DatabaseContants.patient.Id, lblClinicRoomId.Text);
 
@@ -1573,14 +1585,20 @@ namespace PhongKham
                     }
                 }
 
-                List<string> columns = new List<string>() { DatabaseContants.patient.Name, DatabaseContants.patient.Address, DatabaseContants.patient.birthday, DatabaseContants.patient.height, DatabaseContants.patient.weight, DatabaseContants.patient.Phone };
+                List<string> columns = new List<string>() 
+                { 
+                    DatabaseContants.patient.Name, 
+                    DatabaseContants.patient.Address, 
+                    DatabaseContants.patient.birthday, 
+                    DatabaseContants.patient.weight, 
+                    DatabaseContants.patient.Phone
+                };
                 //List<string> columns = new List<string>() { "Name", "Address", "Birthday", "phone" };
                 List<string> values = new List<string>()
                 {
                     comboBoxClinicRoomName.Text,
                     txtBoxClinicRoomAddress.Text,
-                    dateTimePickerBirthDay.Value.ToString("yyyy-MM-dd"),
-                    txtBoxClinicRoomHeight.Text,
+                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text,
                     textBoxClinicPhone.Text
                 };
@@ -1590,12 +1608,17 @@ namespace PhongKham
             }
             else // cap nhat
             {
-                List<string> columns = new List<string>() { DatabaseContants.patient.Address, DatabaseContants.patient.birthday, DatabaseContants.patient.height, DatabaseContants.patient.weight, DatabaseContants.patient.Phone };
+                List<string> columns = new List<string>() 
+                { 
+                    DatabaseContants.patient.Address, 
+                    DatabaseContants.patient.birthday, 
+                    DatabaseContants.patient.weight, 
+                    DatabaseContants.patient.Phone
+                };
                 List<string> values = new List<string>()
                 {
                     txtBoxClinicRoomAddress.Text,
-                    dateTimePickerBirthDay.Value.ToString("yyyy-MM-dd"),
-                    txtBoxClinicRoomHeight.Text,
+                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text,
                     textBoxClinicPhone.Text
                 };
@@ -1624,7 +1647,8 @@ namespace PhongKham
                     "temperature",
                     "Diagnose",
                     "Day",
-                    "Medicines"
+                    "Medicines",
+                    DatabaseContants.Advisory.DateWillBirth
                 };
             List<string> valuesHistory = new List<string>()
                 {
@@ -1633,7 +1657,8 @@ namespace PhongKham
                     textBoxClinicNhietDo.Text,
                     txtBoxClinicRoomDiagnose.Text,
                     DateTime.Now.ToString("yyyy-MM-dd"),
-                    medicines
+                    medicines,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
             db.InsertRowToTable(DatabaseContants.tables.advisory, columnsHistory, valuesHistory);
         }
@@ -1643,7 +1668,7 @@ namespace PhongKham
             try
             {
                 // nhiet do : huyet ap : can nang: chieu cao
-                string state = textBoxClinicNhietDo.Text + ';' + textBoxHuyetAp.Text + ';' + txtBoxClinicRoomWeight.Text + ';' + txtBoxClinicRoomHeight.Text;
+                string state = textBoxClinicNhietDo.Text + ';' + textBoxHuyetAp.Text + ';' + txtBoxClinicRoomWeight.Text;
                 List<string> columnslistpatientToday = new List<string>() { "Id", "Name", "State", "time", "Type" };
                 List<string> valueslistpatientToday = new List<string>() { lblClinicRoomId.Text, comboBoxClinicRoomName.Text, state, DateTime.Now.ToString("yyyy-MM-dd"), ((int)recordType).ToString()};
                 db.InsertRowToTable(DatabaseContants.tables.listpatienttoday, columnslistpatientToday, valueslistpatientToday);

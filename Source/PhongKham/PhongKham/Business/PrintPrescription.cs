@@ -60,91 +60,14 @@ namespace Clinic.Business
         private static void AddSection(string title, Document document, InfoClinic InformationOfClinic, InfoPatient infoPatient, List<Medicine> Medicines, bool onlyServices, string taikham, ref int tongTienThuoc, int Stt)
         {
             Section section = document.AddSection();
-            section.PageSetup.LeftMargin = 10;
+            section.PageSetup.LeftMargin = 20;
 
+            AddHeader(InformationOfClinic, section);
+            section.AddParagraph("\n");
+            AddTitle(title, section);
+            AddSTT(infoPatient, Stt, section);
 
-            Paragraph paragraph = section.Headers.Primary.AddParagraph();
-            //= section.AddParagraph();
-
-            paragraph.Format.Alignment = ParagraphAlignment.Left;
-
-            paragraph.AddText(InformationOfClinic.Name); //+"Mã BN: " + patient.Id + " \n" +" Địa chỉ xxxxx");
-            paragraph.AddText(" \n");
-
-            string[] addressArray = InformationOfClinic.Address.Split(';');
-            try
-            {
-                paragraph.AddSpace(int.Parse(addressArray[0]));
-                paragraph.AddText(addressArray[1]);
-                paragraph.AddText(" \n");
-
-                string[] sdtArray = InformationOfClinic.Sdt.Split(';');
-                paragraph.AddSpace(int.Parse(sdtArray[0]));
-                paragraph.AddText(sdtArray[1]);
-            }
-            catch
-            {
-                paragraph.AddSpace(10);
-            }
-
-            Paragraph paragraph2 = section.Headers.Primary.AddParagraph();
-
-            paragraph2.Format.Alignment = ParagraphAlignment.Right;
-            paragraph2.AddText("ID : " + infoPatient.Id);
-            paragraph2.AddText(" \n");
-            paragraph2.AddText("STT : " + Stt);
-
-            paragraph.AddText(" \n");
-            paragraph.AddText(" \n");
-            paragraph.AddText(" \n");
-            paragraph.AddText(" \n");
-            //Table InfoTable = section.AddTable();
-            //InfoTable.Borders.Width = 0;
-            //Column ColumnInfo1 = InfoTable.AddColumn(500);
-            //Row rowInfoName = InfoTable.AddRow();
-            //Paragraph para1 = rowInfoName.Cells[0].AddParagraph(InformationOfClinic.Name);
-            //Row rowInfo2 = InfoTable.AddRow();
-
-
-
-            //Paragraph paraInfo = rowInfo2.Cells[0].AddParagraph();
-            //paraInfo.AddSpace(4);
-            //paraInfo.AddText(InformationOfClinic.Address);
-            //rowsignatureAndMore2.Cells[0].AddParagraph(taikham);
-            //Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n \n \n" + Form1.nameOfDoctor);
-            //para.Format.Alignment = ParagraphAlignment.Center;
-
-
-
-
-            Paragraph paragraphTitle = section.AddParagraph();
-            paragraphTitle.Format.Alignment = ParagraphAlignment.Center;
-            paragraphTitle.AddTab();
-            paragraphTitle.AddTab();
-            paragraphTitle.AddFormattedText(title, new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
-
-            Table table = new Table();
-            table.Borders.Width = 0;
-            Column column = table.AddColumn();
-            column.Width = 80;
-            table.AddColumn(440);
-
-            Row row = table.AddRow();
-            row.Cells[0].AddParagraph("Bệnh nhân: ");
-            row.Cells[1].AddParagraph(infoPatient.Name);
-            //int tuoi = DateTime.Now.Year - patient.Birthday.Year;
-            row.Cells[0].AddParagraph("Tuổi:");
-            row.Cells[1].AddParagraph(infoPatient.Age);
-            Row row2 = table.AddRow();
-            row2.Cells[0].AddParagraph("Địa chỉ: ");
-            row2.Cells[1].AddParagraph(infoPatient.Address);
-            //row2.Cells[2].AddParagraph("Mã BN: "+ patient.Id);
-            if (!onlyServices)
-            {
-                Row row3 = table.AddRow();
-                row3.Cells[0].AddParagraph("Chẩn đoán: ");
-                row3.Cells[1].AddParagraph(infoPatient.Diagnose);
-            }
+            Table table = AddInfoPatient(infoPatient);
 
             Table tableMedicines = new Table();
             tableMedicines.Borders.Width = 0;
@@ -162,21 +85,21 @@ namespace Clinic.Business
             Column columnMedicines3 = tableMedicines.AddColumn(70);
             Column columnMedicines4 = tableMedicines.AddColumn(130);
             Row rowMedicinesHeader = tableMedicines.AddRow();
-            rowMedicinesHeader.Cells[0].AddParagraph("STT");
+            rowMedicinesHeader.Cells[0].AddParagraph("STT").Format.Font.Bold = true;
             if (!onlyServices)
             {
-                rowMedicinesHeader.Cells[1].AddParagraph("Tên thuốc/Cách dùng");
+                rowMedicinesHeader.Cells[1].AddParagraph("Tên thuốc/Cách dùng").Format.Font.Bold = true;
             }
             else
             {
-                rowMedicinesHeader.Cells[1].AddParagraph("Tên dịch vụ");
+                rowMedicinesHeader.Cells[1].AddParagraph("Tên dịch vụ").Format.Font.Bold = true;
             }
-            rowMedicinesHeader.Cells[2].AddParagraph("Số lượng");
+            rowMedicinesHeader.Cells[2].AddParagraph("Số lượng").Format.Font.Bold = true;
 
 
             if (onlyServices)
             {
-                rowMedicinesHeader.Cells[3].AddParagraph("Số tiền");
+                rowMedicinesHeader.Cells[3].AddParagraph("Số tiền").Format.Font.Bold = true;
                 int totalServices = 0;
                 int indexServices = 1;
                 for (int i = 0; i < Medicines.Count; i++)
@@ -247,8 +170,9 @@ namespace Clinic.Business
             Row rowsignatureAndMore2 = signatureAndMore.AddRow();
             rowsignatureAndMore2.VerticalAlignment = VerticalAlignment.Center;
             //rowsignatureAndMore2.Cells[0].AddParagraph(taikham + ": " + reasonComeBack);
-            Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n \n" + Form1.NameOfDoctor);
+            Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n" + Form1.NameOfDoctor);
             para.Format.Alignment = ParagraphAlignment.Center;
+            para.Format.Font.Bold = true;
 
             document.LastSection.Add(table);
             document.LastSection.AddParagraph("\n");
@@ -256,6 +180,104 @@ namespace Clinic.Business
             document.LastSection.AddParagraph("\n");
             document.LastSection.Footers.Primary.Add(signatureAndMore);
 
+        }
+
+        private static Table AddInfoPatient(InfoPatient infoPatient)
+        {
+            Table table = new Table();
+            table.Borders.Width = 0;
+            Column column = table.AddColumn();
+            column.Width = 100;
+            table.AddColumn(440);
+
+            Row row = table.AddRow();
+            row.Cells[0].AddParagraph("Tên bệnh nhân: ");
+            row.Cells[1].AddParagraph(infoPatient.Name);
+            Row row2 = table.AddRow();
+            row2.Cells[0].AddParagraph("Ngày sinh:");
+            row2.Cells[1].AddParagraph(infoPatient.Birthday.ToString("dd-MM-yyyy"));
+            Row row3 = table.AddRow();
+            row3.Cells[0].AddParagraph("Địa chỉ: ");
+            row3.Cells[1].AddParagraph(infoPatient.Address);
+            Row row4 = table.AddRow();
+            row4.Cells[0].AddParagraph("Chẩn đoán: ");
+            row4.Cells[1].AddParagraph(infoPatient.Diagnose);
+
+            return table;
+        }
+
+        private static void AddSTT(InfoPatient infoPatient, int Stt, Section section)
+        {
+            Paragraph paragraph = section.AddParagraph();
+            Table tableSTT = new Table();
+            tableSTT.TopPadding = 10;
+            tableSTT.Borders.Width = 0;
+            tableSTT.AddColumn(300);
+            tableSTT.AddColumn(120);
+            Row rowSTT = tableSTT.AddRow();
+            Paragraph paragraphHeaderSTT = rowSTT.Cells[1].AddParagraph();
+            paragraphHeaderSTT.AddText("ID : " + infoPatient.Id);
+            paragraphHeaderSTT.AddText(" \n");
+            paragraphHeaderSTT.AddText("STT : " + Stt);
+            paragraph.Section.Add(tableSTT);
+        }
+
+        private static void AddTitle(string title, Section section)
+        {
+            Paragraph paragraphTitle = section.Headers.Primary.AddParagraph();
+            paragraphTitle.Format.Borders.Width = 0;
+            paragraphTitle.Format.Alignment = ParagraphAlignment.Center;
+            paragraphTitle.AddTab();
+            paragraphTitle.AddTab();
+            Font font = new MigraDoc.DocumentObjectModel.Font("Times New Roman", 15)
+            {
+                Bold = true
+            };
+            paragraphTitle.AddFormattedText(title, font);
+        }
+
+        private static void AddHeader(InfoClinic InformationOfClinic, Section section)
+        {
+            Table tableHeader = section.Headers.Primary.AddTable();
+            tableHeader.Borders.Width = 0;
+            tableHeader.BottomPadding = 0;
+            Column columnHeader1 = tableHeader.AddColumn(100);
+            Column columnHeader2 = tableHeader.AddColumn(270);
+            columnHeader1.Format.Alignment = ParagraphAlignment.Right;
+            columnHeader2.Format.Alignment = ParagraphAlignment.Left;
+
+            Row rowHeader = tableHeader.AddRow();
+            Paragraph paragraphHeader1 = rowHeader.Cells[0].AddParagraph();
+            Paragraph paragraphHeader2 = rowHeader.Cells[1].AddParagraph();
+            Paragraph paragraphHeader3 = rowHeader.Cells[1].AddParagraph();
+            paragraphHeader3.Format.Font.Size = 10;
+
+            Image logo = paragraphHeader1.AddImage("Images/logo_exam.png");
+            logo.Width = 80;
+            logo.Height = 55;
+            paragraphHeader2.Format.Alignment = ParagraphAlignment.Center;
+            paragraphHeader2.Format.Font = new Font()
+            {
+                Bold = true,
+                Size = 10
+            };
+            paragraphHeader2.AddText(InformationOfClinic.Name);
+
+            string[] addressArray = InformationOfClinic.Address.Split(';');
+            try
+            {
+                paragraphHeader3.AddSpace(int.Parse(addressArray[0]));
+                paragraphHeader3.AddText($"Địa chỉ : {addressArray[1]}");
+                paragraphHeader3.AddText(" \n");
+
+                string[] sdtArray = InformationOfClinic.Sdt.Split(';');
+                paragraphHeader3.AddSpace(int.Parse(sdtArray[0]));
+                paragraphHeader3.AddText($"Số điện thoại: {sdtArray[1]}");
+            }
+            catch
+            {
+                paragraphHeader3.AddSpace(10);
+            }
         }
     }
 }
