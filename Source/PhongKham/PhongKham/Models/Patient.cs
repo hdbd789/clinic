@@ -51,9 +51,9 @@ namespace Clinic.Models
         [Name("Địa chỉ")]
         [Index(4)]
         public string Address { get; set; }
-        [Name("Chiều cao")]
+        [Name("Ngày dự sanh")]
         [Index(5)]
-        public string Height { get; set; }
+        public DateTime DateWillBirth { get; set; }
         [Name("Cân nặng")]
         [Index(6)]
         public string Weight { get; set; }
@@ -63,12 +63,11 @@ namespace Clinic.Models
         #endregion
 
         #region ctors
-        public Patient(string id, string name, string weight, string height, string address, DateTime birthday)
+        public Patient(string id, string name, string weight, string address, DateTime birthday)
         {
             this.id = id;
             Name = name;
             Weight = weight;
-            Height = height;
             Address = address;
             Birthday = birthday;
         }

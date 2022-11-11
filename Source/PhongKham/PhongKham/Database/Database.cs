@@ -133,36 +133,36 @@ namespace Clinic.Database
                     string strCommand = "grant all privileges on *.* to 'root'@'%' identified by " + Helper.ConvertToSqlString(password);
                     ExecuteNonQuery(strCommand, null);
                 }
-                ExecuteNonQuery("CREATE DATABASE IF NOT EXISTS clinic DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
-                tConnection.ConnectionString += ";database=clinic;";
-                tConnection.ConnectionString += ";password=" + password;
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS clinicuser(Username varchar(50) NOT NULL PRIMARY KEY,Password1  varchar(50),Authority  integer, Password2  varchar(50), namedoctor TEXT NULL);", null);
+                Guard(() => ExecuteNonQuery("CREATE DATABASE IF NOT EXISTS clinic DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null));
+                //tConnection.ConnectionString += ";database=clinic;";
+                //tConnection.ConnectionString += ";password=" + password;
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS clinicuser(Username varchar(50) NOT NULL PRIMARY KEY,Password1  varchar(50),Authority  integer, Password2  varchar(50), namedoctor TEXT NULL);", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS history(IdHistory INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Id varchar(10),Symptom Longtext,Diagnose Longtext,Medicines Longtext,Day Datetime, temperature TEXT, huyetap TEXT, Reason TEXT, NameDoctor TEXT, NameLoaiKham TEXT);", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS history(IdHistory INT NOT NULL AUTO_INCREMENT PRIMARY KEY, Id varchar(10),Symptom Longtext,Diagnose Longtext,Medicines Longtext,Day Datetime, temperature TEXT, huyetap TEXT, Reason TEXT, NameDoctor TEXT, NameLoaiKham TEXT);", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS medicine(Name varchar(50),Count int,CostIn int,CostOut int,InputDay Datetime,Id varchar(10) NOT NULL PRIMARY KEY, Hdsd TEXT, Admin TEXT);", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS medicine(Name varchar(50),Count int,CostIn int,CostOut int,InputDay Datetime,Id varchar(10) NOT NULL PRIMARY KEY, Hdsd TEXT, Admin TEXT);", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS patient(Idpatient INT NOT NULL AUTO_INCREMENT PRIMARY KEY,Name varchar(50), phone VARCHAR(45), Address Varchar(400),birthday datetime,height TEXT,weight TEXT);", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS patient(Idpatient INT NOT NULL AUTO_INCREMENT PRIMARY KEY,Name varchar(50), phone VARCHAR(45), Address Varchar(400),birthday datetime,height TEXT,weight TEXT);", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS calendar(IdCalendar INT NOT NULL,Username varchar(50),StartTime datetime,EndTime datetime,Text Longtext,Color int, PRIMARY KEY (IdCalendar)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS calendar(IdCalendar INT NOT NULL,Username varchar(50),StartTime datetime,EndTime datetime,Text Longtext,Color int, PRIMARY KEY (IdCalendar)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS listpatienttoday(Id varchar(10) NOT NULL, time datetime, Name TEXT NULL,State VARCHAR(45) NULL, PRIMARY KEY (Id));", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS listpatienttoday(Id varchar(10) NOT NULL, time datetime, Name TEXT NULL,State VARCHAR(45) NULL, PRIMARY KEY (Id));", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS doanhthu(Iddoanhthu INT NOT NULL AUTO_INCREMENT,Namedoctor TEXT NULL,Money int NULL,time datetime,Idpatient varchar(10),Namepatient TEXT, Services TEXT,LoaiKham TEXT, IdHistory INT, PRIMARY KEY (Iddoanhthu));", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS doanhthu(Iddoanhthu INT NOT NULL AUTO_INCREMENT,Namedoctor TEXT NULL,Money int NULL,time datetime,Idpatient varchar(10),Namepatient TEXT, Services TEXT,LoaiKham TEXT, IdHistory INT, PRIMARY KEY (Iddoanhthu));", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS lichhen(Idlichhen INT NOT NULL AUTO_INCREMENT,Idpatient int,Namedoctor TEXT NULL,Namepatient TEXT NULL,time datetime,benh TEXT NULL,phone VARCHAR(45), IdHistory INT,status INT, PRIMARY KEY (Idlichhen));", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS lichhen(Idlichhen INT NOT NULL AUTO_INCREMENT,Idpatient int,Namedoctor TEXT NULL,Namepatient TEXT NULL,time datetime,benh TEXT NULL,phone VARCHAR(45), IdHistory INT,status INT, PRIMARY KEY (Idlichhen));", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS loaikham(Idloaikham INT NOT NULL AUTO_INCREMENT,Nameloaikham TEXT NOT NULL, PRIMARY KEY (Idloaikham)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS loaikham(Idloaikham INT NOT NULL AUTO_INCREMENT,Nameloaikham TEXT NOT NULL, PRIMARY KEY (Idloaikham)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS lichsunhapthuoc(Idhistory INT NOT NULL AUTO_INCREMENT,idMedicine varchar(10) NOT NULL, Count INT, CostIn int, CostOut int, InputDay Datetime , CountStore INT,PRIMARY KEY (Idhistory));", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS lichsunhapthuoc(Idhistory INT NOT NULL AUTO_INCREMENT,idMedicine varchar(10) NOT NULL, Count INT, CostIn int, CostOut int, InputDay Datetime , CountStore INT,PRIMARY KEY (Idhistory));", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS ReasonApoinment(ID INT NOT NULL AUTO_INCREMENT,reason TEXT NOT NULL, PRIMARY KEY (ID)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS ReasonApoinment(ID INT NOT NULL AUTO_INCREMENT,reason TEXT NOT NULL, PRIMARY KEY (ID)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS Diagnoses(ID INT NOT NULL AUTO_INCREMENT,diagnoses TEXT NOT NULL,hiden TINYINT(1), PRIMARY KEY (ID)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS Diagnoses(ID INT NOT NULL AUTO_INCREMENT,diagnoses TEXT NOT NULL,hiden TINYINT(1), PRIMARY KEY (ID)) CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS Advisory(Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IdPatient varchar(10),Symptom Longtext,Diagnose Longtext,Medicines Longtext,Day Datetime, temperature TEXT, huyetap TEXT, Reason TEXT, NameDoctor TEXT, NameLoaiKham TEXT);", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS Advisory(Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IdPatient varchar(10),Symptom Longtext,Diagnose Longtext,Medicines Longtext,Day Datetime, temperature TEXT, huyetap TEXT, Reason TEXT, NameDoctor TEXT, NameLoaiKham TEXT);", null));
 
-                ExecuteNonQuery("CREATE Table IF NOT EXISTS AdvisoryHistory(Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IdPatient varchar(10), Day Datetime, NameDoctor TEXT);", null);
+                Guard(() => ExecuteNonQuery("CREATE Table IF NOT EXISTS AdvisoryHistory(Id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, IdPatient varchar(10), Day Datetime, NameDoctor TEXT);", null));
 
                 UpdateDatabase();
             }
@@ -197,6 +197,15 @@ namespace Clinic.Database
             Guard(fun);
 
             fun = () => ExecuteNonQuery("CREATE event delete on schedule every 1 day starts at timestamp '2007-03-25 23:59:00' do delete from listpatienttoday", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE history ADD COLUMN DateWillBirth datetime NULL;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE Advisory ADD COLUMN DateWillBirth datetime NULL;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE lichhen ADD COLUMN DateWillBirth datetime NULL;", null);
             Guard(fun);
         }
 

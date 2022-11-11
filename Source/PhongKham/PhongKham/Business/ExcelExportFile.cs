@@ -42,7 +42,6 @@ namespace Clinic.Business
                             row.CreateCell(2).SetCellValue("Ngày sinh");
                             row.CreateCell(3).SetCellValue("Số điện thoại");
                             row.CreateCell(4).SetCellValue("Địa chỉ");
-                            row.CreateCell(5).SetCellValue("Chiều cao");
                             row.CreateCell(6).SetCellValue("Cân nặng");
                             row.CreateCell(7).SetCellValue("Triệu chứng");
                             row.CreateCell(8).SetCellValue("Chẩn đoán");
@@ -64,7 +63,6 @@ namespace Clinic.Business
                                 row.CreateCell(2).SetCellValue(patient.Birthday.ToString("dd-MM-yyyy"));
                                 row.CreateCell(3).SetCellValue(patient.Phone);
                                 row.CreateCell(4).SetCellValue(patient.Address);
-                                row.CreateCell(5).SetCellValue(patient.Height);
                                 row.CreateCell(6).SetCellValue(patient.Weight);
                                 row.CreateCell(7).SetCellValue(patient.Symptom);
                                 row.CreateCell(8).SetCellValue(patient.Diagnose);

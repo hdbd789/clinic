@@ -43,13 +43,20 @@ namespace Clinic.Business
 
             if (!isPatientExist)
             {
-                List<string> columns = new List<string>() { DatabaseContants.patient.Name, DatabaseContants.patient.Address, DatabaseContants.patient.birthday, DatabaseContants.patient.height, DatabaseContants.patient.weight, DatabaseContants.patient.Id, DatabaseContants.patient.Phone };
+                List<string> columns = new List<string>() 
+                { 
+                    DatabaseContants.patient.Name, 
+                    DatabaseContants.patient.Address, 
+                    DatabaseContants.patient.birthday, 
+                    DatabaseContants.patient.weight, 
+                    DatabaseContants.patient.Id, 
+                    DatabaseContants.patient.Phone
+                };
                 List<string> values = new List<string>()
                 {
                     infoPatient.Name,
                     infoPatient.Address,
-                    infoPatient.Birthday.ToString("yyyy-MM-dd"),
-                    infoPatient.Height,
+                    infoPatient.Birthday.ToString(ClinicConstant.DateTimeSQLFormat),
                     infoPatient.Weight,
                     infoPatient.Id,
                     infoPatient.Phone
@@ -90,7 +97,8 @@ namespace Clinic.Business
                 strHenTaiKham = BuildStringHenTaiKham(infoPatient.NgayTaiKhamDate);
             }
             int STT = Helper.LaySTTTheoNgay(db, DateTime.UtcNow, infoPatient.Id);
-            Helper.CreateAPdfAdvisory(
+
+            PrintPrescription.CreateAPdfAdvisory(
                 infoClinic,
                 infoPatient,
                 listMedicines,
@@ -153,19 +161,21 @@ namespace Clinic.Business
                 "temperature", 
                 "huyetap", 
                 DatabaseContants.Advisory.Reason,
-                DatabaseContants.Advisory.nameofdoctor
+                DatabaseContants.Advisory.nameofdoctor,
+                DatabaseContants.Advisory.DateWillBirth
             };
             List<string> valuesHistory = new List<string>()
             {
                 infoPatient.Id,
                 infoPatient.Symptom,
                 infoPatient.Diagnose,
-                DateTime.Now.ToString("yyyy-MM-dd"),
+                DateTime.Now.ToString(ClinicConstant.DateTimeSQLFormat),
                 medicines,
                 infoPatient.Temperature,
                 infoPatient.HuyenAp,
                 infoPatient.Reason,
-                infoPatient.NameOfDoctor
+                infoPatient.NameOfDoctor,
+                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
             };
             db.InsertRowToTable(DatabaseContants.tables.advisory, ColumnsAdvisory, valuesHistory);
 
@@ -179,8 +189,7 @@ namespace Clinic.Business
             { 
                 DatabaseContants.patient.Name, 
                 DatabaseContants.patient.Address, 
-                DatabaseContants.patient.birthday, 
-                DatabaseContants.patient.height, 
+                DatabaseContants.patient.birthday,
                 DatabaseContants.patient.weight,
                 DatabaseContants.patient.Phone
             };
@@ -188,8 +197,7 @@ namespace Clinic.Business
             {
                 infoPatient.Name,
                 infoPatient.Address,
-                infoPatient.Birthday.ToString("yyyy-MM-dd"),
-                infoPatient.Height,
+                infoPatient.Birthday.ToString(ClinicConstant.DateTimeSQLFormat),
                 infoPatient.Weight,
                 infoPatient.Phone
             };
@@ -209,19 +217,21 @@ namespace Clinic.Business
                 "temperature",
                 "huyetap",
                 DatabaseContants.history.Reason,
-                DatabaseContants.Advisory.nameofdoctor
+                DatabaseContants.Advisory.nameofdoctor,
+                DatabaseContants.Advisory.DateWillBirth
             };
             List<string> valuesHistory = new List<string>()
             {
                 infoPatient.Id,
                 infoPatient.Symptom,
                 infoPatient.Diagnose,
-                infoPatient.NgayKham.ToString("yyyy-MM-dd"),
+                infoPatient.NgayKham.ToString(ClinicConstant.DateTimeSQLFormat),
                 medicines,
                 infoPatient.Temperature,
                 infoPatient.HuyenAp,
                 infoPatient.Reason,
-                infoPatient.NameOfDoctor
+                infoPatient.NameOfDoctor,
+                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
             };
             db.UpdateRowToTable(DatabaseContants.tables.advisory,
                 ColumnsAdvisory,
@@ -276,23 +286,35 @@ namespace Clinic.Business
                 string IDLichHen = "";
                 if (Helper.IsExistsAppointmentAdvisory(db, infoPatient.Id, infoPatient.IdHistory, ref IDLichHen)) // update
                 {
-                    List<string> columnslichhen = new List<string>() { "Idpatient", "Namedoctor", "Namepatient", "time", "phone", "benh", DatabaseContants.LichHen.IdAdvisory, DatabaseContants.LichHen.status };
+                    List<string> columnslichhen = new List<string>() 
+                    { 
+                        "Idpatient", 
+                        "Namedoctor", 
+                        "Namepatient", 
+                        "time", 
+                        "phone", 
+                        "benh", 
+                        DatabaseContants.LichHen.IdAdvisory, 
+                        DatabaseContants.LichHen.status,
+                        DatabaseContants.LichHen.DateWillBirth
+                    };
                     List<string> valueslichhen = new List<string>()
                     {
                         infoPatient.Id,
                         infoPatient.NameOfDoctor,
                         infoPatient.Name,
-                        infoPatient.NgayTaiKhamDate.ToString("yyyy-MM-dd"),
+                        infoPatient.NgayTaiKhamDate.ToString(ClinicConstant.DateTimeSQLFormat),
                         infoPatient.Phone,
                         infoPatient.Diagnose,
                         infoPatient.IdHistory,
-                        "0"
+                        "0",
+                        infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
                     };
                     db.UpdateRowToTable(DatabaseContants.tables.lichHen, columnslichhen, valueslichhen, DatabaseContants.LichHen.ID, IDLichHen);
                 }
                 else // add new
                 {
-                    List<string> columnslichhen = new List<string>() { "Idpatient", "Namedoctor", "Namepatient", "time", "phone", "benh", DatabaseContants.LichHen.IdAdvisory, DatabaseContants.LichHen.status };
+                    List<string> columnslichhen = new List<string>() { "Idpatient", "Namedoctor", "Namepatient", "time", "phone", "benh", DatabaseContants.LichHen.IdAdvisory, DatabaseContants.LichHen.status, DatabaseContants.LichHen.DateWillBirth };
                     List<string> valueslichhen = new List<string>()
                     {
                         infoPatient.Id,
@@ -302,7 +324,8 @@ namespace Clinic.Business
                         infoPatient.Phone,
                         infoPatient.Diagnose,
                         infoPatient.IdHistory,
-                        "0"
+                        "0",
+                        infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
                     };
                     db.InsertRowToTable(DatabaseContants.tables.lichHen, columnslichhen, valueslichhen);
                 }

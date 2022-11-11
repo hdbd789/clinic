@@ -1,9 +1,8 @@
-﻿using Clinic.Helpers;
-using log4net;
-using PhongKham;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
+using log4net;
+using PhongKham;
 
 namespace Clinic.Business
 {
@@ -27,7 +26,7 @@ namespace Clinic.Business
             {
                 Log.Error(ex.Message, ex);
             }
-            if (mainForm.IsLogout)
+            if (mainForm != null && mainForm.IsLogout)
             {
                 Close();
                 StartApp();
