@@ -159,6 +159,9 @@
     <Reference Include="NPOI.OpenXmlFormats, Version=2.5.5.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <HintPath>..\packages\NPOI.2.5.5\lib\net45\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
+    <Reference Include="Octokit, Version=4.0.3.0, Culture=neutral, PublicKeyToken=0be8860aee462442, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octokit.4.0.3\lib\netstandard2.0\Octokit.dll</HintPath>
+    </Reference>
     <Reference Include="PdfSharp, Version=1.31.1789.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\PdfSharp.dll</HintPath>
@@ -229,6 +232,12 @@
       <DependentUpon>DatagridviewPaging.cs</DependentUpon>
     </Compile>
     <Compile Include="ClinicException\FunctionalException.cs" />
+    <Compile Include="Dialog\CheckUpdate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialog\CheckUpdate.Designer.cs">
+      <DependentUpon>CheckUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\ProgressForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -253,6 +262,7 @@
     <Compile Include="Gui\Thongkethuoc.Designer.cs">
       <DependentUpon>Thongkethuoc.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ApplicationHelper.cs" />
     <Compile Include="Helpers\AuthorizationHelper.cs" />
     <Compile Include="Helpers\ErrorProviderHelper.cs" />
     <Compile Include="Helpers\ExtensionMethod.cs" />
@@ -376,6 +386,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CustomControl\DatagridviewPaging.resx">
       <DependentUpon>DatagridviewPaging.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialog\CheckUpdate.resx">
+      <DependentUpon>CheckUpdate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Extensions\ProgressForm.resx">
       <DependentUpon>ProgressForm.cs</DependentUpon>
