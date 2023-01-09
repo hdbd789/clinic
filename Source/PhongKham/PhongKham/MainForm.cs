@@ -22,6 +22,7 @@ using log4net;
 using System.Reflection;
 using Clinic.Business;
 using System.Globalization;
+using Clinic.Dialog;
 
 namespace PhongKham
 {
@@ -78,7 +79,7 @@ namespace PhongKham
 
 
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.Text = "Phòng Khám -" + "User: " + name;
+            this.Text = "Phòng Khám -" + "User: " + name + $" [{ApplicationHelper.GetCurrentVersion()}]";
             Form1.Authority = Authority;
 
             UserName = name;
@@ -2230,6 +2231,12 @@ namespace PhongKham
                 return false;
             }
             return true;
+        }
+
+        private void checkForUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CheckUpdate checUpdateDialog = new CheckUpdate();
+            checUpdateDialog.ShowDialog();
         }
     }
 }
