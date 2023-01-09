@@ -22,24 +22,10 @@ namespace UpdateNewVersion
             InitializeComponent();
         }
 
-        private void btnDownload_Click(object sender, EventArgs e)
-        {
-            btnDownload.Enabled = false;
-            buttonX1.Enabled = false;
-            progressBarX1.Value = 0;
-
-            lblResult.Text = "Đang xử lí ...";
-            tempFileName = Path.Combine(Path.GetTempPath(), $"{Path.GetRandomFileName()}.zip");
-            WebClient webClient = new WebClient();
-            webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
-            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
-            webClient.DownloadFileAsync(new Uri(_urlPackage), tempFileName);
-        }
-
         private void WebClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             bool isSuccess = ExtractAndCopy();
-            progressBarX1.Value = 100;
+            progressBar1.Value = 100;
 
             if (isSuccess)
             {
@@ -51,7 +37,7 @@ namespace UpdateNewVersion
                 btnDownload.Enabled = true;
             }
 
-            buttonX1.Enabled = true;
+            btnExit.Enabled = true;
         }
 
         private bool ExtractAndCopy()
@@ -135,22 +121,36 @@ namespace UpdateNewVersion
 
         private void WebClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            progressBarX1.Value = e.ProgressPercentage;
-        }
-
-        private void progressBarX1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void buttonX1_Click(object sender, EventArgs e)
-        {
-            Close();
+            progressBar1.Value = e.ProgressPercentage;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             lblVersion.Text = _version;
+        }
+
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void btnDownload_Click_1(object sender, EventArgs e)
+        {
+            btnDownload.Enabled = false;
+            btnExit.Enabled = false;
+            progressBar1.Value = 0;
+
+            lblResult.Text = "Đang xử lí ...";
+            tempFileName = Path.Combine(Path.GetTempPath(), $"{Path.GetRandomFileName()}.zip");
+            WebClient webClient = new WebClient();
+            webClient.DownloadProgressChanged += WebClient_DownloadProgressChanged;
+            webClient.DownloadFileCompleted += WebClient_DownloadFileCompleted;
+            webClient.DownloadFileAsync(new Uri(_urlPackage), tempFileName);
         }
     }
 }
