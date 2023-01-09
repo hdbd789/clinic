@@ -33,10 +33,10 @@ namespace Clinic.Business
             }
         }
 
-        private static void Close()
+        public static void Close()
         {
-            mainForm.Dispose();
-            login.Dispose();
+            mainForm?.Dispose();
+            login?.Dispose();
             login = null;
             mainForm = null;
         }
