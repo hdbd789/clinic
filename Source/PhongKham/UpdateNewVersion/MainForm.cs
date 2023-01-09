@@ -50,7 +50,7 @@ namespace UpdateNewVersion
                 lblResult.Text = "Cập nhật thất bại, xin thử lại!.";
                 btnDownload.Enabled = true;
             }
-            
+
             buttonX1.Enabled = true;
         }
 
@@ -71,7 +71,7 @@ namespace UpdateNewVersion
                 }
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex.Message, ex);
                 return false;
@@ -82,6 +82,11 @@ namespace UpdateNewVersion
         {
             if (Directory.Exists(sourceDirectory))
             {
+                if (Path.GetFileName(destinationDirectory).ToLower() == "update")
+                {
+                    return;
+                }
+
                 if (!Directory.Exists(destinationDirectory))
                 {
                     Directory.CreateDirectory(destinationDirectory);
