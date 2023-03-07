@@ -39,6 +39,7 @@ namespace Clinic.Database
             public static string namLoaiKham = "NameLoaiKham";
             public static string IdHistory = "IdHistory";
             public static string Reason = "Reason";
+            public static string DateWillBirth = "DateWillBirth";
         }
 
         public struct medicine
@@ -60,7 +61,7 @@ namespace Clinic.Database
            public static string height = "height";
            public static string weight = "weight";
            public static string Id = "Idpatient";
-            public static string Phone = "phone";
+           public static string Phone = "phone";
         }
 
         public struct danhthu
@@ -101,12 +102,38 @@ namespace Clinic.Database
             public static string sick = "benh";
             public static string Namepatient = "Namepatient";
             public static string Namedoctor = "Namedoctor";
+            public static string IdAdvisory = "IdAdvisory";
+            public static string DateWillBirth = "DateWillBirth";
         }
 
         public struct LoaiKham
         {
             public static string Idloaikham = "Idloaikham";
             public static string Nameloaikham = "Nameloaikham";
+        }
+
+        public struct Advisory
+        {
+            public static string Id = "Id";
+            public static string IdPatient = "IdPatient";
+            public static string Symptom = "Symptom";
+            public static string Diagnose = "Diagnose";
+            public static string Temperature = "temperature";
+            public static string Medicines = "Medicines";
+            public static string Huyetap = "huyetap";
+            public static string Day = "Day";
+            public static string nameofdoctor = "NameDoctor";
+            public static string namLoaiKham = "NameLoaiKham";
+            public static string Reason = "Reason";
+            public static string DateWillBirth = "DateWillBirth";
+        }
+
+        public struct AdvisoryHistory
+        {
+            public static string Id = "Id";
+            public static string IdPatient = "IdPatient";
+            public static string Day = "Day";
+            public static string nameofdoctor = "NameDoctor";
         }
 
         public struct tables
@@ -123,6 +150,8 @@ namespace Clinic.Database
             public static string loaikham = "loaikham";
             public static string reasonapoinment = "reasonapoinment"; 
             public static string listpatienttoday = "listpatienttoday";
+            public static string advisory = "Advisory";
+            public static string AdvisoryHistory = "AdvisoryHistory";
         }
 
 

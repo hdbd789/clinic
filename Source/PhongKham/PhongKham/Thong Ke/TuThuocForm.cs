@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Clinic.Models;
 using Clinic.Helpers;
-using PhongKham;
 using Clinic.Models.ItemMedicine;
 using Clinic.Database;
 using System.Data.Common;
 using Clinic.Thong_Ke;
 using Clinic.MessageBoxControl;
 using Clinic.Gui;
+using log4net;
+using System.Reflection;
 
 namespace Clinic
 {
     public partial class TuThuocForm : Form
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public delegate void RefreshMedicines4MainForm();
         public static RefreshMedicines4MainForm refreshMedicines4MainForm;
@@ -167,8 +165,25 @@ namespace Clinic
         private void button1_Click_1(object sender, EventArgs e)
         {
             string namePDF = "TuThuoc";
-            Helper.CreateAPdfThongKe(this.dataGridView1, namePDF);
-            this.PDFShowMedicines.LoadFile("TuThuoc.pdf");
+            string message;
+            try
+            {
+                Helper.CreateAPdfThongKe(this.dataGridView1, namePDF);
+                if (this.PDFShowMedicines.LoadFile("TuThuoc.pdf"))
+                {
+                    message = "Print thành công";
+                }
+                else
+                {
+                    message = "Print thất bại, xin vui lòng thử lại.";
+                }
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex.Message, ex);
+                message = "Print thất bại, xin vui lòng thử lại.";
+            }
+            MessageBox.Show(message, "Thông báo", MessageBoxButtons.OK);
         }
 
         private void button2_Click(object sender, EventArgs e)

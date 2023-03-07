@@ -22,6 +22,7 @@ using MigraDoc.DocumentObjectModel.Tables;
 using Clinic.Models.ItemMedicine;
 using log4net;
 using System.Reflection;
+using System.Globalization;
 
 namespace Clinic.Helpers
 {
@@ -34,7 +35,7 @@ namespace Clinic.Helpers
         #region Fields
         private static readonly byte[] _key = { 0xA1, 0xF1, 0xA6, 0xBB, 0xA2, 0x5A, 0x37, 0x6F, 0x81, 0x2E, 0x17, 0x41, 0x72, 0x2C, 0x43, 0x27 };
         private static readonly byte[] _initVector = { 0xE1, 0xF1, 0xA6, 0xBB, 0xA9, 0x5B, 0x31, 0x2F, 0x81, 0x2E, 0x17, 0x4C, 0xA2, 0x81, 0x53, 0x61 };
-        public static List<string> ColumnsHistory = new List<string>() { "Id", "Symptom", "Diagnose", "Day", "Medicines", "temperature", "huyetap", DatabaseContants.history.Reason };
+        public static List<string> ColumnsHistory = new List<string>() { "Id", "Symptom", "Diagnose", "Day", "Medicines", "temperature", "huyetap", DatabaseContants.history.Reason, DatabaseContants.history.DateWillBirth };
         public static List<string> ColumnsDoanhThu = new List<string>() { "Namedoctor", "Money", "time", "Idpatient", "Namepatient", DatabaseContants.danhthu.Services, DatabaseContants.danhthu.LoaiKham, DatabaseContants.history.IdHistory };
         public static string IDPatient;
 
@@ -72,8 +73,13 @@ namespace Clinic.Helpers
 
         public static string ChangePositionOfDayAndYear(string datetime)
         {
-            string[] temp = datetime.Split('-');
-            return temp[2] + '-' + temp[1] + '-' + temp[0];
+            DateTime date;
+            if(DateTime.TryParseExact(datetime, ClinicConstant.DateTimeFormat, CultureInfo.InvariantCulture
+                , DateTimeStyles.None, out date))
+            {
+                return date.ToString(ClinicConstant.DateTimeSQLFormat);
+            }
+            return DateTime.Today.ToString(ClinicConstant.DateTimeSQLFormat);
         }
 
 
@@ -219,9 +225,9 @@ namespace Clinic.Helpers
 
         }
 
-        public static bool checkAdminExists(string nameOfTable)
+        public static bool CheckAdminExists()
         {
-            string strCommand = "SELECT * FROM " + nameOfTable + " WHERE Authority = 1";
+            string strCommand = "SELECT Authority FROM " + DatabaseContants.tables.clinicuser + " WHERE Authority = 1 LIMIT 1";
             // MySqlCommand comm = new MySqlCommand(strCommand, conn);
             //MySqlDataReader reader = comm.ExecuteReader();
             IDatabase db = DatabaseFactory.Instance;
@@ -309,6 +315,33 @@ namespace Clinic.Helpers
             {
                 reader.Close();
 
+            }
+        }
+
+        public static bool IsAdvisoryExists(IDatabase db, string IdAdvisory)
+        {
+            string strCommand = $"SELECT {DatabaseContants.Advisory.Id} FROM {DatabaseContants.tables.advisory} WHERE {DatabaseContants.Advisory.Id} = {IdAdvisory}";
+            //MySqlCommand comm = new MySqlCommand(strCommand, conn);
+            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
+            {
+                return reader.HasRows;
+            }
+        }
+
+        public static bool IsAdvisoryHistoryExists(IDatabase db, string IdPatient, string visitDate, out string idAdvisoryHistory)
+        {
+            idAdvisoryHistory = string.Empty;
+            string strCommand = $"SELECT {DatabaseContants.AdvisoryHistory.Id} FROM {DatabaseContants.tables.AdvisoryHistory} "
+                + $" WHERE {DatabaseContants.AdvisoryHistory.IdPatient} = {IdPatient} AND {DatabaseContants.AdvisoryHistory.Day} = {ConvertToSqlString(visitDate)};";
+            using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
+            {
+                reader.Read();
+                bool result = reader.HasRows;
+                if (result)
+                {
+                    idAdvisoryHistory = reader[DatabaseContants.AdvisoryHistory.Id].ToString();
+                }
+                return result;
             }
         }
 
@@ -571,6 +604,7 @@ namespace Clinic.Helpers
 
         internal static void CreateAPdfThongKe(System.Windows.Forms.DataGridView dataGridView, string namePDF)
         {
+            int numberColumn = 6;
             Document document = new Document();
             document.Info.Author = "Luong Y";
             Unit width, height;
@@ -584,33 +618,29 @@ namespace Clinic.Helpers
             paragraphTitle.Format.Alignment = ParagraphAlignment.Center;
             paragraphTitle.AddTab();
             paragraphTitle.AddTab();
-
-
-
-              paragraphTitle.AddFormattedText("Tủ Thuốc \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
+            paragraphTitle.AddFormattedText("Tủ Thuốc \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
  
-
-
-
             section.PageSetup.LeftMargin = 1;
 
             Table tableMedicines = section.AddTable();
             tableMedicines.Borders.Width = 0.5;
             tableMedicines.BottomPadding = 1;
-            //Column columnMedicines1 = tableMedicines.AddColumn(30);
-            for (int i = 0; i<dataGridView.Columns.Count; i++)
-            {
+            tableMedicines.Rows.LeftIndent = Unit.FromMillimeter(17);
 
+            //Column columnMedicines1 = tableMedicines.AddColumn(30);
+            for (int i = 0; i< numberColumn; i++)
+            {
                 if (i == 1)
                 {
-                    Column columnMedicines1 = tableMedicines.AddColumn(150);
+                    tableMedicines.AddColumn(150);
                     
                 }
-                else {
-                    Column columnMedicines1 = tableMedicines.AddColumn();
+                else 
+                {
+                    tableMedicines.AddColumn();
                 }
             }
-
+            
             Row rowHeaderText = tableMedicines.AddRow();
             rowHeaderText.Cells[0].AddParagraph("Id");
             rowHeaderText.Cells[1].AddParagraph("Tên thuốc");
@@ -629,249 +659,12 @@ namespace Clinic.Helpers
                 row.Cells[4].AddParagraph(dataGridView.Rows[i].Cells["ColumnCostOut"].Value != null ? dataGridView.Rows[i].Cells["ColumnCostOut"].Value.ToString() : "");
                 row.Cells[5].AddParagraph(dataGridView.Rows[i].Cells["ColumnInputDay"].Value != null ? dataGridView.Rows[i].Cells["ColumnInputDay"].Value.ToString() : "");
             }
-            
 
             PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always);
             pdfRenderer.Document = document;
             pdfRenderer.RenderDocument();
             pdfRenderer.PdfDocument.Save(namePDF+".pdf");
-        }
-        public static void CreateAPdf(InfoClinic InformationOfClinic, string MaBn, Patient patient, List<Medicine> Medicines, string taikham, string Diagno, string tuoi,int Stt,string reasonComeBack)
-        {
-            Document document = new Document();
-            document.Info.Author = "Luong Y";
-             Unit width, height;
-            PageSetup.GetPageSize(PageFormat.A5, out width, out height);
-            document.DefaultPageSetup.PageWidth = width;
-            document.DefaultPageSetup.PageHeight = height;
-           
-            int tongTienThuoc = 0;
-            AddSection(document, InformationOfClinic, MaBn, patient, Medicines, false, taikham, ref  tongTienThuoc, Diagno, tuoi, Stt, reasonComeBack);
-
-            AddSection(document, InformationOfClinic, MaBn, patient, Medicines, true, taikham, ref  tongTienThuoc, Diagno, tuoi, Stt, reasonComeBack);
-
-            PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true, PdfSharp.Pdf.PdfFontEmbedding.Always);
-     
-            pdfRenderer.Document = document;
-            pdfRenderer.RenderDocument();
-            pdfRenderer.PdfDocument.Save("firstpage.pdf");
-        }
-
-        private static void AddSection(Document document, InfoClinic InformationOfClinic, string MaBn, Patient patient, List<Medicine> Medicines, bool onlyServices, string taikham, ref int tongTienThuoc, string Diagno, string tuoi, int Stt, string reasonComeBack)
-        {
-            Section section = document.AddSection();
-            section.PageSetup.LeftMargin = 10;
-
-
-            Paragraph paragraph =section.Headers.Primary.AddParagraph();
-             //= section.AddParagraph();
-      
-            paragraph.Format.Alignment = ParagraphAlignment.Left;
-
-            paragraph.AddText(InformationOfClinic.Name); //+"Mã BN: " + patient.Id + " \n" +" Địa chỉ xxxxx");
-            paragraph.AddText(" \n");
-
-            string[] addressArray = InformationOfClinic.Address.Split(';');
-            try
-            {
-                paragraph.AddSpace(int.Parse(addressArray[0]));
-                paragraph.AddText(addressArray[1]);
-                paragraph.AddText(" \n");
-
-                string[] sdtArray = InformationOfClinic.Sdt.Split(';');
-                paragraph.AddSpace(int.Parse(sdtArray[0]));
-                paragraph.AddText(sdtArray[1]);
-            }
-            catch (Exception ex)
-            {
-                paragraph.AddSpace(10);
-            }
-            
-
-
-
-            
-
-
-            Paragraph paragraph2 = section.Headers.Primary.AddParagraph();
-
-            paragraph2.Format.Alignment = ParagraphAlignment.Right;
-            paragraph2.AddText("ID : " + MaBn);
-            paragraph2.AddText(" \n");
-            paragraph2.AddText("STT : " + Stt);
-
-            paragraph.AddText(" \n");
-            paragraph.AddText(" \n");
-            paragraph.AddText(" \n");
-            paragraph.AddText(" \n");
-            //Table InfoTable = section.AddTable();
-            //InfoTable.Borders.Width = 0;
-            //Column ColumnInfo1 = InfoTable.AddColumn(500);
-            //Row rowInfoName = InfoTable.AddRow();
-            //Paragraph para1 = rowInfoName.Cells[0].AddParagraph(InformationOfClinic.Name);
-            //Row rowInfo2 = InfoTable.AddRow();
-
-
-
-            //Paragraph paraInfo = rowInfo2.Cells[0].AddParagraph();
-            //paraInfo.AddSpace(4);
-            //paraInfo.AddText(InformationOfClinic.Address);
-            //rowsignatureAndMore2.Cells[0].AddParagraph(taikham);
-            //Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n \n \n" + Form1.nameOfDoctor);
-            //para.Format.Alignment = ParagraphAlignment.Center;
-           
-
-
-
-            Paragraph paragraphTitle = section.AddParagraph();
-            paragraphTitle.Format.Alignment = ParagraphAlignment.Center;
-            paragraphTitle.AddTab();
-            paragraphTitle.AddTab();
-            if (!onlyServices)
-            {
-                paragraphTitle.AddFormattedText("TOA THUỐC \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
-            }
-            else
-            {
-                paragraphTitle.AddFormattedText("Bảng Dịch Vụ \n \n", new MigraDoc.DocumentObjectModel.Font("Times New Roman", 24));
-            }
-
-            Table table = new Table();
-            table.Borders.Width = 0;
-            Column column = table.AddColumn();
-            column.Width = 80;
-            table.AddColumn(440);
-
-            Row row = table.AddRow();
-            row.Cells[0].AddParagraph("Bệnh nhân: ");
-            row.Cells[1].AddParagraph(patient.Name);
-            //int tuoi = DateTime.Now.Year - patient.Birthday.Year;
-            row.Cells[0].AddParagraph("Tuổi:");
-            row.Cells[1].AddParagraph(tuoi);
-            Row row2 = table.AddRow();
-            row2.Cells[0].AddParagraph("Địa chỉ: ");
-            row2.Cells[1].AddParagraph(patient.Address);
-            //row2.Cells[2].AddParagraph("Mã BN: "+ patient.Id);
-            if (!onlyServices)
-            {
-                Row row3 = table.AddRow();
-                row3.Cells[0].AddParagraph("Chẩn đoán: ");
-                row3.Cells[1].AddParagraph(Diagno);
-            }
-
-
-            
-            Table tableMedicines = new Table();
-            tableMedicines.Borders.Width = 0;
-            tableMedicines.BottomPadding = 10;
-            Column columnMedicines1 = tableMedicines.AddColumn(30);
-            Column columnMedicines2;
-            if (onlyServices)
-            {
-               columnMedicines2 = tableMedicines.AddColumn(140);
-            }
-            else
-            {
-                 columnMedicines2 = tableMedicines.AddColumn(240);
-            }
-            Column columnMedicines3 = tableMedicines.AddColumn(70);
-            Column columnMedicines4 = tableMedicines.AddColumn(130);
-            Row rowMedicinesHeader = tableMedicines.AddRow();
-            rowMedicinesHeader.Cells[0].AddParagraph("STT");
-            if (!onlyServices)
-            {
-                rowMedicinesHeader.Cells[1].AddParagraph("Tên thuốc/Cách dùng");
-            }
-            else
-            {
-                rowMedicinesHeader.Cells[1].AddParagraph("Tên dịch vụ");
-            }
-            rowMedicinesHeader.Cells[2].AddParagraph("Số lượng");
-
-
-            if (onlyServices)
-            {
-                rowMedicinesHeader.Cells[3].AddParagraph("Số tiền");
-                int totalServices = 0;
-                int indexServices = 1;
-                for (int i = 0; i < Medicines.Count; i++)
-                {
-                    if (Medicines[i].Name[0] == '@')
-                    {
-                        string name = Medicines[i].Name.Substring(1, Medicines[i].Name.Length - 1);
-                        Row rowDetail = tableMedicines.AddRow();
-                        rowDetail.Cells[0].AddParagraph(indexServices.ToString());
-                        rowDetail.Cells[1].AddParagraph(name + "\n" + Medicines[i].HDSD);
-                        rowDetail.Cells[2].AddParagraph(Medicines[i].Number.ToString());
-                        int thanhtien = Medicines[i].CostOut * Medicines[i].Number;
-                        rowDetail.Cells[3].AddParagraph(thanhtien.ToString("C0"));
-                        indexServices++;
-
-                        totalServices += thanhtien;
-                    }
-
-                }
-                //tong cong thuoc
-
-                Row rowTotalThuoc = tableMedicines.AddRow();
-                rowTotalThuoc.Cells[1].AddParagraph("Thuốc");
-                rowTotalThuoc.Cells[3].AddParagraph(tongTienThuoc.ToString("C0"));
-
-
-
-                Row gachdit = tableMedicines.AddRow();
-                gachdit.Cells[3].AddParagraph("________________");
-
-                int total = totalServices + tongTienThuoc;
-
-                Row rowTotal = tableMedicines.AddRow();
-                rowTotal.Cells[2].AddParagraph("Tổng cộng:");
-                rowTotal.Cells[3].AddParagraph(total.ToString("C0"));
-            }
-            else
-            {
-                int indexMedicines = 1;
-                for (int i = 0; i < Medicines.Count; i++)
-                {
-                    if (Medicines[i].Name[0] != '@')
-                    {
-                        Row rowDetail = tableMedicines.AddRow();
-                        rowDetail.Cells[0].AddParagraph(indexMedicines.ToString());
-                        rowDetail.Cells[1].AddParagraph(Medicines[i].Name + "\n" + Medicines[i].HDSD);
-                        rowDetail.Cells[2].AddParagraph(Medicines[i].Number.ToString());
-                        indexMedicines++;
-                        tongTienThuoc += Medicines[i].Number * Medicines[i].CostOut;
-                    }
-                }
-            }
-
-            //Table loi dan , chu ky
-            Table signatureAndMore = new Table();
-            signatureAndMore.Borders.Width = 0;
-            Column columnsignatureAndMore1 = signatureAndMore.AddColumn(150);
-            Column columnsignatureAndMore2 = signatureAndMore.AddColumn(50);
-            Column columnsignatureAndMore3 = signatureAndMore.AddColumn(210);
-            Row rowsignatureAndMore1 = signatureAndMore.AddRow();
-
-            if (!onlyServices)
-            {
-               // rowsignatureAndMore1.Cells[0].AddParagraph("Lời dặn: " + InformationOfClinic.Advice);
-            }
-            Paragraph paramNgayThang = rowsignatureAndMore1.Cells[2].AddParagraph("Ngày " + DateTime.Now.Day + " tháng " + DateTime.Now.Month + " năm " + DateTime.Now.Year);
-            paramNgayThang.Format.Alignment = ParagraphAlignment.Center;
-            Row rowsignatureAndMore2 = signatureAndMore.AddRow();
-            rowsignatureAndMore2.VerticalAlignment = VerticalAlignment.Center;
-            //rowsignatureAndMore2.Cells[0].AddParagraph(taikham + ": " + reasonComeBack);
-            Paragraph para = rowsignatureAndMore2.Cells[2].AddParagraph(" \n \n \n" + Form1.nameOfDoctor);
-            para.Format.Alignment = ParagraphAlignment.Center;
-
-            document.LastSection.Add(table);
-            document.LastSection.AddParagraph("\n");
-            document.LastSection.Add(tableMedicines);
-            document.LastSection.AddParagraph("\n");
-            document.LastSection.Footers.Primary.Add(signatureAndMore);
-
-        }
+        }     
 
         internal static string ConvertToDatetimeSql(DateTime dateTime)
         {
@@ -1315,6 +1108,48 @@ namespace Clinic.Helpers
             db.ExecuteNonQuery(strCommand, null);
         }
 
+        internal static void UpdateStatusAppointmentHistory(IDatabase db, string idbenhnhan, string idHistoryOld)
+        {
+            // select id,state,idpatient,time,idHistory
+            string strcmd = string.Format("SELECT Idlichhen,{1},{3},{5},{6} from {2} where {3} = {4} and {1} = 0 order by {5} limit 1", DatabaseContants.LichHen.ID, DatabaseContants.LichHen.status, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.Time, DatabaseContants.LichHen.IdHistory);
+            using (DbDataReader reader = db.ExecuteReader(strcmd, null) as DbDataReader)
+            {
+                while (reader.Read())
+                {
+                    if (ConvertObject2String(reader[DatabaseContants.LichHen.IdHistory]) == idHistoryOld)
+                        return;
+                    int status = GetStatusAppointment(reader[DatabaseContants.LichHen.Idpatient].ToString(), Convert.ToDateTime(reader[DatabaseContants.LichHen.Time]), reader[DatabaseContants.LichHen.status]);
+                    if (status == 0)
+                    {
+                        string strUpdate = string.Format("update {0} set {1} = {2} where {3} = {4}", DatabaseContants.tables.lichHen, DatabaseContants.LichHen.status, 1, DatabaseContants.LichHen.ID, reader[DatabaseContants.LichHen.ID]);
+                        DatabaseFactory.Instance2.ExecuteNonQuery(strUpdate, null);
+                        return;
+                    }
+                }
+            }
+        }
+
+        internal static int GetStatusAppointment(string idPatient, DateTime timeHen, object statusFromDb)
+        {
+            int timeCompare = timeHen.CompareTo(DateTime.Now);
+            if (statusFromDb == null || !Helper.CheckNumberValid(statusFromDb))
+            {
+                if (timeCompare <= 0)
+                {
+                    return Helper.GetStateComeBackFromHistoryByIdPatient(idPatient, DatabaseFactory.Instance2, timeHen);
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                int status = Helper.ConvertString2Int(statusFromDb);
+                return status;
+            }
+
+        }
 
         internal static string GetIdMedicineFromName(IDatabase db, string name)
         {
@@ -1706,6 +1541,23 @@ namespace Clinic.Helpers
             return result;
         }
 
+        internal static string GetReasonFromAdvisoryByIdAdvisory(string idAdvisory, IDatabase iDatabase2)
+        {
+            string result = "";
+
+            string strCommand = $"SELECT {DatabaseContants.Advisory.Reason} FROM {DatabaseContants.tables.advisory} WHERE {DatabaseContants.Advisory.Id} = {idAdvisory}";
+            using (DbDataReader reader = iDatabase2.ExecuteReader(strCommand, null) as DbDataReader)
+            {
+                reader.Read();
+                if (reader.HasRows)
+                {
+                    result = reader[DatabaseContants.Advisory.Reason].ToString();
+                }
+            }
+            iDatabase2.CloseCurrentConnection();
+            return result;
+        }
+
         internal static int GetStateComeBackFromHistoryByIdPatient(string IdPatient, IDatabase iDatabase2, DateTime time)
         {
             string strCommand = string.Format("SELECT {0} FROM {1} WHERE Day = {2} AND {3} = {4}",
@@ -1743,11 +1595,47 @@ namespace Clinic.Helpers
             }
         }
 
+        public static long AmoutAdvisoryInDay(IDatabase db, string useName)
+        {
+            try
+            {
+                string strCommand = string.Format("SELECT count(*) FROM {0} WHERE {1} = {2} AND {3} = {4}",
+                    DatabaseContants.tables.AdvisoryHistory,
+                    DatabaseContants.AdvisoryHistory.nameofdoctor,
+                    ConvertToSqlString(useName),
+                    DatabaseContants.AdvisoryHistory.Day,
+                    ConvertToSqlString(DateTime.Today.ToString("yyyy-MM-dd"))
+                    );
+                return long.Parse(db.ExecuteScalar(strCommand).ToString());
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
         public static long TongSoLuotKhamTrongNgay(IDatabase db)
         {
             try
             {
                 string strCommand = string.Format("SELECT count(*) FROM {0} where time = {1}", DatabaseContants.tables.danhthu, ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")));
+                return long.Parse(db.ExecuteScalar(strCommand).ToString());
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        public static long TotalAmoutAdvisoryInDay(IDatabase db)
+        {
+            try
+            {
+                string strCommand = string.Format("SELECT count(*) FROM {0} WHERE {1} = {2} AND {3} IS NOT NULL", 
+                    DatabaseContants.tables.AdvisoryHistory, 
+                    DatabaseContants.AdvisoryHistory.Day,
+                    ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")),
+                    DatabaseContants.AdvisoryHistory.nameofdoctor);
                 return long.Parse(db.ExecuteScalar(strCommand).ToString());
             }
             catch
@@ -1884,7 +1772,7 @@ namespace Clinic.Helpers
             }
         }
 
-        internal static bool IsExistsAppointment(IDatabase db,string idbenhnhan, string idHistory, ref string idLichHen)
+        internal static bool IsExistsAppointmentHistory(IDatabase db,string idbenhnhan, string idHistory, ref string idLichHen)
         {
             string strCmd = string.Format("select {0} from {1} where {2} = {3} and {4} = {5}", DatabaseContants.LichHen.ID, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.IdHistory, idHistory);
             using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
@@ -1896,6 +1784,79 @@ namespace Clinic.Helpers
                 }
                 return false;
             }
+        }
+
+        internal static bool IsExistsAppointmentAdvisory(IDatabase db, string idbenhnhan, string idAdvisory, ref string idLichHen)
+        {
+            string strCmd = string.Format("SELECT {0} FROM {1} WHERE {2} = {3} and {4} = {5}", DatabaseContants.LichHen.ID, DatabaseContants.tables.lichHen, DatabaseContants.LichHen.Idpatient, idbenhnhan, DatabaseContants.LichHen.IdAdvisory, idAdvisory);
+            using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
+            {
+                if (reader.Read())
+                {
+                    idLichHen = Helper.ConvertObject2String(reader[DatabaseContants.LichHen.ID]);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        internal static string BuildStringServicesAndAdmin(string servicesWithoutAdmin, List<IMedicine> currentServices, ref Dictionary<string, int> listService)
+        {
+            StringBuilder result = new StringBuilder();
+            string[] serviceArray = servicesWithoutAdmin.Split(new string[] { ClinicConstant.StringBetweenServicesInDoanhThu }, StringSplitOptions.None);
+
+            for (int i = 0; i < serviceArray.Count(); i++)
+            {
+                IMedicine service = currentServices.Where(x => x.Name == serviceArray[i]).FirstOrDefault();
+                result.Append(serviceArray[i] + ClinicConstant.StringBetweenServiceAndAdmin + (service == null ? "" : service.Admin));
+                if (i != serviceArray.Count() - 1)
+                {
+                    result.AppendLine();
+                }
+                if ((!String.IsNullOrEmpty(serviceArray[i])) && serviceArray[i][0] == '@')
+                {
+                    if (listService.ContainsKey(serviceArray[i]))
+                    {
+                        listService[serviceArray[i]]++;
+                    }
+                    else
+                    {
+                        listService.Add(serviceArray[i], 1);
+                    }
+                }
+            }
+
+            return result.ToString();
+        }
+
+        internal static string BuildStringMedicines(string medicineStr)
+        {
+            StringBuilder result = new StringBuilder();
+            string[] serviceArray = medicineStr.Split(new string[] { ClinicConstant.StringBetweenOfMedicine }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < serviceArray.Count(); i++)
+            {
+                string nameMedicine = serviceArray[i].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+                result.Append(nameMedicine);
+                if (i != serviceArray.Count() - 1)
+                {
+                    result.Append(ClinicConstant.StringBetweenOfMedicine);
+                }
+            }
+
+            return result.ToString();
+        }
+
+        internal static bool IsExistsAdvisory(IDatabase db, string idPatient)
+        {
+            bool result;
+            string strCmd = $"SELECT {DatabaseContants.Advisory.Id} FROM {DatabaseContants.tables.advisory} WHERE {DatabaseContants.Advisory.IdPatient} = {idPatient}";
+            using (DbDataReader reader = db.ExecuteReader(strCmd, null) as DbDataReader)
+            {
+                result = reader.HasRows;
+            }
+            db.CloseCurrentConnection();
+            return result;
         }
     }
 }

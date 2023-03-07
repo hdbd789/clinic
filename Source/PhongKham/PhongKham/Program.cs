@@ -7,6 +7,7 @@ using System.IO;
 using Clinic.Database;
 using log4net;
 using System.Reflection;
+using Clinic.Business;
 
 namespace PhongKham
 {
@@ -25,7 +26,6 @@ namespace PhongKham
             log4net.Config.XmlConfigurator.Configure();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
             if (!File.Exists("WriteLines.txt"))
             {
                 PassSQL SqlForm = new PassSQL();
@@ -38,7 +38,7 @@ namespace PhongKham
             try
             {
                 string[] lines = System.IO.File.ReadAllLines("WriteLines.txt");
-                DatabaseFactory.CreateNewDatabase("",GetConnectionString(lines[0], lines[1]));
+                DatabaseFactory.CreateNewDatabase("", DatabaseFactory.GetConnectionString(lines[0], lines[1]));
             }
             catch(Exception e)
             {
@@ -46,51 +46,15 @@ namespace PhongKham
                 MessageBox.Show("Lỗi database! Xin chạy lại chương trình!");
                 Log.Error(e.Message, e);
             }
-
-            try
+            if (!Helper.CheckAdminExists())
             {
-                if (!Helper.checkAdminExists(DatabaseContants.tables.clinicuser))
+                CreateUserForm createUserForm = new CreateUserForm();
+                if (createUserForm.ShowDialog() != DialogResult.OK)
                 {
-                    CreateUserForm createUserForm = new CreateUserForm();
-                    if (createUserForm.ShowDialog() == DialogResult.OK)
-                    {
-
-                        LoginForm login = new LoginForm();
-
-                        if (login.ShowDialog() == DialogResult.OK)
-                        {
-
-                            Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                        }
-                    }
+                    return;
                 }
-                else
-                {
-                    LoginForm login = new LoginForm();
-
-                    if (login.ShowDialog() == DialogResult.OK)
-                    {
-                        Application.Run(new Form1(LoginForm.Authority, LoginForm.Name1));
-                    }
-
-                }
-
             }
-            catch ( Exception ex)
-            {
-                Log.Error(ex.Message, ex);
-            }
-            
-        }
-
-        private static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
-        {
-            DbConStringBuilder strBuilder = new DbConStringBuilder();
-                strBuilder.Server = IPAddress=="..."?"localhost":IPAddress;
-                strBuilder.UserID="root";
-                strBuilder.Password = passSql;
-                strBuilder.Database="clinic";
-                return strBuilder;
+            StartApplication.StartApp();
         }
     }
 }

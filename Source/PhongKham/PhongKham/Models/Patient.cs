@@ -6,10 +6,8 @@
 
 namespace Clinic.Models
 {
+    using CsvHelper.Configuration.Attributes;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// Comment for the class
@@ -18,74 +16,62 @@ namespace Clinic.Models
     {
         #region Fields
         private string id;
-
+        private string phone;
+        [Ignore()]
         public string Id
         {
             get { return id; }
             set { id = value; }
         }
-        private string name;
-        private int old;
-        private DateTime birthday;
-
-        public DateTime Birthday
+        [Name("Tên bệnh nhân")]
+        [Index(1)]
+        public string Name { get; set; }
+        [Name("Ngày sinh")]
+        [Index(2)]
+        public DateTime Birthday { get; set; }
+        [Ignore()]
+        public int Old { get; set; }
+        [Name("Số điện thoại")]
+        [Index(3)]
+        public string Phone 
         {
-            get { return birthday; }
-            set { birthday = value; }
+            get
+            {
+                return phone;
+            }
+            set
+            {
+                phone = value;
+                if(long.TryParse(phone, out long phoneNumber))
+                {
+                    phone = string.Format("{0:0### ### ###}", phoneNumber);
+                }
+            }
         }
-
-        public int Old
-        {
-            get { return old; }
-            set { old = value; }
-        }
-        private string address;
-
-        public string Address
-        {
-            get { return address; }
-            set { address = value; }
-        }
-        private string height;
-
-        public string Height
-        {
-            get { return height; }
-            set { height = value; }
-        }
-        private string weight;
-
-        public string Weight
-        {
-            get { return weight; }
-            set { weight = value; }
-        }
-        private string symptom;
-
-        public string Symptom
-        {
-            get { return symptom; }
-            set { symptom = value; }
-        }
-
-
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        [Name("Địa chỉ")]
+        [Index(4)]
+        public string Address { get; set; }
+        [Name("Ngày dự sanh")]
+        [Index(5)]
+        public DateTime DateWillBirth { get; set; }
+        [Name("Cân nặng")]
+        [Index(6)]
+        public string Weight { get; set; }
+        [Name("Triệu chứng")]
+        [Index(7)]
+        public string Symptom { get; set; }
         #endregion
 
         #region ctors
-        public Patient(string id, string name, string weight, string height, string address, DateTime birthday)
+        public Patient(string id, string name, string weight, string address, DateTime birthday)
         {
             this.id = id;
-            this.name = name;
-            this.weight = weight;
-            this.height = height;
-            this.address = address;
-            this.birthday = birthday;
+            Name = name;
+            Weight = weight;
+            Address = address;
+            Birthday = birthday;
         }
+        public Patient() { }
         #endregion
 
         #region Properties

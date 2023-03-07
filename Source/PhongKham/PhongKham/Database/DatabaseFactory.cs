@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Clinic.Helpers;
 using MySql.Data.MySqlClient;
 
 namespace Clinic.Database
@@ -62,13 +63,28 @@ namespace Clinic.Database
             stringBuilder.UserID = strBuilder.UserID;
             stringBuilder.Password = strBuilder.Password;
             stringBuilder.Database = strBuilder.Database;
+            if(Setting.SslModeDatabase)
+                stringBuilder.SslMode = MySqlSslMode.Required;
+            else
+                stringBuilder.SslMode = MySqlSslMode.None;
+            stringBuilder.Replication = false;
         }
 
         private DatabaseFactory()
         {
             
         }
-
+        public static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
+        {
+            DbConStringBuilder strBuilder = new DbConStringBuilder
+            {
+                Server = IPAddress == "..." ? "localhost" : IPAddress,
+                UserID = "root",
+                Password = passSql,
+                Database = Setting.DatabaseName
+            };
+            return strBuilder;
+        }
 
 
     }

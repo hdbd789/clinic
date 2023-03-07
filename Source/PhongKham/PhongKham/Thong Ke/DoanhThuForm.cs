@@ -13,6 +13,7 @@ using PhongKham;
 using Clinic.Models.ItemMedicine;
 using System.Threading;
 using Clinic.Extensions;
+using System.Threading.Tasks;
 
 namespace Clinic
 {
@@ -26,8 +27,6 @@ namespace Clinic
         List<IMedicine> currentServices;
         List<string> AllLoaiKham;
         private bool needOptimize =false;
-
-        private Thread threadLoad;
         public DoanhThuForm()
         {
             InitializeComponent();
@@ -94,7 +93,7 @@ namespace Clinic
 
                 row.Cells["ColumnNamePatient"].Value = listItem[i].NamePatient;
 
-                row.Cells["ColumnServices"].Value = BuildStringServicesAndAdmin(listItem[i].Services, ref listService);
+                row.Cells["ColumnServices"].Value = Helper.BuildStringServicesAndAdmin(listItem[i].Services, currentServices, ref listService);
 
                 row.Cells["ColumnLoaiKham"].Value = listItem[i].LoaiKham;
                 
@@ -236,40 +235,11 @@ namespace Clinic
             }
         }
 
-        private string BuildStringServicesAndAdmin(string servicesWithoutAdmin, ref Dictionary<string,int> listService)
-        {
-            string result = "";
-            string[] serviceArray = servicesWithoutAdmin.Split(new string[] {ClinicConstant.StringBetweenServicesInDoanhThu}, StringSplitOptions.None);
-
-            for (int i = 0; i < serviceArray.Count(); i++)
-            {
-                IMedicine service = currentServices.Where(x => x.Name == serviceArray[i]).FirstOrDefault();
-                result += (serviceArray[i] + ClinicConstant.StringBetweenServiceAndAdmin + (service==null?"": service.Admin));
-                if (i != serviceArray.Count() - 1)
-                {
-                    result += "\n";
-                }
-                if ((!String.IsNullOrEmpty(serviceArray[i])) && serviceArray[i][0] == '@')
-                {
-                    if (listService.ContainsKey(serviceArray[i]))
-                    {
-                        listService[serviceArray[i]]++;
-                    }
-                    else
-                    {
-                        listService.Add(serviceArray[i], 1);
-                    }
-                }
-            }
-
-            return result;
-        }
-
         private void button1_Click(object sender, EventArgs e) // ngay
         {
             dataGridViewMain.Rows.Clear();
 
-            Thread thread = new Thread(delegate()
+            HelperControl.Instance.DoAsyncAction(() =>
             {
                 DateTime day = dateTimePicker1.Value;
                 listItem = Helpers.Helper.DoanhThuTheoNgay(DatabaseFactory.Instance, day);
@@ -278,16 +248,13 @@ namespace Clinic
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
                 FillToGrid(listItem);
             });
-            thread.Start();
-            HelperControl.Instance.ShowProgress(thread);
-            thread.Join();
         }
 
         private void button2_Click(object sender, EventArgs e) // thang
         {
             dataGridViewMain.Rows.Clear();
 
-            Thread thread = new Thread(delegate()
+            HelperControl.Instance.DoAsyncAction(() =>
             {
                 listItem = Helpers.Helper.DoanhThuTheoThang(DatabaseFactory.Instance, dateTimePicker1.Value);
                 FillToGrid(listItem);
@@ -295,26 +262,20 @@ namespace Clinic
                 int phimuathuoc = resultBuyMedicine.Item2;
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
             });
-            thread.Start();
-            HelperControl.Instance.ShowProgress(thread);
-            thread.Join();
         }
 
         private void btn_year_Click(object sender, EventArgs e) // nam
         {
             dataGridViewMain.Rows.Clear();
-            Thread thread = new Thread(delegate()
+
+            HelperControl.Instance.DoAsyncAction(() =>
             {
                 listItem = Helpers.Helper.DoanhThuTheoNam(DatabaseFactory.Instance, dateTimePicker1.Value);
                 FillToGrid(listItem);
-
                 Tuple<int, int> resultBuyMedicine = HelperforSeemore.GetAllCountAndMoneyMedicineInputInYear(DatabaseFactory.Instance, dateTimePicker1.Value.Year);
                 int phimuathuoc = resultBuyMedicine.Item2;
                 CalcuTotal(phimuathuoc, listItem, resultBuyMedicine.Item1);
             });
-            thread.Start();
-            HelperControl.Instance.ShowProgress(thread);
-            thread.Join();
         }
         
         private void CalcuTotal(int chiphimuathuoc,List<ItemDoanhThu>listItem,int numberBuyMedicine)

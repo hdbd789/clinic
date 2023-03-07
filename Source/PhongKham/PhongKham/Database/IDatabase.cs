@@ -12,6 +12,7 @@ namespace Clinic.Database
     public interface IDatabase
     {
         IDataReader ExecuteReader(string StoreProcName, List<IDataParameter> Params);
+        DataTable ExecuteReaderAdapter(string StoreProcName, List<IDataParameter> Params);
         void CreateDatabase(string password);
         int InsertRowToTable(string nameOfTable, List<string> nameOfColumns, List<string> values);
         int ExecuteNonQuery(string StoreProcName, List<IDataParameter> Params);
@@ -35,9 +36,11 @@ namespace Clinic.Database
         string SearchIDHistoryByIDPatientAndDay(string idPatient, string visitDate);
         bool CheckMedicineExists(string Id);
         string GetNameOfDoctor(string name);
-        Dictionary<string, string> GetListPatientToday();
+        List<PatientToday> GetListPatientToday();
         List<string> GetAllDiagnosesFromHistory(DateTime date);
         string GetNamePatientByID(string id);
         Medicine GetMedicineFromName(string name);
+
+        List<InfoPatient> GetAllPatientInfo(DateTime fromDate, DateTime toDate);
     }
 }

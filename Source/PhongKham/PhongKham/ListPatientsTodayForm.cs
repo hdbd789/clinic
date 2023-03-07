@@ -6,16 +6,18 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Clinic.Models;
 using PhongKham;
 
 namespace Clinic
 {
     public partial class ListPatientsTodayForm : Form
     {
+        public delegate void SendCommandKham(string id, string name,string state);
+        public delegate void AdvisoryClick(string id, string name, string state);
+        public event SendCommandKham sendCommandKham;
 
-
-        public delegate void SendCommandKham(string id, string name,string nhietdo);
-        public SendCommandKham sendCommandKham;
+        public event AdvisoryClick advisoryClick;
 
         public ListPatientsTodayForm()
         {
@@ -41,22 +43,30 @@ namespace Clinic
         }
 
 
-        internal void PutIntoGrid(Dictionary<string, string> listPatientToday)
+        internal void PutIntoGrid(List<PatientToday> listPatientToday)
         {
             dataGridView1.Rows.Clear();
 
-            List<string> keys = listPatientToday.Keys.ToList();
-            for (int i = 0; i < keys.Count; i++)
+            for (int i = 0; i < listPatientToday.Count; i++)
             {
                 int index = dataGridView1.Rows.Add();
                 DataGridViewRow row = dataGridView1.Rows[index];
-                row.Cells[1].Value = keys[i];
-                string[] nameAndState = listPatientToday[keys[i]].Split(';');
-                row.Cells[2].Value = nameAndState[0];
-                row.Cells["ColumnNhietDo"].Value = nameAndState[1];
-                row.Cells["ColumnHuyetAp"].Value = nameAndState[2];
-                row.Cells["ColWeight"].Value = nameAndState[3];
-                row.Cells["ColHeight"].Value = nameAndState[4];
+                row.Cells[1].Value = listPatientToday[i].IdPatient;
+                
+                row.Cells[2].Value = listPatientToday[i].NamePatient;
+                string[] stateParts = listPatientToday[i].State.Split(';');
+                row.Cells["ColumnNhietDo"].Value = stateParts[0];
+                row.Cells["ColumnHuyetAp"].Value = stateParts[1];
+                row.Cells["ColWeight"].Value = stateParts[2];
+                row.Tag = listPatientToday[i].Type;
+                if (listPatientToday[i].Type == RecordType.Advisory)
+                {
+                    row.Cells["ColAction"].Value = "Tư vấn";
+                }
+                else
+                {
+                    row.Cells["ColAction"].Value = "Khám và xóa";
+                }
             }
         }
                     
@@ -64,11 +74,21 @@ namespace Clinic
         {
             // Ignore clicks that are not on button cells.  
             if (e.RowIndex < 0 || e.ColumnIndex !=
-                dataGridView1.Columns["KhamVaXoa"].Index) return;
+                dataGridView1.Columns["ColAction"].Index) return;
 
             //MessageBox.Show(dataGridView1.Rows[1].Cells[2].Value.ToString());
-            string state = dataGridView1.Rows[e.RowIndex].Cells["ColumnNhietDo"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColumnHuyetAp"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColWeight"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColHeight"].Value.ToString();
-            sendCommandKham(dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString(), dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString(), state);
+            string state = dataGridView1.Rows[e.RowIndex].Cells["ColumnNhietDo"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColumnHuyetAp"].Value.ToString() + ';' + dataGridView1.Rows[e.RowIndex].Cells["ColWeight"].Value.ToString();
+
+            RecordType recordType = (RecordType)dataGridView1.Rows[e.RowIndex].Tag;
+            if(recordType == RecordType.Examination)
+            {
+                sendCommandKham(dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString(), dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString(), state);
+            }
+            else
+            {
+                advisoryClick(dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString(), dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString(), state);
+            }
+            
             dataGridView1.Rows.RemoveAt(e.RowIndex);
         }
 
