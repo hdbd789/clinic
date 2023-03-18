@@ -1,0 +1,17 @@
+name: Build App
+run-name: ${{ github.actor }} is running 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+      - name: Restore Packages
+        run: nuget restore ./Source/PhongKham/PhongKham.sln
+      - name: Build Solution
+        run: msbuild ./Source/PhongKham/PhongKham.sln /p:Configuration=Release
