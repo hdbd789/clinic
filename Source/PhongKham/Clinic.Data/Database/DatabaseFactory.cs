@@ -64,7 +64,7 @@ namespace Clinic.Data.Database
             if (DatabaseSetting.SslModeDatabase)
                 stringBuilder.SslMode = MySqlSslMode.Required;
             else
-                stringBuilder.SslMode = MySqlSslMode.None;
+                stringBuilder.SslMode = MySqlSslMode.Disabled;
             stringBuilder.Replication = false;
         }
 

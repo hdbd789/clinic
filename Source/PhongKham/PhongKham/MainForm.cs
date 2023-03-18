@@ -408,12 +408,8 @@ namespace PhongKham
             string ID = intId.ToString();
             lblClinicRoomId.Text = ID;
 
-            //init comboBoxName
-
             //comboBoxClinicRoomName.Items.Clear();
             comboBoxClinicRoomName.Text = "";
-            // Helper.GetAllRowsOfSpecialColumn("Patient","Name");
-
         }
 
         private void InitComboboxMedicinesMySql()
@@ -423,21 +419,6 @@ namespace PhongKham
             currentMedicines = Helper.GetAllMedicinesAndServicesFromDB();
             currentServices = currentMedicines.Where(x => x.Name[0] == '@').ToList();
             this.ColumnNameAllMedicine.Items.AddRange(currentMedicines.Select(x => x.Name).ToArray());
-        }
-
-        public void Init()
-        {
-            if (!Helper.CheckAdminExists())
-            {
-                CreateUserForm createUserForm = new CreateUserForm();
-                createUserForm.ShowDialog();
-            }
-
-            LoginForm login = new LoginForm();
-            if (login.ShowDialog(this) == DialogResult.OK)
-            {
-
-            }
         }
 
         private void InitUser(int authority)
@@ -555,8 +536,6 @@ namespace PhongKham
         #endregion
 
         #region Helper
-
-        
         private void FillInfoToClinicForm(DbDataReader reader, bool onlyInfo, string idHistory)
         {
             try
@@ -576,13 +555,13 @@ namespace PhongKham
                 {
                     textBoxClinicNhietDo.Text = reader[DatabaseContants.history.temperature].ToString();
                     textBoxHuyetAp.Text = reader[DatabaseContants.history.huyetap].ToString();
-                    dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.history.DateWillBirth].ToString();
                 }
                 if (IsViewHistory)
                 {                   
                     txtBoxClinicRoomWeight.Text = reader["Weight"].ToString();
                 }
                 textBoxClinicPhone.Text = reader["phone"].ToString();
+                dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.patient.DateWillBirthMain].ToString();
             }
             catch (Exception ex)
             {
@@ -1491,7 +1470,7 @@ namespace PhongKham
             {
                 if (Helper.SameAddressAndName(db, this.comboBoxClinicRoomName.Text, this.txtBoxClinicRoomAddress.Text))
                 {
-                    DialogResult r = MessageBox.Show("Tên và địa chỉ trùng với 1 người , bạn có thực sự muốn tạo mới ??", "Chú ý", MessageBoxButtons.YesNo);
+                    DialogResult r = MessageBox.Show("Tên và địa chỉ trùng với 1 người, bạn có thực sự muốn tạo mới ??", "Chú ý", MessageBoxButtons.YesNo);
                     if (r == System.Windows.Forms.DialogResult.No)
                     {
                         buttonSearch.PerformClick();
@@ -1505,16 +1484,17 @@ namespace PhongKham
                     DatabaseContants.patient.Address, 
                     DatabaseContants.patient.birthday, 
                     DatabaseContants.patient.weight, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
-                //List<string> columns = new List<string>() { "Name", "Address", "Birthday", "phone" };
                 List<string> values = new List<string>()
                 {
                     comboBoxClinicRoomName.Text,
                     txtBoxClinicRoomAddress.Text,
-                    dateTimePickerBirthDay.Value.ToString("yyyy-MM-dd"),
+                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text,
-                    textBoxClinicPhone.Text
+                    textBoxClinicPhone.Text,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
                 db.InsertRowToTable(DatabaseContants.tables.patient, columns, values);
                 GetIDMaxCurrentPatient();
@@ -1541,16 +1521,18 @@ namespace PhongKham
                     DatabaseContants.patient.Address, 
                     DatabaseContants.patient.birthday, 
                     DatabaseContants.patient.weight, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
                 List<string> values = new List<string>() 
                 { 
                     txtBoxClinicRoomAddress.Text, 
                     dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text, 
-                    textBoxClinicPhone.Text
+                    textBoxClinicPhone.Text,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
-                db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values,DatabaseContants.patient.Id, lblClinicRoomId.Text);
+                db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values, DatabaseContants.patient.Id, lblClinicRoomId.Text);
 
                 // edit history
                 //List<string> columnsHistory = new List<string>() {"temperature","huyetap" };
@@ -2157,7 +2139,10 @@ namespace PhongKham
         private void dataGridViewAccount_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
+
             if (e.ColumnIndex == this.dataGridViewAccount.Columns[this.Columnupdate.Name].Index)
             {
                 string query = string.Format("update {0} set {1} = {2} where {3} = {4}", DatabaseContants.tables.clinicuser, DatabaseContants.clinicuser.Namedoctor, DatabaseHelper.ConvertToSqlString(this.dataGridViewAccount[1, e.RowIndex].Value.ToString()), DatabaseContants.clinicuser.Username, DatabaseHelper.ConvertToSqlString(this.dataGridViewAccount[0, e.RowIndex].Value.ToString()));

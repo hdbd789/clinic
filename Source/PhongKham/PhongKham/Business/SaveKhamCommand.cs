@@ -294,7 +294,8 @@ namespace Clinic.Business
                 DatabaseContants.patient.Address, 
                 DatabaseContants.patient.birthday,
                 DatabaseContants.patient.weight,
-                DatabaseContants.patient.Phone
+                DatabaseContants.patient.Phone,
+                DatabaseContants.patient.DateWillBirthMain
             };
             List<string> values = new List<string>() 
             {
@@ -302,7 +303,8 @@ namespace Clinic.Business
                 infoPatient.Address,
                 infoPatient.Birthday.ToString(ClinicConstant.DateTimeSQLFormat),
                 infoPatient.Weight,
-                infoPatient.Phone
+                infoPatient.Phone,
+                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
             };
             db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values, DatabaseContants.patient.Id, infoPatient.Id);
 

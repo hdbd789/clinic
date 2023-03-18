@@ -182,7 +182,6 @@ namespace Clinic.Data.Database
             }
         }
 
-
         private void UpdateDatabase()
         {
             Func<int> fun = () => ExecuteNonQuery("ALTER TABLE medicine CHARACTER SET = utf16 , COLLATE = utf16_unicode_ci", null);
@@ -203,6 +202,9 @@ namespace Clinic.Data.Database
             Guard(fun);
 
             fun = () => ExecuteNonQuery("ALTER TABLE lichhen ADD COLUMN DateWillBirth datetime NULL;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery("ALTER TABLE patient ADD COLUMN DateWillBirthMain datetime NULL;", null);
             Guard(fun);
         }
 

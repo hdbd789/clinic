@@ -327,7 +327,7 @@ namespace Clinic.Data.Database
                     item.Birthday = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday));
                     item.Phone = reader[DatabaseContants.patient.Phone].ToString();
                     item.Address = reader[DatabaseContants.patient.Address].ToString();
-                    item.DateWillBirth = DateTime.TryParse(reader[DatabaseContants.history.DateWillBirth].ToString(), out DateTime dateWillBirth) ? dateWillBirth : DateTime.Today;
+                    item.DateWillBirth = DateTime.TryParse(reader[DatabaseContants.patient.DateWillBirthMain].ToString(), out DateTime dateWillBirth) ? dateWillBirth : DateTime.Today;
                     item.Weight = reader[DatabaseContants.patient.weight].ToString();
                     item.Symptom = reader[DatabaseContants.history.Symptom].ToString();
                     item.Temperature = reader[DatabaseContants.history.temperature].ToString();
