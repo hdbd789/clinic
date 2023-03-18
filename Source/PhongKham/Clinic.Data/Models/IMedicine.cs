@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Clinic.Models.ItemMedicine
+namespace Clinic.Data.Models
 {
     public interface IMedicine
     {

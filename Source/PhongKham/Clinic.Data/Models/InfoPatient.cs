@@ -1,9 +1,8 @@
-﻿using Clinic.Helpers;
+﻿using System;
+using Clinic.Data.Helpers;
 using CsvHelper.Configuration.Attributes;
-using System;
-using System.Collections.Generic;
 
-namespace Clinic.Models
+namespace Clinic.Data.Models
 {
     public class InfoPatient : Patient
     {
@@ -68,7 +67,7 @@ namespace Clinic.Models
             }
             set
             {
-                service = Helper.BuildStringMedicines(value);
+                service = DataHelper.BuildStringMedicines(value);
             }
         }
         [Ignore()]

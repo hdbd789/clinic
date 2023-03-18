@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Clinic.Helpers;
+using Clinic.Data.Setting;
 using MySql.Data.MySqlClient;
 
-namespace Clinic.Database
+namespace Clinic.Data.Database
 {
     public class DatabaseFactory
     {
@@ -15,23 +12,24 @@ namespace Clinic.Database
 
         public static IDatabase Instance
         {
-            get {
-                if (instance == null)
-                {
-                    throw new Exception("Object not created");
-                }
-                return DatabaseFactory.instance; 
-            }
-        }
-        public static IDatabase Instance2
-        {
             get
             {
                 if (instance == null)
                 {
                     throw new Exception("Object not created");
                 }
-                return DatabaseFactory.instance2;
+                return instance;
+            }
+        }
+        public static IDatabase Instance2
+        {
+            get
+            {
+                if (instance2 == null)
+                {
+                    throw new Exception("Object not created");
+                }
+                return instance2;
             }
         }
 
@@ -43,11 +41,11 @@ namespace Clinic.Database
                 {
                     throw new Exception("Object not created");
                 }
-                return DatabaseFactory.instance3;
+                return instance3;
             }
         }
-        
-        public static void CreateNewDatabase(string kindOfDatabase,DbConStringBuilder strBuilder)
+
+        public static void CreateNewDatabase(string kindOfDatabase, DbConStringBuilder strBuilder)
         {
             //if else here
             MySqlConnectionStringBuilder stringBuilder = new MySqlConnectionStringBuilder();
@@ -63,7 +61,7 @@ namespace Clinic.Database
             stringBuilder.UserID = strBuilder.UserID;
             stringBuilder.Password = strBuilder.Password;
             stringBuilder.Database = strBuilder.Database;
-            if(Setting.SslModeDatabase)
+            if (DatabaseSetting.SslModeDatabase)
                 stringBuilder.SslMode = MySqlSslMode.Required;
             else
                 stringBuilder.SslMode = MySqlSslMode.None;
@@ -72,7 +70,7 @@ namespace Clinic.Database
 
         private DatabaseFactory()
         {
-            
+
         }
         public static DbConStringBuilder GetConnectionString(string passSql, string IPAddress)
         {
@@ -81,7 +79,7 @@ namespace Clinic.Database
                 Server = IPAddress == "..." ? "localhost" : IPAddress,
                 UserID = "root",
                 Password = passSql,
-                Database = Setting.DatabaseName
+                Database = DatabaseSetting.DatabaseName
             };
             return strBuilder;
         }

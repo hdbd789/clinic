@@ -1,5 +1,5 @@
-﻿using Clinic.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Clinic.Data.Models;
 
 namespace Clinic.Business
 {

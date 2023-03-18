@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Clinic.Database;
+using Clinic.Data.Database;
+using Clinic.Data.Models;
 using Clinic.Helpers;
 using Clinic.Models;
-using PhongKham;
-using Clinic.Models.ItemMedicine;
-using System.Threading;
-using Clinic.Extensions;
-using System.Threading.Tasks;
 
 namespace Clinic
 {

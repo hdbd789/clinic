@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.Common;
 using System.Data;
-using Clinic.Helpers;
-using log4net;
+using System.Data.Common;
 using System.Reflection;
-using Clinic.Models;
-using Clinic.Models.ItemMedicine;
+using Clinic.Data.Helpers;
+using Clinic.Data.Models;
+using Clinic.Data.Setting;
+using log4net;
 
-namespace Clinic.Database
+namespace Clinic.Data.Database
 {
     public abstract class Database<TParameter, TDataReader, TConnection,
        TTransaction, TDataAdapter, TCommand, TDbConnectionStringBuilder> : IDatabase
@@ -82,7 +80,7 @@ namespace Clinic.Database
             }
         }
 
-        protected  TDataReader ExecuteReader(string StoreProcName, List<TParameter> Params)
+        protected TDataReader ExecuteReader(string StoreProcName, List<TParameter> Params)
         {
             TCommand cmd;
             try
@@ -111,7 +109,6 @@ namespace Clinic.Database
             }
             catch (DbException DbEx)
             {
-                System.Windows.Forms.MessageBox.Show("Đọc database thất bại, xin xem lại kết nối database", "Thông báo");
                 Log.Error(DbEx.Message, DbEx);
                 throw DbEx;
             }
@@ -128,9 +125,9 @@ namespace Clinic.Database
         {
             try
             {
-                if (!Setting.SslModeDatabase)
+                if (!DatabaseSetting.SslModeDatabase)
                 {
-                    string strCommand = "grant all privileges on *.* to 'root'@'%' identified by " + Helper.ConvertToSqlString(password);
+                    string strCommand = "grant all privileges on *.* to 'root'@'%' identified by " + DatabaseHelper.ConvertToSqlString(password);
                     ExecuteNonQuery(strCommand, null);
                 }
                 Guard(() => ExecuteNonQuery("CREATE DATABASE IF NOT EXISTS clinic DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;", null));
@@ -217,7 +214,7 @@ namespace Clinic.Database
         }
 
 
-         void IDatabase.CreateDatabase(string password)
+        void IDatabase.CreateDatabase(string password)
         {
             CreateDatabase(password);
         }
@@ -231,7 +228,7 @@ namespace Clinic.Database
             }
             for (int i = 0; i < values.Count; i++)
             {
-                values[i] =Helper.ConvertToSqlString(values[i]);
+                values[i] = DatabaseHelper.ConvertToSqlString(values[i]);
             }
 
             string columns = "Insert Into " + nameOfTable + " (";
@@ -254,27 +251,27 @@ namespace Clinic.Database
         }
 
 
-         int IDatabase.ExecuteNonQuery(string StoreProcName, List<IDataParameter> Params)
+        int IDatabase.ExecuteNonQuery(string StoreProcName, List<IDataParameter> Params)
         {
             return ExecuteNonQuery(StoreProcName, Params as List<TParameter>);
         }
         #endregion
 
 
-         public void CloseCurrentConnection()
-         {
-            if(tConnection != null)
+        public void CloseCurrentConnection()
+        {
+            if (tConnection != null)
             {
                 tConnection.Close();
             }
-         }
+        }
 
 
-         public object ExecuteScalar(string query)
-         {
-             TCommand cmd;
-             try
-             {
+        public object ExecuteScalar(string query)
+        {
+            TCommand cmd;
+            try
+            {
 
                 cmd = new TCommand
                 {
@@ -284,31 +281,31 @@ namespace Clinic.Database
                 };
 
                 if (tConnection.State == ConnectionState.Closed)
-                 {
-                     tConnection.Open();
-                 }
+                {
+                    tConnection.Open();
+                }
 
-                 return cmd.ExecuteScalar();
+                return cmd.ExecuteScalar();
 
-             }
-             catch (DbException DbEx)
-             {
+            }
+            catch (DbException DbEx)
+            {
                 Log.Error(DbEx.Message, DbEx);
                 throw DbEx;
-             }
-             catch (Exception ex)
-             {
+            }
+            catch (Exception ex)
+            {
                 Log.Error(ex.Message, ex);
                 throw ex;
-             }
-             finally
-             {
-                 // reader need connection still open for read() , and note : close connection
+            }
+            finally
+            {
+                // reader need connection still open for read() , and note : close connection
 
-                 //if (internalOpen)
-                 //    tConnection.Close();
-             }
-         }
+                //if (internalOpen)
+                //    tConnection.Close();
+            }
+        }
 
         public abstract List<LoaiKham> GetAllLoaiKham();
         public abstract List<ReasonApointmentModel> GetListReason();

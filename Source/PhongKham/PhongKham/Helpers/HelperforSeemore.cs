@@ -1,6 +1,8 @@
-﻿using Clinic.Database;
-using System;
+﻿using System;
 using System.Data.Common;
+using Clinic.Data.Database;
+using Clinic.Data.Extensions;
+using Clinic.Data.Helpers;
 
 namespace Clinic.Helpers
 {
@@ -10,13 +12,13 @@ namespace Clinic.Helpers
         #region Day
         public static int GetCountRevenueLastDay(IDatabase db, DateTime day, string nameMedicine)
         {
-            string strCommand = "select Sum(Count) from medicine where Name = " + Helper.ConvertToSqlString(nameMedicine) + " and InputDay <= " + Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
+            string strCommand = "select Sum(Count) from medicine where Name = " + DatabaseHelper.ConvertToSqlString(nameMedicine) + " and InputDay <= " + DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
             int count = (int)db.ExecuteScalar(strCommand);
             return count;
         }
         public static int GetMoneyOutRevenueFirstDay(IDatabase db, DateTime day, string nameMedicine)
         {
-            string strCommand = "select Sum(Count) from medicine where Name = " + Helper.ConvertToSqlString(nameMedicine) + " and InputDay < " + Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
+            string strCommand = "select Sum(Count) from medicine where Name = " + DatabaseHelper.ConvertToSqlString(nameMedicine) + " and InputDay < " + DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
             int count = (int)db.ExecuteScalar(strCommand);
             return count;
         }
@@ -24,20 +26,20 @@ namespace Clinic.Helpers
         
         public static Tuple<int,int> GetCountAndMoneyMedicineInputInDay(IDatabase db, DateTime day, string ID)
         {
-            string strCommand = "select * from lichsunhapthuoc where idMedicine = " + Helper.ConvertToSqlString(ID) + " and InputDay = " + Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
+            string strCommand = "select * from lichsunhapthuoc where idMedicine = " + DatabaseHelper.ConvertToSqlString(ID) + " and InputDay = " + DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
             return GetCountAndMoneyMedicineInput(db, strCommand);
         }
 
         public static Tuple<int, int> GetCountAndMoneyMedicineExportInDay(IDatabase db, DateTime day, string Name)
         {
-            string strCommand = "select Medicines from history where Day = " + Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
+            string strCommand = "select Medicines from history where Day = " + DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
             return GetCountAndMoneyMedicineExport(db, strCommand, Name);
         }
 
         public static int GetCountFirstDay(IDatabase db, DateTime day,string id,string name)
         {
-            string commandInput = string.Format("{0} < {1}", DatabaseContants.lichsunhapthuoc.InputDay, Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd")));
-            string commandHis = string.Format("{0} < {1}", DatabaseContants.history.Day, Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd")));
+            string commandInput = string.Format("{0} < {1}", DatabaseContants.lichsunhapthuoc.InputDay, DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd")));
+            string commandHis = string.Format("{0} < {1}", DatabaseContants.history.Day, DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd")));
             return GetCountFirst(db, id, name, commandInput, commandHis);
         }
 
@@ -115,7 +117,7 @@ namespace Clinic.Helpers
                 for (int i = 0; i < medicines.Length; i = i + 2)
                 {
                     string tempName = medicines[i];
-                    int countItem = Helper.ConvertString2Int(medicines[i + 1]);
+                    int countItem = medicines[i + 1].ToInt();
 
                     int moneyMedicin = Helper.GetCostOutMedicineByName(tempName,DatabaseFactory.Instance2);
                     int moneyItem = moneyMedicin * countItem;
@@ -132,8 +134,8 @@ namespace Clinic.Helpers
                     string[] parts = newProcess[i].Split(',');
                     string tempName = parts[0];
 
-                    int countItem = Helper.ConvertString2Int(parts[1]);
-                    int moneyItem = Helper.ConvertString2Int(parts[2]) * count;
+                    int countItem = parts[1].ToInt();
+                    int moneyItem = parts[2].ToInt() * count;
 
                     count += countItem;
                     money += moneyItem;
@@ -148,13 +150,13 @@ namespace Clinic.Helpers
         #region Month
         public static Tuple<int, int> GetCountAndMoneyMedicineInputInMonth(IDatabase db, DateTime date, string ID)
         {
-            string strCommand = "select * from lichsunhapthuoc where idMedicine = " + Helper.ConvertToSqlString(ID) + " and MONTH(InputDay) = " + Helper.ConvertToSqlString(date.Month.ToString()) + " and YEAR(InputDay) = " + Helper.ConvertToSqlString(date.Year.ToString());
+            string strCommand = "select * from lichsunhapthuoc where idMedicine = " + DatabaseHelper.ConvertToSqlString(ID) + " and MONTH(InputDay) = " + DatabaseHelper.ConvertToSqlString(date.Month.ToString()) + " and YEAR(InputDay) = " + DatabaseHelper.ConvertToSqlString(date.Year.ToString());
             return GetCountAndMoneyMedicineInput(db,strCommand);
         }
        
         public static Tuple<int, int> GetCountAndMoneyMedicineExportInMonth(IDatabase db, DateTime date, string Name)
         {
-            string strCommand = "select * from history where MONTH(Day) = " + Helper.ConvertToSqlString(date.Month.ToString()) + "and YEAR(Day) = " + Helper.ConvertToSqlString(date.Year.ToString());
+            string strCommand = "select * from history where MONTH(Day) = " + DatabaseHelper.ConvertToSqlString(date.Month.ToString()) + "and YEAR(Day) = " + DatabaseHelper.ConvertToSqlString(date.Year.ToString());
             return GetCountAndMoneyMedicineExport(db, strCommand, Name);
         }
 
@@ -169,13 +171,13 @@ namespace Clinic.Helpers
         #region Year
         public static Tuple<int, int> GetCountAndMoneyMedicineInputInYear(IDatabase db, int year, string ID)
         {
-            string strCommand = "select * from lichsunhapthuoc where idMedicine = " + Helper.ConvertToSqlString(ID) + " and YEAR(InputDay) >= " + Helper.ConvertToSqlString(year.ToString());
+            string strCommand = "select * from lichsunhapthuoc where idMedicine = " + DatabaseHelper.ConvertToSqlString(ID) + " and YEAR(InputDay) >= " + DatabaseHelper.ConvertToSqlString(year.ToString());
             return GetCountAndMoneyMedicineInput(db, strCommand);
         }
 
         public static Tuple<int, int> GetCountAndMoneyMedicineExportInYear(IDatabase db, int year, string Name)
         {
-            string strCommand = "select Medicines from history where YEAR(Day) = " + Helper.ConvertToSqlString(year.ToString());
+            string strCommand = "select Medicines from history where YEAR(Day) = " + DatabaseHelper.ConvertToSqlString(year.ToString());
             return GetCountAndMoneyMedicineExport(db, strCommand, Name);
         }
 
@@ -231,7 +233,7 @@ namespace Clinic.Helpers
 
         public static int GetCountFirst(IDatabase db, string id, string name, string commandInput, string commandHis)
         {
-            string strcommand = string.Format("select {0},{4} from {1} where idMedicine = {2} and {3} order by {4} desc, Idhistory desc limit 1", DatabaseContants.lichsunhapthuoc.CountStore, DatabaseContants.tables.lichsunhapthuoc, Helper.ConvertToSqlString(id), commandInput, DatabaseContants.lichsunhapthuoc.InputDay);
+            string strcommand = string.Format("select {0},{4} from {1} where idMedicine = {2} and {3} order by {4} desc, Idhistory desc limit 1", DatabaseContants.lichsunhapthuoc.CountStore, DatabaseContants.tables.lichsunhapthuoc, DatabaseHelper.ConvertToSqlString(id), commandInput, DatabaseContants.lichsunhapthuoc.InputDay);
             int countInput = 0;
             string dayInputMedicine = string.Empty;
             using (DbDataReader reader = db.ExecuteReader(strcommand, null) as DbDataReader)
@@ -276,7 +278,7 @@ namespace Clinic.Helpers
         public static Tuple<int, int> GetAllCountAndMoneyMedicineInputInDay(IDatabase db, DateTime day)
         {
             Tuple<int, int> result;
-            string strCommand = "select * from lichsunhapthuoc where InputDay = " + Helper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
+            string strCommand = "select * from lichsunhapthuoc where InputDay = " + DatabaseHelper.ConvertToSqlString(day.ToString("yyyy-MM-dd"));
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 int count = 0;
@@ -296,7 +298,7 @@ namespace Clinic.Helpers
         public static Tuple<int, int> GetAllCountAndMoneyMedicineInputInMonth(IDatabase db, DateTime month)
         {
             Tuple<int, int> result;
-            string strCommand = "select * from lichsunhapthuoc where MONTH(InputDay) = " + Helper.ConvertToSqlString(month.Month.ToString()) + "and YEAR(InputDay) = " + Helper.ConvertToSqlString(month.Year.ToString());
+            string strCommand = "select * from lichsunhapthuoc where MONTH(InputDay) = " + DatabaseHelper.ConvertToSqlString(month.Month.ToString()) + "and YEAR(InputDay) = " + DatabaseHelper.ConvertToSqlString(month.Year.ToString());
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
 
             int count = 0;
@@ -316,7 +318,7 @@ namespace Clinic.Helpers
         public static Tuple<int, int> GetAllCountAndMoneyMedicineInputInYear(IDatabase db, int year)
         {
             Tuple<int, int> result;
-            string strCommand = string.Format("select * from {0} where YEAR(InputDay) = {1}", DatabaseContants.tables.lichsunhapthuoc, Helper.ConvertToSqlString(year.ToString()));
+            string strCommand = string.Format("select * from {0} where YEAR(InputDay) = {1}", DatabaseContants.tables.lichsunhapthuoc, DatabaseHelper.ConvertToSqlString(year.ToString()));
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
 
             int count = 0;

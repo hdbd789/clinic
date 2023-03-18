@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using Clinic.Models;
-using Clinic.Helpers;
-using PhongKham;
-using Clinic.Models.ItemMedicine;
-using Clinic.Database;
 using System.Data.Common;
+using System.Windows.Forms;
+using Clinic.Data.Database;
+using Clinic.Data.Helpers;
+using Clinic.Data.Models;
+using Clinic.Helpers;
 
 namespace Clinic
 {
@@ -126,7 +120,7 @@ namespace Clinic
                 string adminOfService = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnAdmin.Name].Value.ToString();
                 string Id = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnId.Name].Value.ToString();
                 string name = dataGridView1.Rows[e.RowIndex].Cells[this.ColumnName.Name].Value.ToString();
-                string strCommand = "Update Medicine Set CostOut =" + giaOut.ToString() + "," + DatabaseContants.medicine.Name + " = " + Helper.ConvertToSqlString(name) + "," + DatabaseContants.medicine.Admin + " = " + Helper.ConvertToSqlString(adminOfService) + " Where Id =" + Id;
+                string strCommand = "Update Medicine Set CostOut =" + giaOut.ToString() + "," + DatabaseContants.medicine.Name + " = " + DatabaseHelper.ConvertToSqlString(name) + "," + DatabaseContants.medicine.Admin + " = " + DatabaseHelper.ConvertToSqlString(adminOfService) + " Where Id =" + Id;
                 DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
                 MessageBox.Show("Cập nhật dịch vụ thành công");
                 Services_Load(sender, e);

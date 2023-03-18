@@ -122,8 +122,8 @@
     <Reference Include="K4os.Hash.xxHash, Version=1.0.6.0, Culture=neutral, PublicKeyToken=32cd54395057cec3, processorArchitecture=MSIL">
       <HintPath>..\packages\K4os.Hash.xxHash.1.0.6\lib\net46\K4os.Hash.xxHash.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.15\lib\net45\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
@@ -276,12 +276,7 @@
       <DependentUpon>MessageBoxNumberInput.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\ExportType.cs" />
-    <Compile Include="Models\InfoPatient.cs" />
     <Compile Include="Models\LoadDataType.cs" />
-    <Compile Include="Models\LoaiKham.cs" />
-    <Compile Include="Models\PatientToday.cs" />
-    <Compile Include="Models\ReasonApointmentModel.cs" />
-    <Compile Include="Models\RecordType.cs" />
     <Compile Include="Thong Ke\DiagnosesHistory.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -315,19 +310,12 @@
     <Compile Include="ListPatientsTodayForm.Designer.cs">
       <DependentUpon>ListPatientsTodayForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\ADate.cs" />
     <Compile Include="CreateUserForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="CreateUserForm.Designer.cs">
       <DependentUpon>CreateUserForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Database\Database.cs" />
-    <Compile Include="Database\DatabaseContants.cs" />
-    <Compile Include="Database\DatabaseFactory.cs" />
-    <Compile Include="Database\IDatabase.cs" />
-    <Compile Include="Database\MySqlDatabase.cs" />
-    <Compile Include="Database\StringBuilder.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -344,11 +332,6 @@
     <Compile Include="Models\Age.cs" />
     <Compile Include="Models\DoanhThuBacSi.cs" />
     <Compile Include="Models\InfoClinic.cs" />
-    <Compile Include="Models\ItemMedicine\IMedicine.cs" />
-    <Compile Include="Models\ItemMedicine\Medicine.cs" />
-    <Compile Include="Models\ItemMedicine\ObjectMedicine.cs" />
-    <Compile Include="Models\Patient.cs" />
-    <Compile Include="Models\ItemMedicine\Service.cs" />
     <Compile Include="PassSQL.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -532,6 +515,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Clinic.Data\Clinic.Data.csproj">
+      <Project>{3a896a47-da42-4f90-817b-8b6d4e8017c6}</Project>
+      <Name>Clinic.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

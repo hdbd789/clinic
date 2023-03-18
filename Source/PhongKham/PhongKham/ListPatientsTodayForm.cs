@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Clinic.Models;
+using Clinic.Data.Models;
 
 namespace Clinic
 {

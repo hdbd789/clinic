@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Clinic.Data.Database;
 using Clinic.Helpers;
-using Clinic.Database;
 
 
 namespace Clinic
 {
     public partial class CreateUserForm : Form
     {
+        private readonly IDatabase database = DatabaseFactory.Instance;
         public CreateUserForm()
         {
             InitializeComponent();
@@ -32,8 +33,7 @@ namespace Clinic
             }
             List<string> columns = new List<string>() {"Username","Password1","Authority","Password2"};
             List<string> values = new List<string>() { textBox1.Text, Helper.Encrypt(textBox2.Text), "1", Helper.Encrypt(textBox4.Text) };
-            IDatabase dabase = DatabaseFactory.Instance;
-            dabase.InsertRowToTable(DatabaseContants.tables.clinicuser, columns, values);
+            database.InsertRowToTable(DatabaseContants.tables.clinicuser, columns, values);
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
-using Clinic.Helpers;
-using Clinic.Models;
-using Clinic.Models.ItemMedicine;
+using Clinic.Data.Extensions;
+using Clinic.Data.Helpers;
+using Clinic.Data.Models;
 using MySql.Data.MySqlClient;
 
-namespace Clinic.Database
+namespace Clinic.Data.Database
 {
     public class MySqlDatabase : Database<MySqlParameter, MySqlDataReader, MySqlConnection, MySqlTransaction, MySqlDataAdapter, MySqlCommand, MySqlConnectionStringBuilder>
     {
@@ -28,7 +27,9 @@ namespace Clinic.Database
                     if (Params != null && Params.Count > 0)
                     {
                         foreach (DbParameter param in Params)
+                        {
                             cmd.Parameters.Add(param);
+                        } 
                     }
 
                     if (tConnection.State == ConnectionState.Closed)
@@ -42,7 +43,6 @@ namespace Clinic.Database
             }
             catch (DbException DbEx)
             {
-                System.Windows.Forms.MessageBox.Show("Đọc database thất bại, xin xem lại kết nối database", "Thông báo");
                 Log.Error(DbEx.Message, DbEx);
                 throw DbEx;
             }
@@ -53,7 +53,7 @@ namespace Clinic.Database
             }
             finally
             {
-                if(tConnection != null)
+                if (tConnection != null)
                 {
                     tConnection.Close();
                 }
@@ -62,7 +62,7 @@ namespace Clinic.Database
 
         public override bool CheckMedicineExists(string Id)
         {
-            string strCommand = string.Format("SELECT Id FROM {0} WHERE Id = {1}", DatabaseContants.tables.medicine, Helper.ConvertToSqlString(Id));
+            string strCommand = string.Format("SELECT Id FROM {0} WHERE Id = {1}", DatabaseContants.tables.medicine, DatabaseHelper.ConvertToSqlString(Id));
             using (DbDataReader reader = ExecuteReader(strCommand, null))
             {
                 reader.Read();
@@ -72,8 +72,8 @@ namespace Clinic.Database
 
         public override void DeleteRowFromTablelistpatienttoday(string id, string name)
         {
-            string strCommand = string.Format("DELETE FROM {0} WHERE Id = {1} AND Name = {2};", 
-                DatabaseContants.tables.listpatienttoday, Helper.ConvertToSqlString(id), Helper.ConvertToSqlString(name));
+            string strCommand = string.Format("DELETE FROM {0} WHERE Id = {1} AND Name = {2};",
+                DatabaseContants.tables.listpatienttoday, DatabaseHelper.ConvertToSqlString(id), DatabaseHelper.ConvertToSqlString(name));
 
             //MySqlCommand comm = new MySqlCommand(strCommand, conn);
             ExecuteNonQuery(strCommand, null);
@@ -81,7 +81,7 @@ namespace Clinic.Database
 
         public override void DeleteRowInTableByID(string nameTable, string nameID, string ID)
         {
-            string strCommand = string.Format("DELETE FROM {0} WHERE {1} = {2}", nameTable, nameID, Helper.ConvertToSqlString(ID));
+            string strCommand = string.Format("DELETE FROM {0} WHERE {1} = {2}", nameTable, nameID, DatabaseHelper.ConvertToSqlString(ID));
             ExecuteNonQuery(strCommand, null);
         }
 
@@ -97,22 +97,22 @@ namespace Clinic.Database
 
         public override List<ADate> GetAllDateOfUser(string Username)
         {
-            List<ADate> ListDate = new List<ADate>();
-            string strCommand = string.Format("SELECT * FROM {0} where Username = {1}", DatabaseContants.tables.calendar, Helper.ConvertToSqlString(Username));
+            List<ADate> listDate = new List<ADate>();
+            string strCommand = string.Format("SELECT * FROM {0} where Username = {1}", DatabaseContants.tables.calendar, DatabaseHelper.ConvertToSqlString(Username));
             using (DbDataReader reader = ExecuteReader(strCommand, null))
             {
                 while (reader.Read())
                 {
-                    ListDate.Add(Helper.BoxingDate(reader));
+                    listDate.Add(DatabaseHelper.BoxingDate(reader));
                 }
             }
-            return ListDate;
+            return listDate;
         }
 
         public override List<string> GetAllDiagnosesFromHistory(DateTime date)
         {
             List<string> result = new List<string>();
-            string strCommand = Helper.BuildStringCommandGettingFieldsFromTableWithoutCondition(DatabaseContants.tables.history, new List<string>() { DatabaseContants.history.Diagnose }) + " where " + DatabaseContants.history.Diagnose + " NOT LIKE '%[H]'" + "and Day < " + Helper.ConvertToSqlString(date.ToString("yyyy-MM-dd"));
+            string strCommand = DatabaseHelper.BuildStringCommandGettingFieldsFromTableWithoutCondition(DatabaseContants.tables.history, new List<string>() { DatabaseContants.history.Diagnose }) + " where " + DatabaseContants.history.Diagnose + " NOT LIKE '%[H]'" + "and Day < " + DatabaseHelper.ConvertToSqlString(date.ToString("yyyy-MM-dd"));
             using (DbDataReader reader = ExecuteReader(strCommand, null))
             {
                 while (reader.Read())
@@ -154,8 +154,8 @@ namespace Clinic.Database
 
         public override int GetCountFromMecidicByName(string name)
         {
-            string strCommand = string.Format("SELECT Sum(Count) FROM {0} where Name = {1}", DatabaseContants.tables.medicine, Helper.ConvertToSqlString(name));
-            int count = Helper.ConvertString2Int(ExecuteScalar(strCommand).ToString());
+            string strCommand = string.Format("SELECT Sum(Count) FROM {0} where Name = {1}", DatabaseContants.tables.medicine, DatabaseHelper.ConvertToSqlString(name));
+            int count = ExecuteScalar(strCommand).ToInt();
             return count;
         }
 
@@ -177,7 +177,7 @@ namespace Clinic.Database
                     };
                     result.Add(patientToday);
                 }
-                
+
             }
             CloseCurrentConnection();
             return result;
@@ -202,7 +202,7 @@ namespace Clinic.Database
 
         public override Medicine GetMedicineFromName(string name)
         {
-            string strCommand = string.Format("SELECT * FROM {0} Where Name = {1}", DatabaseContants.tables.medicine, Helper.ConvertToSqlString(name));
+            string strCommand = string.Format("SELECT * FROM {0} Where Name = {1}", DatabaseContants.tables.medicine, DatabaseHelper.ConvertToSqlString(name));
             using (DbDataReader reader = ExecuteReader(strCommand, null))
             {
                 reader.Read();
@@ -210,12 +210,12 @@ namespace Clinic.Database
                 {
                     Medicine medicine = new Medicine
                     {
-                        Name = Helper.ConvertObject2String(reader[DatabaseContants.medicine.Name]),
-                        CostIn = Helper.ConvertString2Int(reader[DatabaseContants.medicine.CostIn]),
-                        CostOut = Helper.ConvertString2Int(reader[DatabaseContants.medicine.CostOut]),
-                        Count = Helper.ConvertString2Int(reader[DatabaseContants.medicine.Count]),
+                        Name = reader[DatabaseContants.medicine.Name].ToStringOrDefault(),
+                        CostIn = reader[DatabaseContants.medicine.CostIn].ToInt(),
+                        CostOut = reader[DatabaseContants.medicine.CostOut].ToInt(),
+                        Count = reader[DatabaseContants.medicine.Count].ToInt(),
                         InputDay = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.medicine.InputDay)),
-                        HDSD = Helper.ConvertObject2String(reader[DatabaseContants.medicine.Hdsd])
+                        HDSD = reader[DatabaseContants.medicine.Hdsd].ToStringOrDefault()
                     };
                     return medicine;
                 }
@@ -225,7 +225,7 @@ namespace Clinic.Database
 
         public override string GetNameOfDoctor(string name)
         {
-            string strCommand = string.Format("SELECT * FROM {0} where Username = {1}", DatabaseContants.tables.clinicuser, Helper.ConvertToSqlString(name));
+            string strCommand = string.Format("SELECT * FROM {0} where Username = {1}", DatabaseContants.tables.clinicuser, DatabaseHelper.ConvertToSqlString(name));
             DbDataReader reader = ExecuteReader(strCommand, null);
             reader.Read();
             try
@@ -257,7 +257,7 @@ namespace Clinic.Database
         {
             string strCommand = string.Format("SELECT {0} FROM {1} WHERE Id = {2} AND Day = {3};",
                 DatabaseContants.history.IdHistory, DatabaseContants.tables.history,
-                Helper.ConvertToSqlString(idPatient), Helper.ConvertToSqlString(visitDate));
+                DatabaseHelper.ConvertToSqlString(idPatient), DatabaseHelper.ConvertToSqlString(visitDate));
             //MySqlCommand comm = new MySqlCommand(strCommand, conn);
             IDatabase db = DatabaseFactory.Instance;
             DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader;
@@ -280,7 +280,7 @@ namespace Clinic.Database
 
         public override void UpdateRowToTable(string nameOfTable, List<string> nameOfColumns, List<string> values, string namecolumn, string id)
         {
-            string strCommand = Helper.BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
+            string strCommand = DatabaseHelper.BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
 
             strCommand += " WHERE " + namecolumn + " ='" + id + "';";
 
@@ -290,7 +290,7 @@ namespace Clinic.Database
 
         public override void UpdateRowToTable(string nameOfTable, List<string> nameOfColumns, List<string> values, string nameColumn, string id, string visitDate)
         {
-            string strCommand = Helper.BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
+            string strCommand = DatabaseHelper.BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
 
             strCommand += " WHERE " + nameColumn + " ='" + id + "' AND Day='" + visitDate + "';";
 
@@ -300,7 +300,7 @@ namespace Clinic.Database
 
         public override void UpdateRowToTableCalendar(string nameOfTable, List<string> nameOfColumns, List<string> values, string id, string Username)
         {
-            string strCommand = Helper.BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
+            string strCommand = DatabaseHelper.BuildFirstPartUpdateQuery(nameOfTable, nameOfColumns, values);
 
             strCommand += " WHERE IdCalendar='" + id + "' AND Username='" + Username + "';";
 
@@ -314,8 +314,8 @@ namespace Clinic.Database
                                 + string.Format("LEFT JOIN {0} h ON p.Idpatient = h.Id ", DatabaseContants.tables.history)
                                 + string.Format("LEFT JOIN {0} l ON l.IdHistory = h.IdHistory ", DatabaseContants.tables.lichHen)
                                 + string.Format("WHERE h.Day >= {0} AND h.Day <= {1}",
-                                Helper.ConvertToSqlString(fromDate.ToString("yyyy-MM-dd")),
-                                Helper.ConvertToSqlString(toDate.ToString("yyyy-MM-dd")));
+                                DatabaseHelper.ConvertToSqlString(fromDate.ToString("yyyy-MM-dd")),
+                                DatabaseHelper.ConvertToSqlString(toDate.ToString("yyyy-MM-dd")));
 
             List<InfoPatient> results = new List<InfoPatient>();
             using (MySqlDataReader reader = ExecuteReader(strCommand, null))
@@ -347,42 +347,5 @@ namespace Clinic.Database
             CloseCurrentConnection();
             return results;
         }
-        //public List<InfoPatient> GetAllPatientInfo1(DateTime fromDate, DateTime toDate)
-        //{
-        //    string strCommand = string.Format("SELECT p.*, h.*, l.benh, l.time, l.status FROM {0} p ", DatabaseContants.tables.patient)
-        //                        + string.Format("LEFT JOIN {0} h ON p.Idpatient = h.Id ", DatabaseContants.tables.history)
-        //                        + string.Format("LEFT JOIN {0} l ON l.IdHistory = h.IdHistory ", DatabaseContants.tables.lichHen)
-        //                        + string.Format("WHERE h.Day >= {0} AND h.Day <= {1}",
-        //                        Helper.ConvertToSqlString(fromDate.ToString("yyyy-MM-dd")),
-        //                        Helper.ConvertToSqlString(toDate.ToString("yyyy-MM-dd")));
-
-        //    List<InfoPatient> results = new List<InfoPatient>();
-        //    DataTable dataTable = ExecuteReaderAdapter(strCommand, null);
-        //    foreach(DataRow row in dataTable.Rows)
-        //    {
-        //        InfoPatient item = new InfoPatient();
-        //        item.Name = row[1].ToString();
-        //        item.Phone = row[2].ToString();
-        //        item.Address = row[3].ToString();
-        //        item.Birthday = Convert.ToDateTime(row[4]);
-        //        item.Height = row[5].ToString();
-        //        item.Weight = row[6].ToString();
-        //        item.Symptom = row[8].ToString();
-        //        item.Temperature = row[9].ToString();
-        //        item.HuyenAp = row[10].ToString();
-        //        item.Diagnose = row[11].ToString();
-        //        item.Medicines = row[12].ToString();
-        //        item.NgayKham = Convert.ToDateTime(row[13].ToString());
-        //        item.Reason = row[15].ToString();
-        //        item.NameOfDoctor = row[16].ToString();
-        //        item.Benh = row[18].ToString();
-        //        item.NgayTaiKham = DateTime.TryParse(row[19].ToString(), out DateTime taiKham) ? taiKham.ToString(ClinicConstant.DateTimeFormat) : string.Empty;
-        //        item.Status = row[20].ToString();
-
-        //        results.Add(item);
-        //    }
-
-        //    return results;
-        //}
     }
 }

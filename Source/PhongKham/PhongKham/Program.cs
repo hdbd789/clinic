@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Windows.Forms;
-using Clinic.Helpers;
-using Clinic;
-using MySql.Data.MySqlClient;
 using System.IO;
-using Clinic.Database;
-using log4net;
 using System.Reflection;
+using System.Windows.Forms;
+using Clinic;
 using Clinic.Business;
+using Clinic.Data.Database;
+using Clinic.Helpers;
+using log4net;
+using MySql.Data.MySqlClient;
 
 namespace PhongKham
 {
