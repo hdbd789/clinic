@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Clinic.Helpers;
-using Clinic.Models;
+using Clinic.Data.Models;
 
 namespace Clinic
 {

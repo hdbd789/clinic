@@ -1,11 +1,11 @@
-﻿using Clinic.Database;
-using Clinic.Helpers;
-using Clinic.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using Clinic.Data.Database;
+using Clinic.Data.Models;
+using Clinic.Helpers;
 
 namespace Clinic.Extensions
 {

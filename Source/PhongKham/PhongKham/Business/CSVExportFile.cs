@@ -1,15 +1,15 @@
-﻿using Clinic.ClinicException;
-using Clinic.Helpers;
-using Clinic.Models;
-using CsvHelper;
-using CsvHelper.TypeConversion;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Clinic.ClinicException;
+using Clinic.Data.Models;
+using Clinic.Helpers;
+using CsvHelper;
+using CsvHelper.TypeConversion;
+using log4net;
 
 namespace Clinic.Business
 {

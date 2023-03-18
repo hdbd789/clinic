@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Windows.Forms;
-using Clinic.Helpers;
-using Clinic.Models.ItemMedicine;
-using Clinic.Database;
 using System.Data.Common;
-using Clinic.Thong_Ke;
-using Clinic.MessageBoxControl;
-using Clinic.Gui;
-using log4net;
+using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
+using Clinic.Data.Database;
+using Clinic.Data.Helpers;
+using Clinic.Data.Models;
+using Clinic.Gui;
+using Clinic.Helpers;
+using Clinic.MessageBoxControl;
+using Clinic.Thong_Ke;
+using log4net;
 
 namespace Clinic
 {
@@ -21,7 +22,7 @@ namespace Clinic
 
         public delegate void RefreshMedicines4MainForm();
         public static RefreshMedicines4MainForm refreshMedicines4MainForm;
-        private IDatabase db = DatabaseFactory.Instance;
+        private readonly IDatabase db = DatabaseFactory.Instance;
         public TuThuocForm()
         {
             InitializeComponent();
@@ -82,7 +83,7 @@ namespace Clinic
                 MessageBox.Show("Tên thuốc không được để trống ");
                 return;
             }
-            string strCommand = "Select Name From medicine  Where Name = " + Helper.ConvertToSqlString(this.txtBoxInputMedicineNewName.Text);
+            string strCommand = "Select Name From medicine  Where Name = " + DatabaseHelper.ConvertToSqlString(this.txtBoxInputMedicineNewName.Text);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
                 reader.Read();
@@ -221,15 +222,15 @@ namespace Clinic
                 string strCommand = "Update " + DatabaseContants.tables.medicine +
                     " Set CostOut =" + giaOut.ToString()
                     + "," +
-                    DatabaseContants.medicine.Name + " = " + Helper.ConvertToSqlString(name)
+                    DatabaseContants.medicine.Name + " = " + DatabaseHelper.ConvertToSqlString(name)
                     + "," +
-                    DatabaseContants.medicine.Hdsd + " = " + Helper.ConvertToSqlString(hdsd)
+                    DatabaseContants.medicine.Hdsd + " = " + DatabaseHelper.ConvertToSqlString(hdsd)
                     + "," +
-                    DatabaseContants.medicine.Count + " = " + Helper.ConvertToSqlString(count)
+                    DatabaseContants.medicine.Count + " = " + DatabaseHelper.ConvertToSqlString(count)
                     + "," +
-                    DatabaseContants.medicine.CostIn + " = " + Helper.ConvertToSqlString(giaIn)
+                    DatabaseContants.medicine.CostIn + " = " + DatabaseHelper.ConvertToSqlString(giaIn)
                     + "," +
-                    DatabaseContants.medicine.InputDay + " = " + Helper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"))
+                    DatabaseContants.medicine.InputDay + " = " + DatabaseHelper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd"))
                     + " Where Id =" + Id;
                 DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
                 MessageBox.Show("Cập nhật thuốc thành công");
