@@ -1,13 +1,7 @@
-﻿using Clinic.Database;
-using Clinic.Helpers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Windows.Forms;
+using Clinic.Data.Database;
+using Clinic.Helpers;
 
 namespace Clinic.Thong_Ke
 {

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Clinic.Data.Database;
 using Clinic.Helpers;
-using Clinic.Database;
-using System.Data.Common;
 
 namespace Clinic.Extensions.LoaiKham
 {

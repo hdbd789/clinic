@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Clinic.Database;
+using Clinic.Data.Database;
+using Clinic.Data.Helpers;
 using Clinic.Helpers;
 
 namespace Clinic.Thong_Ke
@@ -77,7 +76,7 @@ namespace Clinic.Thong_Ke
 
         private void UpdateRow(string value,string valuePrivious)
         {
-            string strCommand = string.Format("Update {0} Set {1} = {2} where {3} = {4}", DatabaseContants.tables.history, DatabaseContants.history.Diagnose, Helper.ConvertToSqlString(value), DatabaseContants.history.Diagnose, Helper.ConvertToSqlString(valuePrivious));
+            string strCommand = string.Format("Update {0} Set {1} = {2} where {3} = {4}", DatabaseContants.tables.history, DatabaseContants.history.Diagnose, DatabaseHelper.ConvertToSqlString(value), DatabaseContants.history.Diagnose, DatabaseHelper.ConvertToSqlString(valuePrivious));
             DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
         }
         private bool isValid(Control control, string text)
@@ -167,7 +166,7 @@ namespace Clinic.Thong_Ke
 
         private void UpdateTableDiagnoses(string id, string value)
         {
-            string strCommand = string.Format("Update {0} Set {1} = {2} where {3} = {4}", DatabaseContants.tables.diagnoses, DatabaseContants.Diagnoses.diagnoses, Helper.ConvertToSqlString(value), DatabaseContants.Diagnoses.Id, id);
+            string strCommand = string.Format("Update {0} Set {1} = {2} where {3} = {4}", DatabaseContants.tables.diagnoses, DatabaseContants.Diagnoses.diagnoses, DatabaseHelper.ConvertToSqlString(value), DatabaseContants.Diagnoses.Id, id);
             DatabaseFactory.Instance.ExecuteNonQuery(strCommand, null);
         }
 

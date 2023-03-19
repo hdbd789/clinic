@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
-using Clinic;
-using Clinic.Helpers;
-using Clinic.Models;
-using Clinic.Database;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Drawing;
-using System.ComponentModel;
-using System.Windows.Forms.Calendar;
-using System.IO;
-using System.Xml.Serialization;
-using System.Runtime.InteropServices;
-using Clinic.Models.ItemMedicine;
-using Clinic.Extensions.LoaiKham;
-using Clinic.Thong_Ke;
-using Clinic.Extensions;
-using Clinic.Gui;
-using log4net;
-using System.Reflection;
-using Clinic.Business;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Forms.Calendar;
+using System.Xml.Serialization;
+using Clinic;
+using Clinic.Business;
+using Clinic.Data.Database;
+using Clinic.Data.Helpers;
+using Clinic.Data.Models;
 using Clinic.Dialog;
+using Clinic.Extensions;
+using Clinic.Extensions.LoaiKham;
+using Clinic.Gui;
+using Clinic.Helpers;
+using Clinic.Models;
+using Clinic.Thong_Ke;
+using log4net;
 
 namespace PhongKham
 {
@@ -225,7 +226,7 @@ namespace PhongKham
                     + $"FROM {DatabaseContants.tables.patient} p "
                     + $"INNER JOIN {DatabaseContants.tables.advisory} a ON p.Idpatient = a.IdPatient "
                     + $"INNER JOIN {DatabaseContants.tables.lichHen} l ON a.Id = l.IdAdvisory "
-                    + $"WHERE l.status = '0' AND l.time = {Helper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd"))} "
+                    + $"WHERE l.status = '0' AND l.time = {DatabaseHelper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd"))} "
                     + $"      AND l.Idpatient NOT IN (SELECT ltd.Id FROM {DatabaseContants.tables.listpatienttoday} ltd)";
         }
 
@@ -240,7 +241,7 @@ namespace PhongKham
                     + $"FROM {DatabaseContants.tables.patient} p "
                     + $"INNER JOIN {DatabaseContants.tables.history} h ON p.Idpatient = h.Id "
                     + $"INNER JOIN {DatabaseContants.tables.lichHen} l ON h.IdHistory = l.IdHistory "
-                    + $"WHERE l.status = '0' AND l.time = {Helper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd"))} "
+                    + $"WHERE l.status = '0' AND l.time = {DatabaseHelper.ConvertToSqlString(dateTime.ToString("yyyy-MM-dd"))} "
                     + $"      AND l.Idpatient NOT IN (SELECT ltd.Id FROM {DatabaseContants.tables.listpatienttoday} ltd)";
         }
 
@@ -277,32 +278,32 @@ namespace PhongKham
             this.circularProgress1.Hide();
         }
 
-        private void ListPatientForm_advisoryClick(string id, string name, string state)
+        private void ListPatientForm_advisoryClick(PatientToday patientToday)
         {
             LoadDataType = LoadDataType.OnlyAdvisory;
             savePatientCommand = new SaveAdviseCommand(db);
-            FillDataForPatientTodayAction(id, name, state);
+            FillDataForPatientTodayAction(patientToday.IdPatient, patientToday.NamePatient, patientToday.State);
             this.IsViewHistory = false;
             this.btn_khamlai.Visible = false;
             btnAdvise.Visible = false;
-            db.DeleteRowFromTablelistpatienttoday(id, name);
+            db.DeleteRowFromTablelistpatienttoday(patientToday.IdPatient, patientToday.NamePatient);
         }
 
-        private void KhamVaXoa(string id, string name, string state)
+        private void KhamVaXoa(PatientToday patientToday)
         {
             savePatientCommand = new SaveKhamCommand(db);
-            FillDataForPatientTodayAction(id, name, state);
+            FillDataForPatientTodayAction(patientToday.IdPatient, patientToday.NamePatient, patientToday.State);
             this.IsViewHistory = false;
             this.btn_khamlai.Visible = false;
             btnAdvise.Visible = false;
-            db.DeleteRowFromTablelistpatienttoday(id, name);
+            db.DeleteRowFromTablelistpatienttoday(patientToday.IdPatient, patientToday.NamePatient);
         }
 
         private void FillDataForPatientTodayAction(string id, string name, string state)
         {
             string strCommand = string.Format("SELECT * FROM {0} Where Name = {1} AND {2} = {3}",
-                DatabaseContants.tables.patient, Helper.ConvertToSqlString(name),
-                DatabaseContants.patient.Id, Helper.ConvertToSqlString(id));
+                DatabaseContants.tables.patient, DatabaseHelper.ConvertToSqlString(name),
+                DatabaseContants.patient.Id, DatabaseHelper.ConvertToSqlString(id));
 
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
@@ -315,6 +316,7 @@ namespace PhongKham
             this.textBoxHuyetAp.Text = stateString[1];
             this.txtBoxClinicRoomWeight.Text = stateString[2];
             this.buttonPutIn.Text = savePatientCommand.ButtonInputText;
+            dateTimePickerNgayDuSanh.Text = stateString[3];
             // buttonSearch.PerformClick();
             SearchOnTextBox_PressEnter();
         }
@@ -335,12 +337,9 @@ namespace PhongKham
 
 
         #region Init
-
-
-
         private void XoaListToday()
         {
-            string cmd = string.Format("Delete from {0} Where time != {1}", DatabaseContants.tables.listpatienttoday, Helper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")));
+            string cmd = string.Format("Delete from {0} Where time != {1}", DatabaseContants.tables.listpatienttoday, DatabaseHelper.ConvertToSqlString(DateTime.Now.ToString("yyyy-MM-dd")));
             db.ExecuteNonQuery(cmd, null);
         }
 
@@ -349,7 +348,7 @@ namespace PhongKham
             string cmd = string.Format("SELECT l.*, p.birthday FROM {0} l LEFT JOIN {1} p ON p.Idpatient = l.Idpatient WHERE time = {2}", 
                 DatabaseContants.tables.lichHen,
                 DatabaseContants.tables.patient,
-                Helper.ConvertToSqlString(time.ToString("yyyy-MM-dd")));
+                DatabaseHelper.ConvertToSqlString(time.ToString("yyyy-MM-dd")));
             using (DbDataReader reader = db.ExecuteReader(cmd, null) as DbDataReader)
             {
                 while (reader.Read())
@@ -409,12 +408,8 @@ namespace PhongKham
             string ID = intId.ToString();
             lblClinicRoomId.Text = ID;
 
-            //init comboBoxName
-
             //comboBoxClinicRoomName.Items.Clear();
             comboBoxClinicRoomName.Text = "";
-            // Helper.GetAllRowsOfSpecialColumn("Patient","Name");
-
         }
 
         private void InitComboboxMedicinesMySql()
@@ -424,21 +419,6 @@ namespace PhongKham
             currentMedicines = Helper.GetAllMedicinesAndServicesFromDB();
             currentServices = currentMedicines.Where(x => x.Name[0] == '@').ToList();
             this.ColumnNameAllMedicine.Items.AddRange(currentMedicines.Select(x => x.Name).ToArray());
-        }
-
-        public void Init()
-        {
-            if (!Helper.CheckAdminExists())
-            {
-                CreateUserForm createUserForm = new CreateUserForm();
-                createUserForm.ShowDialog();
-            }
-
-            LoginForm login = new LoginForm();
-            if (login.ShowDialog(this) == DialogResult.OK)
-            {
-
-            }
         }
 
         private void InitUser(int authority)
@@ -556,8 +536,6 @@ namespace PhongKham
         #endregion
 
         #region Helper
-
-        
         private void FillInfoToClinicForm(DbDataReader reader, bool onlyInfo, string idHistory)
         {
             try
@@ -577,13 +555,13 @@ namespace PhongKham
                 {
                     textBoxClinicNhietDo.Text = reader[DatabaseContants.history.temperature].ToString();
                     textBoxHuyetAp.Text = reader[DatabaseContants.history.huyetap].ToString();
-                    dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.history.DateWillBirth].ToString();
                 }
                 if (IsViewHistory)
                 {                   
                     txtBoxClinicRoomWeight.Text = reader["Weight"].ToString();
                 }
                 textBoxClinicPhone.Text = reader["phone"].ToString();
+                dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.patient.DateWillBirthMain].ToString();
             }
             catch (Exception ex)
             {
@@ -743,7 +721,7 @@ namespace PhongKham
             if (dataGridViewMedicine[columnIndex, rowIndex].Value != null)
             {
                 string nameOfMedicine = dataGridViewMedicine[columnIndex, rowIndex].Value.ToString();
-                string strCommand = string.Format("SELECT * FROM {0} WHERE Name = {1}", DatabaseContants.tables.medicine, Helper.ConvertToSqlString(nameOfMedicine));
+                string strCommand = string.Format("SELECT * FROM {0} WHERE Name = {1}", DatabaseContants.tables.medicine, DatabaseHelper.ConvertToSqlString(nameOfMedicine));
                 //MySqlCommand comm = new MySqlCommand(strCommand, Program.conn);
                 using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
                 {
@@ -923,7 +901,7 @@ namespace PhongKham
             string strCommandMainAdvisor = "";
             //
             // Check find level2 if (both Name and ID match)
-            string strCommand = "SELECT Name ," +  DatabaseContants.patient.Id + " FROM patient  Where Name = " + Helper.ConvertToSqlString(findingName) + " and " +  DatabaseContants.patient.Id + " =" + Helper.ConvertToSqlString(Id);
+            string strCommand = "SELECT Name ," +  DatabaseContants.patient.Id + " FROM patient  Where Name = " + DatabaseHelper.ConvertToSqlString(findingName) + " and " +  DatabaseContants.patient.Id + " =" + DatabaseHelper.ConvertToSqlString(Id);
             // MySqlCommand comm = new MySqlCommand(strCommand, Program.conn);
             using (DbDataReader reader = db.ExecuteReader(strCommand, null) as DbDataReader)
             {
@@ -940,10 +918,10 @@ namespace PhongKham
                         if (string.IsNullOrEmpty(findingName)) //name = null --> find due to date
                         {
                             strCommandMainHistory = string.Format("SELECT * FROM patient p RIGHT JOIN history h ON p.{0} = h.Id WHERE h.Day = ",DatabaseContants.patient.Id) +
-                                Helper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"));
+                                DatabaseHelper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"));
 
                             strCommandMainAdvisor = $"SELECT * FROM {DatabaseContants.tables.patient} p RIGHT JOIN {DatabaseContants.tables.advisory} a ON p.{DatabaseContants.patient.Id} = a.{DatabaseContants.Advisory.IdPatient}"
-                                                   + $" WHERE a.{DatabaseContants.Advisory.Day} = {Helper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"))}";
+                                                   + $" WHERE a.{DatabaseContants.Advisory.Day} = {DatabaseHelper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"))}";
                         }
                         else
                         {
@@ -959,11 +937,11 @@ namespace PhongKham
                         strCommandMainHistory = $"SELECT distinct p.*, h.* FROM {DatabaseContants.tables.patient} p"
                                                 + $" RIGHT JOIN {DatabaseContants.tables.history} h ON p.Idpatient = h.Id"
                                                 + $" RIGHT JOIN {DatabaseContants.tables.lichHen} l ON h.IdHistory = l.IdHistory"
-                                                + $" WHERE l.time = {Helper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"))}";
+                                                + $" WHERE l.time = {DatabaseHelper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"))}";
                         strCommandMainAdvisor = $"SELECT distinct p.*, a.* FROM {DatabaseContants.tables.patient} p"
                                                 + $" RIGHT JOIN {DatabaseContants.tables.advisory} a ON p.{DatabaseContants.patient.Id} = a.{DatabaseContants.Advisory.IdPatient}"
                                                 + $" RIGHT JOIN {DatabaseContants.tables.lichHen} l ON a.{DatabaseContants.Advisory.Id} = l.{DatabaseContants.LichHen.IdAdvisory}"
-                                                + $" WHERE l.{DatabaseContants.LichHen.Time} = {Helper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"))}";
+                                                + $" WHERE l.{DatabaseContants.LichHen.Time} = {DatabaseHelper.ConvertToSqlString(dateTimePickerNgayKham.Value.ToString("yyyy-MM-dd"))}";
                     }
                 }
             }
@@ -1492,7 +1470,7 @@ namespace PhongKham
             {
                 if (Helper.SameAddressAndName(db, this.comboBoxClinicRoomName.Text, this.txtBoxClinicRoomAddress.Text))
                 {
-                    DialogResult r = MessageBox.Show("Tên và địa chỉ trùng với 1 người , bạn có thực sự muốn tạo mới ??", "Chú ý", MessageBoxButtons.YesNo);
+                    DialogResult r = MessageBox.Show("Tên và địa chỉ trùng với 1 người, bạn có thực sự muốn tạo mới ??", "Chú ý", MessageBoxButtons.YesNo);
                     if (r == System.Windows.Forms.DialogResult.No)
                     {
                         buttonSearch.PerformClick();
@@ -1506,16 +1484,17 @@ namespace PhongKham
                     DatabaseContants.patient.Address, 
                     DatabaseContants.patient.birthday, 
                     DatabaseContants.patient.weight, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
-                //List<string> columns = new List<string>() { "Name", "Address", "Birthday", "phone" };
                 List<string> values = new List<string>()
                 {
                     comboBoxClinicRoomName.Text,
                     txtBoxClinicRoomAddress.Text,
-                    dateTimePickerBirthDay.Value.ToString("yyyy-MM-dd"),
+                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text,
-                    textBoxClinicPhone.Text
+                    textBoxClinicPhone.Text,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
                 db.InsertRowToTable(DatabaseContants.tables.patient, columns, values);
                 GetIDMaxCurrentPatient();
@@ -1542,16 +1521,18 @@ namespace PhongKham
                     DatabaseContants.patient.Address, 
                     DatabaseContants.patient.birthday, 
                     DatabaseContants.patient.weight, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
                 List<string> values = new List<string>() 
                 { 
                     txtBoxClinicRoomAddress.Text, 
                     dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
                     txtBoxClinicRoomWeight.Text, 
-                    textBoxClinicPhone.Text
+                    textBoxClinicPhone.Text,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
-                db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values,DatabaseContants.patient.Id, lblClinicRoomId.Text);
+                db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values, DatabaseContants.patient.Id, lblClinicRoomId.Text);
 
                 // edit history
                 //List<string> columnsHistory = new List<string>() {"temperature","huyetap" };
@@ -1669,7 +1650,11 @@ namespace PhongKham
             try
             {
                 // nhiet do : huyet ap : can nang: chieu cao
-                string state = textBoxClinicNhietDo.Text + ';' + textBoxHuyetAp.Text + ';' + txtBoxClinicRoomWeight.Text;
+                string state = string.Join(";", 
+                    textBoxClinicNhietDo.Text,
+                    textBoxHuyetAp.Text,
+                    txtBoxClinicRoomWeight.Text,
+                    dateTimePickerNgayDuSanh.Text);
                 List<string> columnslistpatientToday = new List<string>() { "Id", "Name", "State", "time", "Type" };
                 List<string> valueslistpatientToday = new List<string>() { lblClinicRoomId.Text, comboBoxClinicRoomName.Text, state, DateTime.Now.ToString("yyyy-MM-dd"), ((int)recordType).ToString()};
                 db.InsertRowToTable(DatabaseContants.tables.listpatienttoday, columnslistpatientToday, valueslistpatientToday);
@@ -2154,10 +2139,13 @@ namespace PhongKham
         private void dataGridViewAccount_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
+            {
                 return;
+            }
+
             if (e.ColumnIndex == this.dataGridViewAccount.Columns[this.Columnupdate.Name].Index)
             {
-                string query = string.Format("update {0} set {1} = {2} where {3} = {4}", DatabaseContants.tables.clinicuser, DatabaseContants.clinicuser.Namedoctor, Helper.ConvertToSqlString(this.dataGridViewAccount[1, e.RowIndex].Value.ToString()), DatabaseContants.clinicuser.Username, Helper.ConvertToSqlString(this.dataGridViewAccount[0, e.RowIndex].Value.ToString()));
+                string query = string.Format("update {0} set {1} = {2} where {3} = {4}", DatabaseContants.tables.clinicuser, DatabaseContants.clinicuser.Namedoctor, DatabaseHelper.ConvertToSqlString(this.dataGridViewAccount[1, e.RowIndex].Value.ToString()), DatabaseContants.clinicuser.Username, DatabaseHelper.ConvertToSqlString(this.dataGridViewAccount[0, e.RowIndex].Value.ToString()));
                 if(db.ExecuteNonQuery(query, null) > -1)
                     MessageBox.Show(ClinicConstant.SuccessUpdate_Text);
                 else
@@ -2173,7 +2161,7 @@ namespace PhongKham
                 {
                     MessageBox.Show("Bạn không thể xóa tài khoản hiện tại của bạn");
                 }
-                string query = string.Format("delete from {0} where {1} = {2}", DatabaseContants.tables.clinicuser, DatabaseContants.clinicuser.Username, Helper.ConvertToSqlString(usenameDelete));
+                string query = string.Format("delete from {0} where {1} = {2}", DatabaseContants.tables.clinicuser, DatabaseContants.clinicuser.Username, DatabaseHelper.ConvertToSqlString(usenameDelete));
                 if (db.ExecuteNonQuery(query, null) > -1)
                 {
                     MessageBox.Show("Bạn xóa thành công");

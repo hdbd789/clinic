@@ -1,14 +1,14 @@
-﻿using Clinic.Database;
-using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Data;
 using System.Windows.Forms;
+using Clinic.Data.Database;
+using MySql.Data.MySqlClient;
 
 namespace Clinic.Gui
 {
     public partial class Appointment : Form
     {
-        private IDatabase db;
+        private readonly IDatabase db;
         public Appointment()
         {
             InitializeComponent();

@@ -1,4 +1,4 @@
-﻿namespace Clinic.Models
+﻿namespace Clinic.Data.Models
 {
     public class LoaiKham
     {

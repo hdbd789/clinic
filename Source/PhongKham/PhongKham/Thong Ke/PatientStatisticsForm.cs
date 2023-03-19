@@ -1,13 +1,14 @@
-﻿using Clinic.Business;
-using Clinic.Database;
-using Clinic.Helpers;
-using Clinic.Models;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Windows.Forms;
+using Clinic.Business;
+using Clinic.Data.Database;
+using Clinic.Data.Models;
+using Clinic.Helpers;
+using Clinic.Models;
+using log4net;
 
 namespace Clinic.Thong_Ke
 {

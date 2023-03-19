@@ -1,10 +1,4 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="Patient.cs" company="emotive GmbH">
-//     Copyright (c) emotive GmbH. All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
-
-namespace Clinic.Models
+﻿namespace Clinic.Data.Models
 {
     using CsvHelper.Configuration.Attributes;
     using System;
