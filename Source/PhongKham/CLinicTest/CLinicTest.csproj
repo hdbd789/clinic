@@ -46,7 +46,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\HelperTest.cs" />
+    <Compile Include="Helpers\DataHelperTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +54,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Clinic.Data\Clinic.Data.csproj">
+      <Project>{3a896a47-da42-4f90-817b-8b6d4e8017c6}</Project>
+      <Name>Clinic.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PhongKham\Clinic.csproj">
       <Project>{0674f8b1-b4d4-42a0-b559-e5d965ae3c84}</Project>
       <Name>Clinic</Name>

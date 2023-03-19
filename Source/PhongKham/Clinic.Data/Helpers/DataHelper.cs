@@ -6,7 +6,7 @@ namespace Clinic.Data.Helpers
 {
     public static class DataHelper
     {
-        internal static string BuildStringMedicines(string medicineStr)
+        public static string BuildStringMedicines(string medicineStr)
         {
             StringBuilder result = new StringBuilder();
             string[] serviceArray = medicineStr.Split(new string[] { ClinicConstant.StringBetweenOfMedicine }, StringSplitOptions.RemoveEmptyEntries);
