@@ -71,6 +71,44 @@ namespace Clinic.Helpers
             Instance.ShowProgress(ts);
         }
 
+        public void DoAsyncAction(
+            Action action, 
+            Action actionBefore,
+            Action actionAfter,
+            string messageSuccess = "", 
+            string messageFail = "Có lỗi xảy ra. Xin hãy liên hệ admin.")
+        {
+            var ts = new CancellationTokenSource();
+            Task task = Task.Factory.StartNew(() =>
+            {
+                action();
+            }, ts.Token).ContinueWith((t1) =>
+            {
+                actionAfter();
+                if (t1.Status == TaskStatus.Faulted)
+                {
+                    if (t1.Exception.InnerException is FunctionalException functional)
+                    {
+                        MessageBox.Show(functional.Message, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        Log.Error(t1.Exception.InnerException.Message, t1.Exception.InnerException);
+                        MessageBox.Show(messageFail, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else if (t1.Status == TaskStatus.Canceled)
+                {
+                    MessageBox.Show("Bạn đã dừng xử lí.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else if (!string.IsNullOrEmpty(messageSuccess))
+                {
+                    MessageBox.Show(messageSuccess, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            });
+            actionBefore();
+        }
+
         void form_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
         {
             ProgressForm form = (ProgressForm)sender;

@@ -347,5 +347,58 @@ namespace Clinic.Data.Database
             CloseCurrentConnection();
             return results;
         }
+
+        public override List<InfoPatient> LoadDataFromHistory(string query)
+        {
+            List<InfoPatient> results = new List<InfoPatient>();
+            using (MySqlDataReader reader = ExecuteReader(query, null))
+            {
+                while (reader.Read())
+                {
+                    InfoPatient item = new InfoPatient();
+                    item.Id = reader[DatabaseContants.patient.Id].ToString();
+                    item.Name = reader[DatabaseContants.patient.Name].ToString();
+                    item.Birthday = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday));
+                    item.NgayKham = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.history.Day));
+                    item.Address = reader[DatabaseContants.patient.Address].ToString();
+                    item.Symptom = reader[DatabaseContants.history.Symptom].ToString();
+                    item.Diagnose = reader[DatabaseContants.history.Diagnose].ToString();
+                    item.Temperature = reader[DatabaseContants.history.temperature].ToString();
+                    item.Weight = reader[DatabaseContants.patient.weight].ToString();
+                    item.IdHistory = reader[DatabaseContants.history.IdHistory].ToString();
+                    item.Medicines = reader[DatabaseContants.history.Medicines].ToString();
+                    item.HuyenAp = reader[DatabaseContants.history.huyetap].ToString();
+                    results.Add(item);
+                }
+            }
+            CloseCurrentConnection();
+            return results;
+        }
+
+        public override List<InfoPatient> LoadDataFromAdvisory(string query)
+        {
+            List<InfoPatient> results = new List<InfoPatient>();
+            using (MySqlDataReader reader = ExecuteReader(query, null))
+            {
+                while (reader.Read())
+                {
+                    InfoPatient item = new InfoPatient();
+                    item.Id = reader[DatabaseContants.patient.Id].ToString();
+                    item.Name = reader[DatabaseContants.patient.Name].ToString();
+                    item.Birthday = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday));
+                    item.Address = reader[DatabaseContants.patient.Address].ToString();
+                    item.Symptom = reader[DatabaseContants.Advisory.Symptom].ToString();
+                    item.Diagnose = reader[DatabaseContants.Advisory.Diagnose].ToString();
+                    item.Temperature = reader[DatabaseContants.Advisory.Temperature].ToString();
+                    item.Weight = reader[DatabaseContants.patient.weight].ToString();
+                    item.IdHistory = reader[DatabaseContants.Advisory.Id].ToString();
+                    item.Medicines = reader[DatabaseContants.Advisory.Medicines].ToString();
+                    item.HuyenAp = reader[DatabaseContants.Advisory.Huyetap].ToString();
+                    results.Add(item);
+                }
+            }
+            CloseCurrentConnection();
+            return results;
+        }
     }
 }

@@ -45,9 +45,21 @@
         [Name("Địa chỉ")]
         [Index(4)]
         public string Address { get; set; }
+        [Ignore]
+        public DateTime DateWillBirth { get; set; }
         [Name("Ngày dự sanh")]
         [Index(5)]
-        public DateTime DateWillBirth { get; set; }
+        public string DateWillBirthStr 
+        {
+            get
+            {
+                if( DateWillBirth == DateTime.Today)
+                {
+                    return string.Empty;
+                }
+                return DateWillBirth.ToString(ClinicConstant.DateTimeFormat);
+            }
+        }
         [Name("Cân nặng")]
         [Index(6)]
         public string Weight { get; set; }
