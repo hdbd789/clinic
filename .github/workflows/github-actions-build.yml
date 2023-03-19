@@ -16,7 +16,7 @@ jobs:
       - name: Build Solution
         run: msbuild ./Source/PhongKham/PhongKham.sln /p:Configuration=Release
       - name: Run tests
-        uses: microsoft-approved-actions/vstest@master
+        uses: microsoft/vstest-action@v1.0.0
         with:
           testAssembly: CLinicTest.dll
           searchFolder: ./Source/PhongKham/CLinicTest/bin/Release/
