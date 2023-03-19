@@ -72,7 +72,6 @@ namespace PhongKham
             //init MainForm
             this.TopLevel = true;
             InitializeComponent();
-
             //init delegate
             TuThuocForm.refreshMedicines4MainForm = new Clinic.TuThuocForm.RefreshMedicines4MainForm(InitComboboxMedicinesMySql);
             Services.refreshMedicines4MainForm = new Clinic.Services.RefreshMedicines4MainForm(InitComboboxMedicinesMySql);
@@ -533,6 +532,26 @@ namespace PhongKham
             labelTuoi.Text = "0";
             dateTimePickerNgayDuSanh.ResetText();
         }
+
+        private delegate void EnableClinicRoomFormDelegate(bool enabled);
+        private void EnableClinicRoomForm(bool enabled)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EnableClinicRoomFormDelegate(EnableClinicRoomForm), enabled);
+                return;
+            }
+
+            comboBoxClinicRoomName.Enabled = enabled;
+            dateTimePickerBirthDay.Enabled = enabled;
+            txtBoxClinicRoomSymptom.Enabled = enabled;
+            txtBoxClinicRoomWeight.Enabled = enabled;
+            lblClinicRoomId.Enabled = enabled;
+            textBoxClinicNhietDo.Enabled = enabled;
+            textBoxHuyetAp.Enabled = enabled;
+            dateTimePickerNgayDuSanh.Enabled = enabled;
+            textBoxAddressClinic.Enabled = enabled;
+        }
         #endregion
 
         #region Helper
@@ -959,110 +978,95 @@ namespace PhongKham
                                                  System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewSearchValue.DefaultCellStyle = style;
 
-            CircularProgressAction("Loaddata");
-            switch (LoadDataType)
+            HelperControl.Instance.DoAsyncAction(() =>
             {
-                case LoadDataType.ALL:
-                    {
-                        LoadDataFromHistory(strCommandMainHistory);
-                        LoadDataFromAdvisory(strCommandMainAdvisor);
-                        break;
-                    }
-                case LoadDataType.OnlyAdvisory:
-                    {
-                        LoadDataFromAdvisory(strCommandMainAdvisor);
-                        break;
-                    }
-                case LoadDataType.OnlyExamination:
-                    {
-                        LoadDataFromHistory(strCommandMainHistory);
-                        break;
-                    }
-            }
-            CircularProgressStop("100");
-        }
-
-        private void LoadDataFromHistory(string queryHistory)
-        {
-            // MySqlCommand comm2 = new MySqlCommand(strCommandMain, Program.conn);
-            using (DbDataReader reader = db.ExecuteReader(queryHistory, null) as DbDataReader)
-            {
-                while (reader.Read())
+                switch (LoadDataType)
                 {
-                    string ID = reader[DatabaseContants.patient.Id].ToString(); // id;
-                    if (string.IsNullOrEmpty(ID))
-                    {
-                        continue;
-                    }
-                    int index = dataGridViewSearchValue.Rows.Add();
-                    DataGridViewRow row = dataGridViewSearchValue.Rows[index];
-                    row.Cells["ColumnID"].Value = ID; // id
-                    row.Cells["ColumnNamePatient"].Value = reader[DatabaseContants.patient.Name].ToString();
-                    row.Cells["ColumnNgaySinh"].Value = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday)).ToString("dd-MM-yyyy");//birthday
-                    row.Cells["ColumnNgayKham"].Value = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.history.Day)).ToString("dd-MM-yyyy");  // ngay kham
-                    row.Cells["ColumnAddress"].Value = reader[DatabaseContants.patient.Address].ToString();//address
-                    row.Cells["ColumnSymtom"].Value = reader[DatabaseContants.history.Symptom].ToString();//symptom
-                    row.Cells["ColumnDiagno"].Value = reader[DatabaseContants.history.Diagnose].ToString(); // chan doan
-                    row.Cells["ColumnNhietDo"].Value = reader[DatabaseContants.history.temperature].ToString();
-                    row.Cells["ColumnWeight"].Value = reader[DatabaseContants.patient.weight].ToString();
-                    row.Cells["CollIDHistory"].Value = reader[DatabaseContants.history.IdHistory].ToString();
-                    if (checkBoxShowMedicines.Checked)
-                    {
-                        string medicines = reader[DatabaseContants.history.Medicines].ToString();
-                        try
+                    case LoadDataType.ALL:
                         {
-                            row.Cells["ColumnSearchValueMedicines"].Value = Helper.ChangeListMedicines(medicines);
+                            var histories = db.LoadDataFromHistory(strCommandMainHistory);
+                            var advisories = db.LoadDataFromAdvisory(strCommandMainAdvisor);
+                            LoadData(histories, RecordType.Examination);
+                            LoadData(advisories, RecordType.Advisory);
+                            break;
                         }
-                        catch (Exception exp)
+                    case LoadDataType.OnlyAdvisory:
                         {
-                            Log.Error(exp.Message, exp);
+                            LoadData(db.LoadDataFromAdvisory(strCommandMainAdvisor), RecordType.Advisory);
+                            break;
                         }
-                    }
-                    row.Cells["ColumnHuyetAp"].Value = reader[DatabaseContants.history.huyetap].ToString();
-                    row.Cells["ColTypeRecord"].Value = RecordType.Examination;
+                    case LoadDataType.OnlyExamination:
+                        {
+                            LoadData(db.LoadDataFromHistory(strCommandMainHistory), RecordType.Examination);
+                            break;
+                        }
                 }
-            }
+            }, 
+            () =>
+            {
+                EnableClinicRoomForm(false);
+            },
+            () =>
+            {
+                EnableClinicRoomForm(true);
+            });
         }
 
-        private void LoadDataFromAdvisory(string queryAdvisory)
+        private delegate void LoadDataDelegate(List<InfoPatient> infoPatients, RecordType recordType);
+        private void LoadData(List<InfoPatient> infoPatients, RecordType recordType)
         {
-            // MySqlCommand comm2 = new MySqlCommand(strCommandMain, Program.conn);
-            using (DbDataReader reader = db.ExecuteReader(queryAdvisory, null) as DbDataReader)
+            if (infoPatients == null || infoPatients.Count == 0)
             {
-                while (reader.Read())
+                return;
+            }
+
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new LoadDataDelegate(LoadData), infoPatients, recordType);
+                return;
+            }
+
+            foreach (var info in infoPatients)
+            {
+                if (string.IsNullOrEmpty(info.Id))
                 {
-                    string ID = reader[DatabaseContants.patient.Id].ToString(); // id;
-                    if (string.IsNullOrEmpty(ID))
-                    {
-                        continue;
-                    }
-                    int index = dataGridViewSearchValue.Rows.Add();
-                    DataGridViewRow row = dataGridViewSearchValue.Rows[index];
-                    row.Cells["ColumnID"].Value = ID; // id
-                    row.Cells["ColumnNamePatient"].Value = reader[DatabaseContants.patient.Name].ToString();
-                    row.Cells["ColumnNgaySinh"].Value = reader.GetDateTime(reader.GetOrdinal(DatabaseContants.patient.birthday)).ToString("dd-MM-yyyy");//birthday
+                    continue;
+                }
+
+                int index = dataGridViewSearchValue.Rows.Add();
+                DataGridViewRow row = dataGridViewSearchValue.Rows[index];
+                row.Cells["ColumnID"].Value = info.Id; // id
+                row.Cells["ColumnNamePatient"].Value = info.Name;
+                row.Cells["ColumnNgaySinh"].Value = info.Birthday.ToString("dd-MM-yyyy");//birthday
+                if(recordType == RecordType.Advisory)
+                {
                     row.Cells["ColumnNgayKham"].Value = "Tư vấn";  // ngay kham
-                    row.Cells["ColumnAddress"].Value = reader[DatabaseContants.patient.Address].ToString();//address
-                    row.Cells["ColumnSymtom"].Value = reader[DatabaseContants.Advisory.Symptom].ToString();//symptom
-                    row.Cells["ColumnDiagno"].Value = reader[DatabaseContants.Advisory.Diagnose].ToString(); // chan doan
-                    row.Cells["ColumnNhietDo"].Value = reader[DatabaseContants.Advisory.Temperature].ToString();
-                    row.Cells["ColumnWeight"].Value = reader[DatabaseContants.patient.weight].ToString();
-                    row.Cells["CollIDHistory"].Value = reader[DatabaseContants.Advisory.Id].ToString();
-                    if (checkBoxShowMedicines.Checked)
-                    {
-                        string medicines = reader[DatabaseContants.Advisory.Medicines].ToString();
-                        try
-                        {
-                            row.Cells["ColumnSearchValueMedicines"].Value = Helper.ChangeListMedicines(medicines);
-                        }
-                        catch (Exception exp)
-                        {
-                            Log.Error(exp.Message, exp);
-                        }
-                    }
-                    row.Cells["ColumnHuyetAp"].Value = reader[DatabaseContants.Advisory.Huyetap].ToString();
-                    row.Cells["ColTypeRecord"].Value = RecordType.Advisory;
                 }
+                else if(recordType == RecordType.Examination)
+                {
+                    row.Cells["ColumnNgayKham"].Value = info.NgayKham.ToString("dd-MM-yyyy");  // ngay kham
+                }
+                
+                row.Cells["ColumnAddress"].Value = info.Address;//address
+                row.Cells["ColumnSymtom"].Value = info.Symptom;//symptom
+                row.Cells["ColumnDiagno"].Value = info.Diagnose; // chan doan
+                row.Cells["ColumnNhietDo"].Value = info.Temperature;
+                row.Cells["ColumnWeight"].Value = info.Weight;
+                row.Cells["CollIDHistory"].Value = info.IdHistory;
+                if (checkBoxShowMedicines.Checked)
+                {
+                    string medicines = info.Medicines;
+                    try
+                    {
+                        row.Cells["ColumnSearchValueMedicines"].Value = Helper.ChangeListMedicines(medicines);
+                    }
+                    catch (Exception exp)
+                    {
+                        Log.Error(exp.Message, exp);
+                    }
+                }
+                row.Cells["ColumnHuyetAp"].Value = info.HuyenAp;
+                row.Cells["ColTypeRecord"].Value = recordType;
             }
         }
 

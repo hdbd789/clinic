@@ -92,6 +92,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y "$(ProjectDir)\bin\Debug" "$(SolutionDir)\PhongKham\bin\Debug\Update"</PostBuildEvent>
+    <PostBuildEvent>if not exist "$(SolutionDir)\PhongKham\bin\$(ConfigurationName)\Update" mkdir "$(SolutionDir)\PhongKham\bin\$(ConfigurationName)\Update"
+
+copy /y "$(ProjectDir)\bin\$(ConfigurationName)" "$(SolutionDir)\PhongKham\bin\$(ConfigurationName)\Update"</PostBuildEvent>
   </PropertyGroup>
 </Project>

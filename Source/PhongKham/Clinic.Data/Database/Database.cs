@@ -327,5 +327,9 @@ namespace Clinic.Data.Database
         public abstract string GetNamePatientByID(string id);
         public abstract Medicine GetMedicineFromName(string name);
         public abstract List<InfoPatient> GetAllPatientInfo(DateTime fromDate, DateTime toDate);
+
+        public abstract List<InfoPatient> LoadDataFromHistory(string query);
+
+        public abstract List<InfoPatient> LoadDataFromAdvisory(string query);
     }
 }

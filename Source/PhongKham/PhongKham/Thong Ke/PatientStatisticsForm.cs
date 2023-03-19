@@ -24,6 +24,7 @@ namespace Clinic.Thong_Ke
             { "Dateofbirth", new Tuple<string, int>("Ngày sinh",100) },
             { "Phone", new Tuple<string, int>("Số điện thoại",120) },
             { "Address", new Tuple<string, int>("Địa chỉ",250) },
+            { "DateWillBirth", new Tuple<string, int>("Ngày dự sanh",100) },
             { "Weight", new Tuple<string, int>("Cân nặng",80) },
             { "Temperature", new Tuple<string, int>("Nhiệt độ",100) },
             { "Huyetap", new Tuple<string, int>("Huyết áp",100) },
@@ -102,6 +103,7 @@ namespace Clinic.Thong_Ke
                 row["Dateofbirth"] = infoPatient.Birthday.ToString(ClinicConstant.DateTimeFormat);
                 row["Phone"] = infoPatient.Phone;
                 row["Address"] = infoPatient.Address;
+                row["DateWillBirth"] = infoPatient.DateWillBirthStr;
                 row["Weight"] = infoPatient.Weight;
                 row["Temperature"] = infoPatient.Temperature;
                 row["Huyetap"] = infoPatient.HuyenAp;

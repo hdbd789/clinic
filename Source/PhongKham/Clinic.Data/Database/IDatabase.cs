@@ -38,5 +38,8 @@ namespace Clinic.Data.Database
         Medicine GetMedicineFromName(string name);
 
         List<InfoPatient> GetAllPatientInfo(DateTime fromDate, DateTime toDate);
+
+        List<InfoPatient> LoadDataFromHistory(string query);
+        List<InfoPatient> LoadDataFromAdvisory(string query);
     }
 }

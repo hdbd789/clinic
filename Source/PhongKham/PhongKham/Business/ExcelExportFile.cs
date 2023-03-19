@@ -42,6 +42,7 @@ namespace Clinic.Business
                             row.CreateCell(2).SetCellValue("Ngày sinh");
                             row.CreateCell(3).SetCellValue("Số điện thoại");
                             row.CreateCell(4).SetCellValue("Địa chỉ");
+                            row.CreateCell(5).SetCellValue("Ngày dự sanh");
                             row.CreateCell(6).SetCellValue("Cân nặng");
                             row.CreateCell(7).SetCellValue("Triệu chứng");
                             row.CreateCell(8).SetCellValue("Chẩn đoán");
@@ -58,11 +59,12 @@ namespace Clinic.Business
                             foreach (var patient in infoPatients)
                             {
                                 row = excelSheet.CreateRow(RowIndex);
-                                row.CreateCell(0).SetCellValue(patient.NgayKham.ToString("dd-MM-yyyy"));
+                                row.CreateCell(0).SetCellValue(patient.NgayKham.ToString(ClinicConstant.DateTimeFormat));
                                 row.CreateCell(1).SetCellValue(patient.Name);
-                                row.CreateCell(2).SetCellValue(patient.Birthday.ToString("dd-MM-yyyy"));
+                                row.CreateCell(2).SetCellValue(patient.Birthday.ToString(ClinicConstant.DateTimeFormat));
                                 row.CreateCell(3).SetCellValue(patient.Phone);
                                 row.CreateCell(4).SetCellValue(patient.Address);
+                                row.CreateCell(5).SetCellValue(patient.DateWillBirthStr);
                                 row.CreateCell(6).SetCellValue(patient.Weight);
                                 row.CreateCell(7).SetCellValue(patient.Symptom);
                                 row.CreateCell(8).SetCellValue(patient.Diagnose);
