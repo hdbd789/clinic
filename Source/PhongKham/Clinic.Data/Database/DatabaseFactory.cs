@@ -9,6 +9,7 @@ namespace Clinic.Data.Database
         private static IDatabase instance;
         private static IDatabase instance2;
         private static IDatabase instance3;
+        private static MySqlConnectionStringBuilder stringBuilderData;
 
         public static IDatabase Instance
         {
@@ -45,14 +46,19 @@ namespace Clinic.Data.Database
             }
         }
 
+        public static IDatabase GetNewInstance()
+        {
+            return new MySqlDatabase(stringBuilderData.ConnectionString + ';' + "charset = utf8;");
+        }
+
         public static void CreateNewDatabase(string kindOfDatabase, DbConStringBuilder strBuilder)
         {
             //if else here
-            MySqlConnectionStringBuilder stringBuilder = new MySqlConnectionStringBuilder();
-            StringBuilderCopy(strBuilder, stringBuilder);
-            instance = new MySqlDatabase(stringBuilder.ConnectionString + ';' + "charset = utf8;");
-            instance2 = new MySqlDatabase(stringBuilder.ConnectionString + ';' + "charset = utf8;");
-            instance3 = new MySqlDatabase(stringBuilder.ConnectionString + ';' + "charset = utf8;");
+            stringBuilderData = new MySqlConnectionStringBuilder();
+            StringBuilderCopy(strBuilder, stringBuilderData);
+            instance = new MySqlDatabase(stringBuilderData.ConnectionString + ';' + "charset = utf8;");
+            instance2 = new MySqlDatabase(stringBuilderData.ConnectionString + ';' + "charset = utf8;");
+            instance3 = new MySqlDatabase(stringBuilderData.ConnectionString + ';' + "charset = utf8;");
         }
 
         private static void StringBuilderCopy(DbConStringBuilder strBuilder, MySqlConnectionStringBuilder stringBuilder)

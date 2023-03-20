@@ -980,27 +980,30 @@ namespace PhongKham
 
             HelperControl.Instance.DoAsyncAction(() =>
             {
+                IDatabase databaseThread = DatabaseFactory.GetNewInstance();
                 switch (LoadDataType)
                 {
                     case LoadDataType.ALL:
                         {
-                            var histories = db.LoadDataFromHistory(strCommandMainHistory);
-                            var advisories = db.LoadDataFromAdvisory(strCommandMainAdvisor);
+                            var histories = databaseThread.LoadDataFromHistory(strCommandMainHistory);
+                            var advisories = databaseThread.LoadDataFromAdvisory(strCommandMainAdvisor);
                             LoadData(histories, RecordType.Examination);
                             LoadData(advisories, RecordType.Advisory);
                             break;
                         }
                     case LoadDataType.OnlyAdvisory:
                         {
-                            LoadData(db.LoadDataFromAdvisory(strCommandMainAdvisor), RecordType.Advisory);
+                            LoadData(databaseThread.LoadDataFromAdvisory(strCommandMainAdvisor), RecordType.Advisory);
                             break;
                         }
                     case LoadDataType.OnlyExamination:
                         {
-                            LoadData(db.LoadDataFromHistory(strCommandMainHistory), RecordType.Examination);
+                            LoadData(databaseThread.LoadDataFromHistory(strCommandMainHistory), RecordType.Examination);
                             break;
                         }
                 }
+
+                databaseThread.CloseCurrentConnection();
             }, 
             () =>
             {
