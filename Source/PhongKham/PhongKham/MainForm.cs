@@ -315,7 +315,6 @@ namespace PhongKham
             this.textBoxHuyetAp.Text = stateString[1];
             this.txtBoxClinicRoomWeight.Text = stateString[2];
             this.buttonPutIn.Text = savePatientCommand.ButtonInputText;
-            dateTimePickerNgayDuSanh.Text = stateString[3];
             // buttonSearch.PerformClick();
             SearchOnTextBox_PressEnter();
         }
@@ -1002,8 +1001,6 @@ namespace PhongKham
                             break;
                         }
                 }
-
-                databaseThread.CloseCurrentConnection();
             }, 
             () =>
             {
@@ -1660,8 +1657,7 @@ namespace PhongKham
                 string state = string.Join(";", 
                     textBoxClinicNhietDo.Text,
                     textBoxHuyetAp.Text,
-                    txtBoxClinicRoomWeight.Text,
-                    dateTimePickerNgayDuSanh.Text);
+                    txtBoxClinicRoomWeight.Text);
                 List<string> columnslistpatientToday = new List<string>() { "Id", "Name", "State", "time", "Type" };
                 List<string> valueslistpatientToday = new List<string>() { lblClinicRoomId.Text, comboBoxClinicRoomName.Text, state, DateTime.Now.ToString("yyyy-MM-dd"), ((int)recordType).ToString()};
                 db.InsertRowToTable(DatabaseContants.tables.listpatienttoday, columnslistpatientToday, valueslistpatientToday);
