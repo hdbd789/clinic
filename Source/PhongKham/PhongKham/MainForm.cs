@@ -219,7 +219,7 @@ namespace PhongKham
             return "INSERT INTO listpatienttoday (Id, Name, State, Type, time) "
                     + $"SELECT distinct p.Idpatient, "
                     + $"p.Name, "
-                    + $"CONCAT(a.temperature,';', a.huyetap,';', p.weight,';', p.height) as State, "
+                    + $"CONCAT(a.temperature,';', a.huyetap,';', a.{DatabaseContants.Advisory.Weight},';', p.height) as State, "
                     + $"{(int)RecordType.Advisory}, "
                     + $"'{dateTime:yyyy-MM-dd}' as time "
                     + $"FROM {DatabaseContants.tables.patient} p "
@@ -234,7 +234,7 @@ namespace PhongKham
             return "INSERT INTO listpatienttoday (Id, Name, State, Type, time) "
                     + $"SELECT distinct p.Idpatient, "
                     + $"p.Name, "
-                    + $"CONCAT(h.temperature,';', h.huyetap,';', p.weight,';', p.height) as State, "
+                    + $"CONCAT(h.temperature,';', h.huyetap,';', h.{DatabaseContants.history.Weight},';', p.height) as State, "
                     + $"{(int)RecordType.Examination}, "
                     + $"'{dateTime:yyyy-MM-dd}' as time "
                     + $"FROM {DatabaseContants.tables.patient} p "
@@ -261,20 +261,6 @@ namespace PhongKham
             this.circularProgress1.Show();
             this.circularProgress1.IsRunning = true;
             this.circularProgress1.ProgressText = text;
-        }
-
-        private void CircularProgressStop(string text)
-        {
-            this.circularProgress1.IsRunning = false;
-            this.circularProgress1.ProgressText = text;
-            this.circularProgress1.Hide();
-        }
-
-        private void CircularProgressSetvalue(string text)
-        {
-            this.circularProgress1.IsRunning = false;
-            this.circularProgress1.ProgressText = text;
-            this.circularProgress1.Hide();
         }
 
         private void ListPatientForm_advisoryClick(PatientToday patientToday)
@@ -571,12 +557,9 @@ namespace PhongKham
                 }
                 if (!onlyInfo && IsViewHistory)
                 {
+                    txtBoxClinicRoomWeight.Text = reader[DatabaseContants.history.Weight].ToString();
                     textBoxClinicNhietDo.Text = reader[DatabaseContants.history.temperature].ToString();
                     textBoxHuyetAp.Text = reader[DatabaseContants.history.huyetap].ToString();
-                }
-                if (IsViewHistory)
-                {                   
-                    txtBoxClinicRoomWeight.Text = reader["Weight"].ToString();
                 }
                 textBoxClinicPhone.Text = reader["phone"].ToString();
                 dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.patient.DateWillBirthMain].ToString();
@@ -802,8 +785,7 @@ namespace PhongKham
                 this.dataGridViewMedicine.Rows.Clear();
                 if (Helper.CheckDataMedicineOld(medicines))
                 {
-                    string[] medicineAndCount = new string[] { };
-                    medicineAndCount = medicines.Split(',');
+                    string[] medicineAndCount = medicines.Split(',');
 
                     // empty
                     if (medicineAndCount.Length < 2)
@@ -1137,7 +1119,7 @@ namespace PhongKham
         {
             if (string.IsNullOrEmpty(this.comboBoxClinicRoomName.Text))
             {
-                MessageBox.Show("Tên bệnh nhân");
+                MessageBox.Show("Chưa nhập tên bệnh nhân", "Thông báo");
                 this.Enabled = true;
                 return;
             }
@@ -1255,18 +1237,18 @@ namespace PhongKham
                 //backgroundWorker.DoWork += new DoWorkEventHandler(bw_DoWork);
                 //backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
                 //backgroundWorker.RunWorkerAsync(idbenhnhan);
-                bw_DoWork(idbenhnhan);
                 try
                 {
+                    bw_DoWork(idbenhnhan);
                     axAcroPDF1.LoadFile("firstpage.pdf");
-                    db.UpdateRowToTable(DatabaseContants.tables.patient, new List<string>() { "phone" }, new List<string>() { this.textBoxClinicPhone.Text },DatabaseContants.patient.Id ,idbenhnhan);
+                    this.Enabled = true;
+                    UpdateForm(savePatientCommand.LoadDataType);
                 }
                 catch(Exception ex)
                 {
                     Log.Error(ex.Message, ex);
+                    throw;
                 }
-                this.Enabled = true;
-                UpdateForm(savePatientCommand.LoadDataType);
             }
         }
 
@@ -1487,7 +1469,6 @@ namespace PhongKham
                     DatabaseContants.patient.Name, 
                     DatabaseContants.patient.Address, 
                     DatabaseContants.patient.birthday, 
-                    DatabaseContants.patient.weight, 
                     DatabaseContants.patient.Phone,
                     DatabaseContants.patient.DateWillBirthMain
                 };
@@ -1496,7 +1477,6 @@ namespace PhongKham
                     comboBoxClinicRoomName.Text,
                     txtBoxClinicRoomAddress.Text,
                     dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
-                    txtBoxClinicRoomWeight.Text,
                     textBoxClinicPhone.Text,
                     dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
@@ -1504,7 +1484,17 @@ namespace PhongKham
                 GetIDMaxCurrentPatient();
                 string medicines = "Dd nhập bệnh nhân mới,!";
 
-                List<string> columnsHistory = new List<string>() { "Id", "Symptom","temperature", "Diagnose", "Day", "Medicines", DatabaseContants.history.DateWillBirth };
+                List<string> columnsHistory = new List<string>() 
+                { 
+                    "Id", 
+                    "Symptom",
+                    "temperature", 
+                    "Diagnose", 
+                    "Day", 
+                    "Medicines", 
+                    DatabaseContants.history.DateWillBirth,
+                    DatabaseContants.history.Weight
+                };
                 List<string> valuesHistory = new List<string>() 
                 { 
                     lblClinicRoomId.Text, 
@@ -1513,7 +1503,8 @@ namespace PhongKham
                     txtBoxClinicRoomDiagnose.Text, 
                     DateTime.Now.ToString("yyyy-MM-dd"), 
                     medicines,
-                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat),
+                    txtBoxClinicRoomWeight.Text
                 };
                 db.InsertRowToTable(DatabaseContants.tables.history, columnsHistory, valuesHistory);
                 MessageBox.Show("Thêm bệnh nhân mới thành công","Thông Báo");  
@@ -1524,15 +1515,13 @@ namespace PhongKham
                 { 
                     DatabaseContants.patient.Address, 
                     DatabaseContants.patient.birthday, 
-                    DatabaseContants.patient.weight, 
                     DatabaseContants.patient.Phone,
                     DatabaseContants.patient.DateWillBirthMain
                 };
                 List<string> values = new List<string>() 
                 { 
                     txtBoxClinicRoomAddress.Text, 
-                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
-                    txtBoxClinicRoomWeight.Text, 
+                    dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat), 
                     textBoxClinicPhone.Text,
                     dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
@@ -1575,9 +1564,9 @@ namespace PhongKham
                 { 
                     DatabaseContants.patient.Name, 
                     DatabaseContants.patient.Address, 
-                    DatabaseContants.patient.birthday, 
-                    DatabaseContants.patient.weight, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.birthday,
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
                 //List<string> columns = new List<string>() { "Name", "Address", "Birthday", "phone" };
                 List<string> values = new List<string>()
@@ -1585,8 +1574,8 @@ namespace PhongKham
                     comboBoxClinicRoomName.Text,
                     txtBoxClinicRoomAddress.Text,
                     dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
-                    txtBoxClinicRoomWeight.Text,
-                    textBoxClinicPhone.Text
+                    textBoxClinicPhone.Text,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
                 db.InsertRowToTable(DatabaseContants.tables.patient, columns, values);
                 GetIDMaxCurrentPatient();
@@ -1597,16 +1586,16 @@ namespace PhongKham
                 List<string> columns = new List<string>() 
                 { 
                     DatabaseContants.patient.Address, 
-                    DatabaseContants.patient.birthday, 
-                    DatabaseContants.patient.weight, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.birthday,
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
                 List<string> values = new List<string>()
                 {
                     txtBoxClinicRoomAddress.Text,
                     dateTimePickerBirthDay.Value.ToString(ClinicConstant.DateTimeSQLFormat),
-                    txtBoxClinicRoomWeight.Text,
-                    textBoxClinicPhone.Text
+                    textBoxClinicPhone.Text,
+                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
                 db.UpdateRowToTable(DatabaseContants.tables.patient, columns, values, DatabaseContants.patient.Id, lblClinicRoomId.Text);
 
@@ -1627,25 +1616,27 @@ namespace PhongKham
             string medicines = "Dd nhập bệnh nhân mới,!";
 
             List<string> columnsHistory = new List<string>()
-                {
-                    "IdPatient",
-                    "Symptom",
-                    "temperature",
-                    "Diagnose",
-                    "Day",
-                    "Medicines",
-                    DatabaseContants.Advisory.DateWillBirth
-                };
+            {
+                "IdPatient",
+                "Symptom",
+                "temperature",
+                "Diagnose",
+                "Day",
+                "Medicines",
+                DatabaseContants.Advisory.DateWillBirth,
+                DatabaseContants.Advisory.Weight
+            };
             List<string> valuesHistory = new List<string>()
-                {
-                    lblClinicRoomId.Text,
-                    txtBoxClinicRoomSymptom.Text,
-                    textBoxClinicNhietDo.Text,
-                    txtBoxClinicRoomDiagnose.Text,
-                    DateTime.Now.ToString("yyyy-MM-dd"),
-                    medicines,
-                    dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat)
-                };
+            {
+                lblClinicRoomId.Text,
+                txtBoxClinicRoomSymptom.Text,
+                textBoxClinicNhietDo.Text,
+                txtBoxClinicRoomDiagnose.Text,
+                DateTime.Now.ToString("yyyy-MM-dd"),
+                medicines,
+                dateTimePickerNgayDuSanh.Value.ToString(ClinicConstant.DateTimeSQLFormat),
+                txtBoxClinicRoomWeight.Text
+            };
             db.InsertRowToTable(DatabaseContants.tables.advisory, columnsHistory, valuesHistory);
         }
 

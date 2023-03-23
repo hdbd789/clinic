@@ -206,6 +206,12 @@ namespace Clinic.Data.Database
 
             fun = () => ExecuteNonQuery("ALTER TABLE patient ADD COLUMN DateWillBirthMain datetime NULL;", null);
             Guard(fun);
+
+            fun = () => ExecuteNonQuery($"ALTER TABLE {DatabaseContants.tables.history} ADD COLUMN {DatabaseContants.history.Weight} TEXT NULL;", null);
+            Guard(fun);
+
+            fun = () => ExecuteNonQuery($"ALTER TABLE {DatabaseContants.tables.advisory} ADD COLUMN {DatabaseContants.Advisory.Weight} TEXT NULL;", null);
+            Guard(fun);
         }
 
         #region implement Interface IDatabase

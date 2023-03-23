@@ -37,6 +37,7 @@ namespace Clinic.Data.Database
             public static string IdHistory = "IdHistory";
             public static string Reason = "Reason";
             public static string DateWillBirth = "DateWillBirth";
+            public static string Weight = "WeightTemp";
         }
 
         public struct medicine
@@ -55,7 +56,6 @@ namespace Clinic.Data.Database
             public static string Name = "Name";
             public static string Address = "Address";
             public static string birthday = "birthday";
-            public static string height = "height";
             public static string weight = "weight";
             public static string Id = "Idpatient";
             public static string Phone = "phone";
@@ -124,6 +124,7 @@ namespace Clinic.Data.Database
             public static string namLoaiKham = "NameLoaiKham";
             public static string Reason = "Reason";
             public static string DateWillBirth = "DateWillBirth";
+            public static string Weight = "WeightTemp";
         }
 
         public struct AdvisoryHistory
