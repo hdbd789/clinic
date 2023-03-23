@@ -5,6 +5,7 @@ on:
     inputs:
       tagname:
         description: 'New Tag'
+        required: true
 jobs:
   Create-release:
     runs-on: windows-latest
@@ -25,10 +26,12 @@ jobs:
           testAssembly: CLinicTest.dll
           searchFolder: ./Source/PhongKham/CLinicTest/bin/Debug/
           runInParallel: true
-      - name: Zip output
-        uses: montudor/action-zip@v1.0.0
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.7.1
         with:
-          args: zip -qq -r ${{ github.event.inputs.tagname }}.zip ./Source/PhongKham/PhongKham/bin/Debug
+          type: 'zip'
+          filename: '${{ github.event.inputs.tagname }}.zip'
+          path: './Source/PhongKham/PhongKham/bin/Debug'
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
