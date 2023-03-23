@@ -557,12 +557,9 @@ namespace PhongKham
                 }
                 if (!onlyInfo && IsViewHistory)
                 {
+                    txtBoxClinicRoomWeight.Text = reader[DatabaseContants.history.Weight].ToString();
                     textBoxClinicNhietDo.Text = reader[DatabaseContants.history.temperature].ToString();
                     textBoxHuyetAp.Text = reader[DatabaseContants.history.huyetap].ToString();
-                }
-                if (IsViewHistory)
-                {                   
-                    txtBoxClinicRoomWeight.Text = reader["Weight"].ToString();
                 }
                 textBoxClinicPhone.Text = reader["phone"].ToString();
                 dateTimePickerNgayDuSanh.Text = reader[DatabaseContants.patient.DateWillBirthMain].ToString();
@@ -788,8 +785,7 @@ namespace PhongKham
                 this.dataGridViewMedicine.Rows.Clear();
                 if (Helper.CheckDataMedicineOld(medicines))
                 {
-                    string[] medicineAndCount = new string[] { };
-                    medicineAndCount = medicines.Split(',');
+                    string[] medicineAndCount = medicines.Split(',');
 
                     // empty
                     if (medicineAndCount.Length < 2)
