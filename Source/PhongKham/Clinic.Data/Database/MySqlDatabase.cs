@@ -328,7 +328,7 @@ namespace Clinic.Data.Database
                     item.Phone = reader[DatabaseContants.patient.Phone].ToString();
                     item.Address = reader[DatabaseContants.patient.Address].ToString();
                     item.DateWillBirth = DateTime.TryParse(reader[DatabaseContants.patient.DateWillBirthMain].ToString(), out DateTime dateWillBirth) ? dateWillBirth : DateTime.Today;
-                    item.Weight = reader[DatabaseContants.patient.weight].ToString();
+                    item.Weight = reader[DatabaseContants.history.Weight].ToString();
                     item.Symptom = reader[DatabaseContants.history.Symptom].ToString();
                     item.Temperature = reader[DatabaseContants.history.temperature].ToString();
                     item.HuyenAp = reader[DatabaseContants.history.huyetap].ToString();
@@ -364,7 +364,7 @@ namespace Clinic.Data.Database
                     item.Symptom = reader[DatabaseContants.history.Symptom].ToString();
                     item.Diagnose = reader[DatabaseContants.history.Diagnose].ToString();
                     item.Temperature = reader[DatabaseContants.history.temperature].ToString();
-                    item.Weight = reader[DatabaseContants.patient.weight].ToString();
+                    item.Weight = reader[DatabaseContants.history.Weight].ToString();
                     item.IdHistory = reader[DatabaseContants.history.IdHistory].ToString();
                     item.Medicines = reader[DatabaseContants.history.Medicines].ToString();
                     item.HuyenAp = reader[DatabaseContants.history.huyetap].ToString();
@@ -390,7 +390,7 @@ namespace Clinic.Data.Database
                     item.Symptom = reader[DatabaseContants.Advisory.Symptom].ToString();
                     item.Diagnose = reader[DatabaseContants.Advisory.Diagnose].ToString();
                     item.Temperature = reader[DatabaseContants.Advisory.Temperature].ToString();
-                    item.Weight = reader[DatabaseContants.patient.weight].ToString();
+                    item.Weight = reader[DatabaseContants.Advisory.Weight].ToString();
                     item.IdHistory = reader[DatabaseContants.Advisory.Id].ToString();
                     item.Medicines = reader[DatabaseContants.Advisory.Medicines].ToString();
                     item.HuyenAp = reader[DatabaseContants.Advisory.Huyetap].ToString();

@@ -47,21 +47,25 @@ namespace Clinic.Business
                 { 
                     DatabaseContants.patient.Name, 
                     DatabaseContants.patient.Address, 
-                    DatabaseContants.patient.birthday, 
-                    DatabaseContants.patient.weight, 
+                    DatabaseContants.patient.birthday,
                     DatabaseContants.patient.Id, 
-                    DatabaseContants.patient.Phone
+                    DatabaseContants.patient.Phone,
+                    DatabaseContants.patient.DateWillBirthMain
                 };
                 List<string> values = new List<string>()
                 {
                     infoPatient.Name,
                     infoPatient.Address,
                     infoPatient.Birthday.ToString(ClinicConstant.DateTimeSQLFormat),
-                    infoPatient.Weight,
                     infoPatient.Id,
-                    infoPatient.Phone
+                    infoPatient.Phone,
+                    infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
                 };
                 db.InsertRowToTable(DatabaseContants.tables.patient, columns, values);
+            }
+            else
+            {
+                Helper.UpdateInfoPatient(db, infoPatient);
             }
 
             if (listMedicines.Count > 1)
@@ -162,7 +166,8 @@ namespace Clinic.Business
                 "huyetap", 
                 DatabaseContants.Advisory.Reason,
                 DatabaseContants.Advisory.nameofdoctor,
-                DatabaseContants.Advisory.DateWillBirth
+                DatabaseContants.Advisory.DateWillBirth,
+                DatabaseContants.Advisory.Weight
             };
             List<string> valuesHistory = new List<string>()
             {
@@ -175,7 +180,8 @@ namespace Clinic.Business
                 infoPatient.HuyenAp,
                 infoPatient.Reason,
                 infoPatient.NameOfDoctor,
-                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
+                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat),
+                infoPatient.Weight
             };
             db.InsertRowToTable(DatabaseContants.tables.advisory, ColumnsAdvisory, valuesHistory);
 
@@ -190,7 +196,6 @@ namespace Clinic.Business
                 DatabaseContants.patient.Name, 
                 DatabaseContants.patient.Address, 
                 DatabaseContants.patient.birthday,
-                DatabaseContants.patient.weight,
                 DatabaseContants.patient.Phone,
                 DatabaseContants.patient.DateWillBirthMain
             };
@@ -199,7 +204,6 @@ namespace Clinic.Business
                 infoPatient.Name,
                 infoPatient.Address,
                 infoPatient.Birthday.ToString(ClinicConstant.DateTimeSQLFormat),
-                infoPatient.Weight,
                 infoPatient.Phone,
                 infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
             };
@@ -220,7 +224,8 @@ namespace Clinic.Business
                 "huyetap",
                 DatabaseContants.history.Reason,
                 DatabaseContants.Advisory.nameofdoctor,
-                DatabaseContants.Advisory.DateWillBirth
+                DatabaseContants.Advisory.DateWillBirth,
+                DatabaseContants.Advisory.Weight
             };
             List<string> valuesHistory = new List<string>()
             {
@@ -233,7 +238,8 @@ namespace Clinic.Business
                 infoPatient.HuyenAp,
                 infoPatient.Reason,
                 infoPatient.NameOfDoctor,
-                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat)
+                infoPatient.DateWillBirth.ToString(ClinicConstant.DateTimeSQLFormat),
+                infoPatient.Weight
             };
             db.UpdateRowToTable(DatabaseContants.tables.advisory,
                 ColumnsAdvisory,
