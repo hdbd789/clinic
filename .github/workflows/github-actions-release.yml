@@ -7,7 +7,7 @@ on:
         description: 'New Tag'
         required: true
 jobs:
-  Build-Test:
+  Create-release:
     runs-on: windows-latest
     steps:
       - name: Checkout Code
