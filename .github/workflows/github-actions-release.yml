@@ -6,6 +6,8 @@ on:
       tagname:
         description: 'New Tag'
         required: true
+permissions:
+  contents: write
 jobs:
   Create-release:
     runs-on: windows-latest
