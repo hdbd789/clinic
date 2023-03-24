@@ -5,6 +5,9 @@ on:
     inputs:
       tagname:
         description: 'New Tag'
+        required: true
+permissions:
+  contents: write
 jobs:
   Create-release:
     runs-on: windows-latest
@@ -25,10 +28,12 @@ jobs:
           testAssembly: CLinicTest.dll
           searchFolder: ./Source/PhongKham/CLinicTest/bin/Debug/
           runInParallel: true
-      - name: Zip output
-        uses: montudor/action-zip@v1.0.0
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.7.1
         with:
-          args: zip -qq -r ${{ github.event.inputs.tagname }}.zip ./Source/PhongKham/PhongKham/bin/Debug
+          type: 'zip'
+          filename: '${{ github.event.inputs.tagname }}.zip'
+          path: './Source/PhongKham/PhongKham/bin/Debug/*'
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -47,5 +52,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./${{ github.event.inputs.tagname }}.zip
-          asset_name: ${{ github.event.inputs.tagname }}.zip
+          asset_name: Clinic_${{ github.event.inputs.tagname }}.zip
           asset_content_type: application/zip
